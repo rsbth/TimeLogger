@@ -12,7 +12,11 @@
 
 <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mprtcz.timeloggerdesktop.controller.Controller">
    <top>
-      <Label fx:id="programNameLabel" BorderPane.alignment="CENTER" />
+      <Label fx:id="programNameLabel" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+         </BorderPane.margin>
+      </Label>
    </top>
    <center>
       <HBox>
@@ -41,7 +45,10 @@
    <right>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <JFXButton fx:id="addRecordButton" buttonType="RAISED" onAction="#onAddRecordButtonClicked" />
+            <JFXButton fx:id="addRecordButton" buttonType="RAISED" onAction="#onAddRecordButtonClicked">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin></JFXButton>
          </children>
       </VBox>
    </right>
@@ -58,13 +65,13 @@
             </JFXListView>
             <HBox alignment="CENTER">
                <children>
-                  <JFXButton fx:id="addActivityButton" buttonType="RAISED" onMouseClicked="#onAddActivityButtonCLicked" ripplerFill="#56c32e" text="+" textAlignment="CENTER" />
+                  <JFXButton fx:id="addActivityButton" depthTest="ENABLE" onMouseClicked="#onAddActivityButtonCLicked" ripplerFill="#2f64c2" text="+" />
                </children>
             </HBox>
          </children>
       </VBox>
    </left>
    <bottom>
-      <JFXSnackbar fx:id="activityDetailSnackbar" BorderPane.alignment="CENTER" />
+      <JFXSnackbar fx:id="activityDetailSnackbar" snapToPixel="false" BorderPane.alignment="CENTER" />
    </bottom>
 </BorderPane>

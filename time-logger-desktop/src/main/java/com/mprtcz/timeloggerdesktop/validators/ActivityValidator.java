@@ -1,6 +1,6 @@
 package com.mprtcz.timeloggerdesktop.validators;
 
-import com.mprtcz.timeloggerdesktop.handlers.ErrorHandler;
+import com.mprtcz.timeloggerdesktop.handlers.ValidationResult;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 
 import java.util.List;
@@ -10,23 +10,27 @@ import java.util.List;
  */
 public class ActivityValidator {
 
-    public ErrorHandler validateNewActivity(Activity activity, List<Activity> activities) {
-        if(activity.getName().equals("")) {
-            return new ErrorHandler(ErrorHandler.CustomErrorEnum.ACTIVITY_NAME_EMPTY);
-        }
-        if(checkIfActivityNameExists(activity.getName(), activities)) {
-            return new ErrorHandler(ErrorHandler.CustomErrorEnum.ACTIVITY_EXISTS);
-        }
-        return new ErrorHandler(ErrorHandler.CustomErrorEnum.OK);
+    private ValidationResult validationResult;
+
+    public ActivityValidator() {
+        this.validationResult = new ValidationResult();
     }
 
-    private boolean checkIfActivityNameExists(String name, List<Activity> activities) {
+    public ValidationResult validateNewActivity(Activity activity, List<Activity> activities) {
+        if(activity.getName().equals("")) {
+            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.ACTIVITY_NAME_EMPTY);
+        }
+        checkIfActivityNameExists(activity.getName(), activities);
+        return this.validationResult;
+    }
+
+    private void checkIfActivityNameExists(String name, List<Activity> activities) {
         for (Activity activity :
                 activities) {
             if (activity.getName().equals(name)) {
-                return true;
+                this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.ACTIVITY_EXISTS);
+                break;
             }
         }
-        return false;
     }
 }

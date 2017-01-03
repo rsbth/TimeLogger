@@ -19,7 +19,7 @@ public class App extends Application {
         Scene scene = new Scene(root, 800, 600);
 
         scene.getStylesheets().add(App.class.getResource("/css/jfoenix-fonts.css").toExternalForm());
-        scene.getStylesheets().add(App.class.getResource("/css/jfoenix-design.css").toExternalForm());
+//        scene.getStylesheets().add(App.class.getResource("/css/jfoenix-design.css").toExternalForm());
         scene.getStylesheets().add(App.class.getResource("/css/my-styles.css").toExternalForm());
 
 

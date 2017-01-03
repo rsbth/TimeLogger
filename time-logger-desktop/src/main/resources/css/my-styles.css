@@ -8,7 +8,7 @@
 }
 
 .jfx-list-cell:selected {
-    -fx-background-color: #3d8c91;
+    -fx-background-color: lightgreen;
 }
 
 .jfx-list-view {
@@ -17,4 +17,19 @@
 
 .jfx-snackbar-content {
     -fx-background-color: white;
+}
+
+.jfx-button {
+    -fx-font-family: "Roboto";
+    -fx-font-size: 16px;
+    -fx-button-type: RAISED;
+    -fx-background-color: lightgreen;
+}
+
+.root {
+    -fx-font-family: "Roboto Light";
+}
+
+.jfx-snackbar-content .jfx-button {
+    -fx-button-type: FLAT;
 }

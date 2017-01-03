@@ -1,12 +1,15 @@
 package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
-import com.mprtcz.timeloggerdesktop.handlers.ErrorHandler;
+import com.mprtcz.timeloggerdesktop.handlers.ValidationResult;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
-import com.mprtcz.timeloggerdesktop.service.LoggingService;
+import com.mprtcz.timeloggerdesktop.service.Service;
 import com.mprtcz.timeloggerdesktop.utilities.StringConverter;
+import com.mprtcz.timeloggerdesktop.validators.ActivityValidator;
+import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
 import javafx.collections.FXCollections;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -16,8 +19,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by mprtcz on 2017-01-02.
@@ -48,21 +55,20 @@ public class Controller {
     private JFXPopup addNewActivityPopup;
     private JFXPopup emptyDescConfPopup;
 
-    private LoggingService loggingService;
+    private Service service;
     private String newActivityName;
     private String newActivityDescription;
     private static final int SNACKBAR_DURATION = 5000; //[ms]
+    private static final String BACKGROUND_COLOR = "#F4F4F4";
 
     @FXML
     void onAddRecordButtonClicked() {
-        try {
-            System.out.println("startDatePicker = " + startDatePicker.getValue());
-            System.out.println("endDatePicker = " + endDatePicker.getValue());
-            System.out.println("startTimePicker = " + startTimePicker.getTime());
-            System.out.println("endTimePicker = " + endTimePicker.getTime());
-        } catch (NullPointerException npe) {
-            System.out.println("NPE!");
-        }
+        System.out.println("startDatePicker = " + startDatePicker.getValue());
+        System.out.println("endDatePicker = " + endDatePicker.getValue());
+        System.out.println("startTimePicker = " + startTimePicker.getTime());
+        System.out.println("endTimePicker = " + endTimePicker.getTime());
+        this.service.addNewRecord(startTimePicker.getTime(), endTimePicker.getTime(),
+                startDatePicker.getValue(), endDatePicker.getValue());
     }
 
     @FXML
@@ -80,12 +86,15 @@ public class Controller {
     @FXML
     private void initialize() {
         System.out.println("initialized");
-        this.loggingService = new LoggingService();
+        this.service = new Service(new ActivityValidator(), new RecordValidator());
         this.setLabels();
         populateListView();
         initAddActivityPopup();
         initEmptyDescriptionConfPopup();
         setUpListViewListener();
+        initializeDateTimeControls();
+        this.addActivityButton.setShape(new Circle(8));
+        System.out.println(this.addActivityButton.getFont());
     }
 
 
@@ -99,7 +108,7 @@ public class Controller {
     }
 
     private void populateListView() {
-        List<Activity> list = this.loggingService.getActivities();
+        List<Activity> list = this.service.getActivities();
         this.activityNamesList.setItems(FXCollections.observableList(list));
         this.activityNamesList.setExpanded(true);
         this.activityNamesList.depthProperty().set(1);
@@ -112,7 +121,7 @@ public class Controller {
     }
 
     private void addNewActivity(String name, String description) {
-        ErrorHandler e = this.loggingService.addActivity(name, description);
+        ValidationResult e = this.service.addActivity(name, description);
         System.out.println("e = " + e);
         this.populateListView();
     }
@@ -128,8 +137,12 @@ public class Controller {
                 newActivityDescriptionTextField, false));
         setPopupContentsStyles(confirmAddButton, cancelAddButton, newActivityNameTextField, newActivityDescriptionTextField);
         HBox hBox = new HBox(confirmAddButton, cancelAddButton);
+        HBox.setMargin(confirmAddButton, new Insets(5));
+        HBox.setMargin(cancelAddButton, new Insets(5));
+        HBox.setMargin(newActivityNameTextField, new Insets(5));
+        HBox.setMargin(newActivityDescriptionTextField, new Insets(5));
         VBox vBox = new VBox(newActivityNameTextField, newActivityDescriptionTextField, hBox);
-        vBox.setBackground(this.getBackground());
+        vBox.setBackground(this.getBackgroundOfColor(BACKGROUND_COLOR));
         return vBox;
     }
 
@@ -175,20 +188,24 @@ public class Controller {
         });
         cancelAddButton.setOnAction(e -> this.emptyDescConfPopup.close());
         HBox hBox = new HBox(confirmAddButton, cancelAddButton);
+        HBox.setMargin(confirmAddButton, new Insets(5));
+        HBox.setMargin(cancelAddButton, new Insets(5));
+        HBox.setMargin(label, new Insets(5));
         VBox vBox = new VBox(label, hBox);
-        vBox.setBackground(this.getBackground());
+        vBox.setBackground(this.getBackgroundOfColor(BACKGROUND_COLOR));
         this.setUpPopupProperties(this.emptyDescConfPopup, vBox, this.addActivityButton);
     }
 
-    private Background getBackground() {
-        return new Background(new BackgroundFill(Color.web("#F4F4F4"), CornerRadii.EMPTY, Insets.EMPTY));
+    private Background getBackgroundOfColor(String color) {
+        return new Background(new BackgroundFill(Color.web(color), CornerRadii.EMPTY, Insets.EMPTY));
     }
 
     private void setStyleOfConfirmCancelButtons(JFXButton confirmButton, JFXButton cancelButton) {
         confirmButton.setPadding(new Insets(10));
         cancelButton.setPadding(new Insets(10));
-        confirmButton.setRipplerFill(Paint.valueOf("#40ff00"));
-        cancelButton.setRipplerFill(Paint.valueOf("#ff84bd"));
+        confirmButton.setRipplerFill(Paint.valueOf("darkgreen"));
+        cancelButton.setRipplerFill(Paint.valueOf("red"));
+        cancelButton.setStyle("-fx-background-color: hotpink;");
     }
 
     private void setUpPopupProperties(JFXPopup popup, Pane pane, Control source) {
@@ -201,8 +218,6 @@ public class Controller {
 
     private void setUpListViewListener() {
         this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("ListView selection changed from oldValue = "
-                    + oldValue + " to newValue = " + newValue);
             if (newValue != null) {
                 Controller.this.showSnackbar(newValue.getDescription());
             }
@@ -210,15 +225,24 @@ public class Controller {
     }
 
     private void showSnackbar(String value) {
-        if(this.activityDetailSnackbar.getPopupContainer() != null) {
+        if (this.activityDetailSnackbar.getPopupContainer() != null) {
             this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
         }
         System.out.println("is Visible " + this.activityDetailSnackbar.isHover());
         this.activityDetailSnackbar = new JFXSnackbar(borderPane);
-
-        EventHandler eventHandler = event -> Controller.this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
+        EventHandler<Event> eventHandler = event ->
+                Controller.this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
 
         System.out.println("Controller.showSnackbar");
-        this.activityDetailSnackbar.show(StringConverter.insertLineSeparator(value, 50), "X", SNACKBAR_DURATION, eventHandler);
+        this.activityDetailSnackbar.show(StringConverter.insertLineSeparator(value, 50),
+                "X", SNACKBAR_DURATION, eventHandler);
+    }
+
+    private void initializeDateTimeControls() {
+        this.startDatePicker.setValue(LocalDate.now());
+        this.endDatePicker.setValue(LocalDate.now());
+        this.startTimePicker.setTime(LocalTime.of(0, 0));
+        this.endTimePicker.setTime(LocalTime.of(0, 0));
+        Locale.setDefault(Locale.ENGLISH);
     }
 }
