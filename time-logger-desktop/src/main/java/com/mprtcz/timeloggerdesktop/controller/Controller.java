@@ -218,6 +218,4 @@ public class Controller {
         System.out.println("Controller.showSnackbar");
         this.activityDetailSnackbar.show(StringConverter.insertLineSeparator(value, 50), "X", SNACKBAR_DURATION, eventHandler);
     }
-
-
 }

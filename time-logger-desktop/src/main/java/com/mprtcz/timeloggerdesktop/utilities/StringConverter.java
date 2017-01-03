@@ -11,6 +11,9 @@ public class StringConverter {
         int separator = 0;
         for (int i = 0; i < charArray.length; i++) {
             stringBuilder.append(charArray[i]);
+            if(charArray[i] == '\n') {
+                separator = 0;
+            }
             if(separator > maxLength) {
                 if(charArray[i] == ' ') {
                     stringBuilder.append("\n");
