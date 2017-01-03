@@ -1,0 +1,16 @@
+.jfx-list-view {
+    -fx-background-insets: 0;
+    -fx-vertical-gap: 10px;
+}
+
+.jfx-list-cell:hover {
+    -fx-background-color: #1bd79c;
+}
+
+.jfx-list-cell:selected {
+    -fx-background-color: #3d8c91;
+}
+
+.jfx-list-view {
+    -fx-background-color: #F4F4F4;
+}
