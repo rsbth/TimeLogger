@@ -3,14 +3,14 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXDatePicker?>
 <?import com.jfoenix.controls.JFXListView?>
-<?import com.jfoenix.controls.JFXPopup?>
+<?import com.jfoenix.controls.JFXSnackbar?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mprtcz.timeloggerdesktop.controller.Controller">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mprtcz.timeloggerdesktop.controller.Controller">
    <top>
       <Label fx:id="programNameLabel" BorderPane.alignment="CENTER" />
    </top>
@@ -45,21 +45,26 @@
          </children>
       </VBox>
    </right>
-   <bottom>
-      <HBox />
-   </bottom>
    <left>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <JFXListView fx:id="activityNamesList" prefWidth="233.0" />
-            <HBox>
+            <JFXListView fx:id="activityNamesList" minWidth="200.0" onMouseClicked="#onMouseClickedListView" VBox.vgrow="NEVER">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </JFXListView>
+            <HBox alignment="CENTER">
                <children>
-                  <JFXButton fx:id="addActivityButton" buttonType="RAISED" onMouseClicked="#onAddActivityButtonCLicked" ripplerFill="#56c32e" text="+" />
-                  <JFXPopup fx:id="addNewActivityPopup" />
-                  <JFXPopup fx:id="emptyDescConfPopup" />
+                  <JFXButton fx:id="addActivityButton" buttonType="RAISED" onMouseClicked="#onAddActivityButtonCLicked" ripplerFill="#56c32e" text="+" textAlignment="CENTER" />
                </children>
             </HBox>
          </children>
       </VBox>
    </left>
+   <bottom>
+      <JFXSnackbar fx:id="activityDetailSnackbar" BorderPane.alignment="CENTER" />
+   </bottom>
 </BorderPane>

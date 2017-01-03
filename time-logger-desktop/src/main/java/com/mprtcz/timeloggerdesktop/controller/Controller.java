@@ -2,9 +2,12 @@ package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
 import com.mprtcz.timeloggerdesktop.handlers.ErrorHandler;
+import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.LoggingService;
 import javafx.collections.FXCollections;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Control;
@@ -34,25 +37,34 @@ public class Controller {
     @FXML
     private JFXButton addActivityButton;
     @FXML
-    private JFXListView<String> activityNamesList;
+    private JFXListView<Activity> activityNamesList;
     @FXML
     private Label programNameLabel;
     @FXML
-    private JFXPopup addNewActivityPopup;
+    private JFXSnackbar activityDetailSnackbar;
     @FXML
+    private BorderPane borderPane;
+
+    private JFXPopup addNewActivityPopup;
     private JFXPopup emptyDescConfPopup;
 
     private LoggingService loggingService;
     private String newActivityName;
     private String newActivityDescription;
+    private static final int SNACKBAR_DURATION = 5000; //[ms]
 
     @FXML
     void onAddRecordButtonClicked() {
     }
 
     @FXML
+    void onMouseClickedListView(MouseEvent mouseEvent) {
+
+    }
+
+    @FXML
     void onAddActivityButtonCLicked() {
-        addNewActivityPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT,
+        this.addNewActivityPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT,
                 addActivityButton.getLayoutX(), addActivityButton.getLayoutY());
 
     }
@@ -70,6 +82,7 @@ public class Controller {
         populateListView();
         initAddActivityPopup();
         initEmptyDescriptionConfPopup();
+        setUpListViewListener();
     }
 
 
@@ -83,13 +96,14 @@ public class Controller {
     }
 
     private void populateListView() {
-        List<String> list = this.loggingService.getActivityNames();
+        List<Activity> list = this.loggingService.getActivities();
         this.activityNamesList.setItems(FXCollections.observableList(list));
         this.activityNamesList.setExpanded(true);
         this.activityNamesList.depthProperty().set(1);
     }
 
     private void initAddActivityPopup() {
+        this.addNewActivityPopup = new JFXPopup();
         VBox vBox = generatePopupContent();
         this.setUpPopupProperties(this.addNewActivityPopup, vBox, this.addActivityButton);
     }
@@ -118,11 +132,11 @@ public class Controller {
 
     private void processSaveActivity(JFXTextField newActivityNameTextField, JFXTextField newActivityDescriptionTextField,
                                      boolean withActivitySave) {
-        if(newActivityNameTextField.getText().equals("") && withActivitySave) {
+        if (newActivityNameTextField.getText().equals("") && withActivitySave) {
             return;
         }
         if (withActivitySave) {
-            if(newActivityDescriptionTextField.getText().equals("")) {
+            if (newActivityDescriptionTextField.getText().equals("")) {
                 this.newActivityName = newActivityNameTextField.getText();
                 this.newActivityDescription = newActivityDescriptionTextField.getText();
                 this.emptyDescConfPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT,
@@ -146,6 +160,7 @@ public class Controller {
     }
 
     private void initEmptyDescriptionConfPopup() {
+        this.emptyDescConfPopup = new JFXPopup();
         JFXButton confirmAddButton = new JFXButton(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_BUTTON);
         JFXButton cancelAddButton = new JFXButton(LabelsModel.EMPTY_DESCRIPTION_CANCEL_BUTTON);
         Label label = new Label(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_LABEL);
@@ -179,5 +194,29 @@ public class Controller {
         popup.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             popup.close();
         });
+    }
+
+    private void setUpListViewListener() {
+        this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("ListView selection changed from oldValue = "
+                    + oldValue + " to newValue = " + newValue);
+            if(newValue != null) {
+                Controller.this.showSnackbar(newValue.getDescription());
+            }
+        });
+    }
+
+    private void showSnackbar(String value) {
+        this.activityDetailSnackbar = new JFXSnackbar(borderPane);
+
+        EventHandler eventHandler = new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                Controller.this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
+            }
+        };
+
+        System.out.println("Controller.showSnackbar");
+        this.activityDetailSnackbar.show(value, "X", SNACKBAR_DURATION, eventHandler);
     }
 }

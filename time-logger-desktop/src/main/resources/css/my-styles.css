@@ -14,3 +14,7 @@
 .jfx-list-view {
     -fx-background-color: #F4F4F4;
 }
+
+.jfx-snackbar-content {
+    -fx-background-color: white;
+}

@@ -2,7 +2,6 @@ package com.mprtcz.timeloggerdesktop.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString
 public class Activity {
     private Long id;
     private String name;
@@ -28,5 +26,10 @@ public class Activity {
         activities.add(new Activity("name", "description"));
         activities.add(new Activity("name2", "long description"));
         activities.add(new Activity("name3", "even longer description"));
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
