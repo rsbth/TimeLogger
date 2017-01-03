@@ -15,18 +15,43 @@ public class Activity {
     private Long id;
     private String name;
     private String description;
+    private String color;
 
     public Activity(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
-    public static List<Activity> activities = new ArrayList<>();
+    public Activity(String name, String description, String color) {
+        this.name = name;
+        this.description = description;
+        this.color = color;
+    }
+
+
+
+    public static List<String> colorCodes = new ArrayList<>();
+
     static {
-        activities.add(new Activity("name", "description"));
-        activities.add(new Activity("name2", "long description"));
-        activities.add(new Activity("name3", "even longer description"));
-        activities.add(new Activity("name4", "even longer description \nwhich will contain more than 50 word necessary to identify whether a string cutting method appears to work correctly"));
+        colorCodes.add("#ffcdd2");
+        colorCodes.add("#f8bbd0");
+        colorCodes.add("#e1bee7");
+        colorCodes.add("#d1c4e9");
+        colorCodes.add("#c5cae9");
+        colorCodes.add("#bbdefb");
+        colorCodes.add("#b3e5fc");
+        colorCodes.add("#b2ebf2");
+        colorCodes.add("#b2dfdb");
+        colorCodes.add("#c8e6c9");
+        colorCodes.add("#dcedc8");
+        colorCodes.add("#f0f4c3");
+        colorCodes.add("#fff9c4");
+        colorCodes.add("#ffecb3");
+        colorCodes.add("#ffe0b2");
+        colorCodes.add("#ffccbc");
+        colorCodes.add("#d7ccc8");
+        colorCodes.add("#f5f5f5");
+        colorCodes.add("#cfd8dc");
     }
 
     @Override

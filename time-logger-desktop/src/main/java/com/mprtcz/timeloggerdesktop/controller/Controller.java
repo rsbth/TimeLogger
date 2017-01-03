@@ -1,6 +1,7 @@
 package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
+import com.mprtcz.timeloggerdesktop.dao.InMemoryActivityDao;
 import com.mprtcz.timeloggerdesktop.handlers.ValidationResult;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
@@ -15,11 +16,14 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.util.Callback;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -86,13 +90,14 @@ public class Controller {
     @FXML
     private void initialize() {
         System.out.println("initialized");
-        this.service = new Service(new ActivityValidator(), new RecordValidator());
+        this.service = new Service(new ActivityValidator(), new RecordValidator(), new InMemoryActivityDao());
         this.setLabels();
         populateListView();
         initAddActivityPopup();
         initEmptyDescriptionConfPopup();
         setUpListViewListener();
         initializeDateTimeControls();
+        setListViewFactory();
         this.addActivityButton.setShape(new Circle(8));
         System.out.println(this.addActivityButton.getFont());
     }
@@ -112,6 +117,8 @@ public class Controller {
         this.activityNamesList.setItems(FXCollections.observableList(list));
         this.activityNamesList.setExpanded(true);
         this.activityNamesList.depthProperty().set(1);
+
+        System.out.println("items" +this.activityNamesList.getChildrenUnmodifiable());
     }
 
     private void initAddActivityPopup() {
@@ -244,5 +251,28 @@ public class Controller {
         this.startTimePicker.setTime(LocalTime.of(0, 0));
         this.endTimePicker.setTime(LocalTime.of(0, 0));
         Locale.setDefault(Locale.ENGLISH);
+    }
+
+    private void setListViewFactory() {
+        this.activityNamesList.setCellFactory(new Callback<ListView<Activity>, ListCell<Activity>>() {
+            @Override
+            public ListCell<Activity> call(ListView<Activity> param) {
+                return new JFXListCell<Activity>(){
+                    @Override
+                    public void updateItem(Activity item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if(item!=null && !empty){
+                            HBox container = new HBox();
+                            container.setMouseTransparent(true);
+                            Label label = new Label(item.getName());
+                            label.setBackground(getBackgroundOfColor(item.getColor()));
+                            container.getChildren().add(label);
+                            container.setBackground(getBackgroundOfColor(item.getColor()));
+                            setGraphic(container);
+                        }
+                    }
+                };
+            }
+        });
     }
 }

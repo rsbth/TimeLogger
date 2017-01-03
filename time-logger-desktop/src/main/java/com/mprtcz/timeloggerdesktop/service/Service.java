@@ -1,5 +1,6 @@
 package com.mprtcz.timeloggerdesktop.service;
 
+import com.mprtcz.timeloggerdesktop.dao.Dao;
 import com.mprtcz.timeloggerdesktop.handlers.ValidationResult;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.Record;
@@ -18,9 +19,12 @@ public class Service {
 
     private ActivityValidator activityValidator;
     private RecordValidator recordValidator;
+    private Dao dao;
 
     public Service(ActivityValidator activityValidator,
-                   RecordValidator recordValidator) {
+                   RecordValidator recordValidator,
+                   Dao dao) {
+        this.dao = dao;
         this.activityValidator = activityValidator;
         this.recordValidator = recordValidator;
     }
@@ -31,7 +35,11 @@ public class Service {
 
 
     public List<Activity> getActivities() {
-        return Activity.activities;
+        for (Activity a:
+             dao.getAll()) {
+            System.out.println("Color = " +a.getColor());
+        }
+        return dao.getAll();
     }
 
     public List<String> getActivityNames() {
@@ -44,7 +52,8 @@ public class Service {
     }
 
     public void saveActivity(Activity activity) {
-        Activity.activities.add(activity);
+        chooseActivityColor(activity);
+        dao.save(activity);
     }
 
     public ValidationResult validateNewActivityAndSave(Activity activity) {
@@ -64,5 +73,14 @@ public class Service {
             //TODO record saving
         }
         return validationResult;
+    }
+
+    private void chooseActivityColor(Activity activity) {
+        List<Activity> activities = getActivities();
+        if(Activity.colorCodes.size() >= activities.size()) {
+            activity.setColor(Activity.colorCodes.get(activities.size()));
+        } else {
+            activity.setColor(Activity.colorCodes.get(0));
+        }
     }
 }
