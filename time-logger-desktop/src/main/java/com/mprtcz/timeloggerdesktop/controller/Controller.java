@@ -55,11 +55,14 @@ public class Controller {
 
     @FXML
     void onAddRecordButtonClicked() {
-    }
-
-    @FXML
-    void onMouseClickedListView(MouseEvent mouseEvent) {
-
+        try {
+            System.out.println("startDatePicker = " + startDatePicker.getValue());
+            System.out.println("endDatePicker = " + endDatePicker.getValue());
+            System.out.println("startTimePicker = " + startTimePicker.getTime());
+            System.out.println("endTimePicker = " + endTimePicker.getTime());
+        } catch (NullPointerException npe) {
+            System.out.println("NPE!");
+        }
     }
 
     @FXML

@@ -26,6 +26,7 @@ public class Activity {
         activities.add(new Activity("name", "description"));
         activities.add(new Activity("name2", "long description"));
         activities.add(new Activity("name3", "even longer description"));
+        activities.add(new Activity("name4", "even longer description \nwhich will contain more than 50 word necessary to identify whether a string cutting method appears to work correctly"));
     }
 
     @Override

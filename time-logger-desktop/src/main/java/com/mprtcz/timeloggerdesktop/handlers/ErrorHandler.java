@@ -15,7 +15,8 @@ public class ErrorHandler {
     public enum CustomErrorEnum {
         ACTIVITY_NAME_EMPTY("Activity cannot have empty name"),
         ACTIVITY_EXISTS("Activity with that name already exists"),
-        SAVED("Activity saved"),;
+        SAVED("Activity saved"),
+        OK("Validation successful"),;
 
         private String value;
 
