@@ -5,6 +5,7 @@ import com.mprtcz.timeloggerdesktop.handlers.ErrorHandler;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.LoggingService;
+import com.mprtcz.timeloggerdesktop.utilities.StringConverter;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -215,6 +216,8 @@ public class Controller {
         EventHandler eventHandler = event -> Controller.this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
 
         System.out.println("Controller.showSnackbar");
-        this.activityDetailSnackbar.show(value, "X", SNACKBAR_DURATION, eventHandler);
+        this.activityDetailSnackbar.show(StringConverter.insertLineSeparator(value, 50), "X", SNACKBAR_DURATION, eventHandler);
     }
+
+
 }
