@@ -6,7 +6,6 @@ import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.LoggingService;
 import javafx.collections.FXCollections;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -200,21 +199,20 @@ public class Controller {
         this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("ListView selection changed from oldValue = "
                     + oldValue + " to newValue = " + newValue);
-            if(newValue != null) {
+            if (newValue != null) {
                 Controller.this.showSnackbar(newValue.getDescription());
             }
         });
     }
 
     private void showSnackbar(String value) {
+        if(this.activityDetailSnackbar.getPopupContainer() != null) {
+            this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
+        }
+        System.out.println("is Visible " + this.activityDetailSnackbar.isHover());
         this.activityDetailSnackbar = new JFXSnackbar(borderPane);
 
-        EventHandler eventHandler = new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                Controller.this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
-            }
-        };
+        EventHandler eventHandler = event -> Controller.this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
 
         System.out.println("Controller.showSnackbar");
         this.activityDetailSnackbar.show(value, "X", SNACKBAR_DURATION, eventHandler);
