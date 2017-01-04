@@ -66,6 +66,11 @@
             <HBox alignment="CENTER">
                <children>
                   <JFXButton fx:id="addActivityButton" depthTest="ENABLE" onMouseClicked="#onAddActivityButtonCLicked" ripplerFill="#2f64c2" text="+" />
+                  <JFXButton fx:id="deleteActivityButton" buttonType="RAISED" onAction="#onDeleteActivityButtonClicked" text="X">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </JFXButton>
                </children>
             </HBox>
          </children>

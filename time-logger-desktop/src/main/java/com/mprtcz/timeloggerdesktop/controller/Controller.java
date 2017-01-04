@@ -2,7 +2,7 @@ package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
-import com.mprtcz.timeloggerdesktop.dao.DatabaseActivityCustomDao;
+import com.mprtcz.timeloggerdesktop.dao.DatabaseCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.Service;
@@ -48,6 +48,8 @@ public class Controller {
     private JFXDatePicker endDatePicker;
     @FXML
     private JFXButton addRecordButton;
+    @FXML
+    private JFXButton deleteActivityButton;
     @FXML
     private JFXButton addActivityButton;
     @FXML
@@ -106,22 +108,27 @@ public class Controller {
     }
 
     @FXML
+    void onDeleteActivityButtonClicked() {}
+
+    @FXML
     private void initialize() {
         System.out.println("initialized");
         this.setLabels();
-        initializeService();
-        populateListView();
-        initAddActivityPopup();
-        initEmptyDescriptionConfPopup();
-        setUpListViewListener();
-        initializeDateTimeControls();
-        setListViewFactory();
+        this.initializeService();
+        this.populateListView();
+        this.initAddActivityPopup();
+        this.initEmptyDescriptionConfPopup();
+        this.setUpListViewListener();
+        this.initializeDateTimeControls();
+        this.setListViewFactory();
+        this.deleteActivityButton.setStyle("-fx-background-color: hotpink;");
+        this.deleteActivityButton.setVisible(false);
         this.addActivityButton.setShape(new Circle(8));
     }
 
     private void initializeService() {
         try {
-            CustomDao DAO_PROVIDER = new DatabaseActivityCustomDao();
+            CustomDao DAO_PROVIDER = new DatabaseCustomDao();
             this.service = new Service(new ActivityValidator(), new RecordValidator(), DAO_PROVIDER);
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,7 +164,7 @@ public class Controller {
 
     private void initAddActivityPopup() {
         this.addNewActivityPopup = new JFXPopup();
-        VBox vBox = generatePopupContent();
+        VBox vBox = generateAddActivityPopupContent();
         this.setUpPopupProperties(this.addNewActivityPopup, vBox, this.addActivityButton);
     }
 
@@ -182,7 +189,7 @@ public class Controller {
 
     }
 
-    private VBox generatePopupContent() {
+    private VBox generateAddActivityPopupContent() {
         JFXButton confirmAddButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CONFIRM_BUTTON);
         JFXButton cancelAddButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CANCEL_BUTTON);
         JFXTextField newActivityNameTextField = new JFXTextField();
@@ -276,6 +283,11 @@ public class Controller {
         this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 Controller.this.showSnackbar(newValue.getDescription());
+                System.out.println("Set button visible");
+                Controller.this.deleteActivityButton.setVisible(true);
+            } else {
+                System.out.println("Set button invisible");
+                Controller.this.deleteActivityButton.setVisible(false);
             }
         });
     }

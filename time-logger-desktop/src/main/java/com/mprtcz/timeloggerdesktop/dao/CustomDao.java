@@ -9,7 +9,9 @@ import java.util.List;
  * Created by mprtcz on 2017-01-03.
  */
 public interface CustomDao {
-    <T> void save(T t) throws Exception;
+    void save(Activity activity) throws Exception;
+
+    void save(Record record) throws Exception;
 
     List<Activity> getAllActivities() throws Exception;
 

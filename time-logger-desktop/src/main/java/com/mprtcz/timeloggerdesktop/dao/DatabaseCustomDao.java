@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by mprtcz on 2017-01-04.
  */
-public class DatabaseActivityCustomDao implements CustomDao {
+public class DatabaseCustomDao implements CustomDao {
     private static final String USERNAME = "root";
     private static final String PASSWORD = "password";
     private static final String MYSQL_DATABASE_URL = "jdbc:mysql://localhost:3306/timeloggerdb";
@@ -25,7 +25,7 @@ public class DatabaseActivityCustomDao implements CustomDao {
     private Dao<Activity, Long> activityDao;
     private Dao<Record, Long> recordDao;
 
-    public DatabaseActivityCustomDao() throws SQLException {
+    public DatabaseCustomDao() throws SQLException {
         this.activityDao = DaoManager.createDao(connectionSource, Activity.class);
         this.recordDao = DaoManager.createDao(connectionSource, Record.class);
         if(!this.activityDao.isTableExists()) {
@@ -37,13 +37,13 @@ public class DatabaseActivityCustomDao implements CustomDao {
     }
 
     @Override
-    public <T> void save(T t) throws Exception {
-        if(t instanceof Activity) {
-            activityDao.create((Activity) t);
-        }
-        if(t instanceof Record) {
-            recordDao.create((Record) t);
-        }
+    public void save(Activity activity) throws Exception {
+            activityDao.create(activity);
+    }
+
+    @Override
+    public void save(Record record) throws Exception {
+            recordDao.create(record);
     }
 
     @Override

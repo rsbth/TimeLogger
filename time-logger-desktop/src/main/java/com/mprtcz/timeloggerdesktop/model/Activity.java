@@ -43,25 +43,25 @@ public class Activity {
 
     public static List<String> colorCodes = new ArrayList<>();
     static {
-        colorCodes.add("#ffcdd2");
-        colorCodes.add("#f8bbd0");
-        colorCodes.add("#e1bee7");
-        colorCodes.add("#d1c4e9");
-        colorCodes.add("#c5cae9");
-        colorCodes.add("#bbdefb");
-        colorCodes.add("#b3e5fc");
-        colorCodes.add("#b2ebf2");
-        colorCodes.add("#b2dfdb");
-        colorCodes.add("#c8e6c9");
-        colorCodes.add("#dcedc8");
-        colorCodes.add("#f0f4c3");
-        colorCodes.add("#fff9c4");
-        colorCodes.add("#ffecb3");
-        colorCodes.add("#ffe0b2");
-        colorCodes.add("#ffccbc");
-        colorCodes.add("#d7ccc8");
-        colorCodes.add("#f5f5f5");
-        colorCodes.add("#cfd8dc");
+        colorCodes.add("#f44336");
+        colorCodes.add("#9c27b0");
+        colorCodes.add("#3f51b5");
+        colorCodes.add("#03a9f4");
+        colorCodes.add("#009688");
+        colorCodes.add("#8bc34a");
+        colorCodes.add("#ffeb3b");
+        colorCodes.add("#ff9800");
+        colorCodes.add("#795548");
+        colorCodes.add("#607d8b");
+        colorCodes.add("#e91e63");
+        colorCodes.add("#673ab7");
+        colorCodes.add("#2196f3");
+        colorCodes.add("#00bcd4");
+        colorCodes.add("#4caf50");
+        colorCodes.add("#cddc39");
+        colorCodes.add("#ffc107");
+        colorCodes.add("#ff5722");
+        colorCodes.add("#9e9e9e");
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by mprtcz on 2017-01-03.
  */
-public class InMemoryActivityCustomDao implements CustomDao {
+public class InMemoryCustomDao implements CustomDao {
 
     public static List<Activity> activities = new ArrayList<>();
     static {
@@ -27,14 +27,15 @@ public class InMemoryActivityCustomDao implements CustomDao {
         records.add(new Record(LocalTime.of(1, 0), LocalTime.of(1, 0), LocalDate.now(), LocalDate.now(), activities.get(0)));
     }
 
+
     @Override
-    public <T> void save(T object) {
-        if(object instanceof Activity) {
-            activities.add((Activity) object);
-        }
-        if(object instanceof Record) {
-            records.add((Record) object);
-        }
+    public void save(Activity activity) throws Exception {
+        activities.add(activity);
+    }
+
+    @Override
+    public void save(Record record) throws Exception {
+        records.add(record);
     }
 
     @Override
