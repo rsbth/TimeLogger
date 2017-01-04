@@ -15,6 +15,7 @@ public class LabelsModel {
     public static final String ADD_ACTIVITY_DESCRIPTION_TEXT_FIELD = "Add description";
     public static final String ADD_ACTIVITY_CANCEL_BUTTON = "Cancel";
     public static final String EMPTY_DESCRIPTION_CONFIRM_LABEL = "Add with empty description?";
-    public static final String EMPTY_DESCRIPTION_CONFIRM_BUTTON = "Yes";
-    public static final String EMPTY_DESCRIPTION_CANCEL_BUTTON = "No";
+    public static final String CONFIRMATION_POPUP_NO = "No";
+    public static final String CONFIRMATION_POPUP_YES = "Yes";
+    public static final String REMOVE_ACTIVITYPOPUP_LABEL = "Remove this activity?";
 }

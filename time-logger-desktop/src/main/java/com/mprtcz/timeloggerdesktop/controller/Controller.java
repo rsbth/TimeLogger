@@ -2,7 +2,7 @@ package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
-import com.mprtcz.timeloggerdesktop.dao.DatabaseCustomDao;
+import com.mprtcz.timeloggerdesktop.dao.InMemoryCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.Service;
@@ -16,6 +16,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -60,15 +61,19 @@ public class Controller {
     private JFXSnackbar activityDetailSnackbar;
     @FXML
     private BorderPane borderPane;
+    @FXML
+    private Canvas dataRepresentationCanvas;
 
     private JFXPopup addNewActivityPopup;
-    private JFXPopup emptyDescConfPopup;
+    private JFXPopup confirmationPopup;
 
     private Service service;
     private String newActivityName;
     private String newActivityDescription;
     private static final int SNACKBAR_DURATION = 5000; //[ms]
     private static final String BACKGROUND_COLOR = "#F4F4F4";
+    private static final int LIST_VIEW_ROW_HEIGHT = 25;
+    private static final int LIST_VIEW_ROW_PADDING = 20;
 
 
     @FXML
@@ -98,8 +103,8 @@ public class Controller {
 
     @FXML
     void onAddActivityButtonCLicked() {
-        this.addNewActivityPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT,
-                addActivityButton.getLayoutX(), addActivityButton.getLayoutY());
+        this.initAddActivityPopup();
+        this.addNewActivityPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 0, 0);
     }
 
     @FXML
@@ -108,7 +113,10 @@ public class Controller {
     }
 
     @FXML
-    void onDeleteActivityButtonClicked() {}
+    void onDeleteActivityButtonClicked() {
+        this.initActivityRemoveConfirmationPopup();
+        this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 0, 0);
+    }
 
     @FXML
     private void initialize() {
@@ -116,11 +124,10 @@ public class Controller {
         this.setLabels();
         this.initializeService();
         this.populateListView();
-        this.initAddActivityPopup();
-        this.initEmptyDescriptionConfPopup();
         this.setUpListViewListener();
         this.initializeDateTimeControls();
         this.setListViewFactory();
+        this.drawOnCanvas();
         this.deleteActivityButton.setStyle("-fx-background-color: hotpink;");
         this.deleteActivityButton.setVisible(false);
         this.addActivityButton.setShape(new Circle(8));
@@ -128,8 +135,8 @@ public class Controller {
 
     private void initializeService() {
         try {
-            CustomDao DAO_PROVIDER = new DatabaseCustomDao();
-            this.service = new Service(new ActivityValidator(), new RecordValidator(), DAO_PROVIDER);
+            CustomDao daoProvider = new InMemoryCustomDao();
+            this.service = new Service(new ActivityValidator(), new RecordValidator(), daoProvider);
         } catch (Exception e) {
             e.printStackTrace();
             displayException(e);
@@ -218,8 +225,8 @@ public class Controller {
             if (newActivityDescriptionTextField.getText().equals("")) {
                 this.newActivityName = newActivityNameTextField.getText();
                 this.newActivityDescription = newActivityDescriptionTextField.getText();
-                this.emptyDescConfPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT,
-                        addActivityButton.getLayoutX(), addActivityButton.getLayoutY());
+                this.initEmptyDescriptionConfirmationPopup();
+                this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 0, 0);
             } else {
                 this.addNewActivity(newActivityNameTextField.getText(), newActivityDescriptionTextField.getText());
             }
@@ -229,8 +236,10 @@ public class Controller {
         this.addNewActivityPopup.close();
     }
 
-    private void setPopupContentsStyles(JFXButton confirmAddButton, JFXButton cancelAddButton,
-                                        JFXTextField newActivityNameTextField, JFXTextField newActivityDescriptionTextField) {
+    private void setPopupContentsStyles(JFXButton confirmAddButton,
+                                        JFXButton cancelAddButton,
+                                        JFXTextField newActivityNameTextField,
+                                        JFXTextField newActivityDescriptionTextField) {
         newActivityNameTextField.setPromptText(LabelsModel.ADD_ACTIVITY_TEXT_FIELD);
         newActivityDescriptionTextField.setPromptText(LabelsModel.ADD_ACTIVITY_DESCRIPTION_TEXT_FIELD);
         this.setStyleOfConfirmCancelButtons(confirmAddButton, cancelAddButton);
@@ -238,25 +247,40 @@ public class Controller {
         newActivityDescriptionTextField.setPadding(new Insets(10));
     }
 
-    private void initEmptyDescriptionConfPopup() {
-        this.emptyDescConfPopup = new JFXPopup();
-        JFXButton confirmAddButton = new JFXButton(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_BUTTON);
-        JFXButton cancelAddButton = new JFXButton(LabelsModel.EMPTY_DESCRIPTION_CANCEL_BUTTON);
-        Label label = new Label(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_LABEL);
-        this.setStyleOfConfirmCancelButtons(confirmAddButton, cancelAddButton);
+    private void initConfirmationPopup(JFXButton confirmButton, Label label) {
+        this.confirmationPopup = new JFXPopup();
+        JFXButton cancelAddButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_NO);
+        this.setStyleOfConfirmCancelButtons(confirmButton, cancelAddButton);
         label.setPadding(new Insets(10));
-        confirmAddButton.setOnAction(e -> {
-            this.addNewActivity(this.newActivityName, this.newActivityDescription);
-            this.emptyDescConfPopup.close();
-        });
-        cancelAddButton.setOnAction(e -> this.emptyDescConfPopup.close());
-        HBox hBox = new HBox(confirmAddButton, cancelAddButton);
-        HBox.setMargin(confirmAddButton, new Insets(5));
+        cancelAddButton.setOnAction(e -> this.confirmationPopup.close());
+        HBox hBox = new HBox(confirmButton, cancelAddButton);
+        HBox.setMargin(confirmButton, new Insets(5));
         HBox.setMargin(cancelAddButton, new Insets(5));
         HBox.setMargin(label, new Insets(5));
         VBox vBox = new VBox(label, hBox);
         vBox.setBackground(this.getBackgroundOfColor(BACKGROUND_COLOR));
-        this.setUpPopupProperties(this.emptyDescConfPopup, vBox, this.addActivityButton);
+        this.setUpPopupProperties(this.confirmationPopup, vBox, this.addActivityButton);
+    }
+
+    private void initEmptyDescriptionConfirmationPopup() {
+        Label label = new Label(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_LABEL);
+        JFXButton confirmButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_YES);
+        confirmButton.setOnAction(e -> {
+            this.addNewActivity(this.newActivityName, this.newActivityDescription);
+            this.confirmationPopup.close();
+        });
+        initConfirmationPopup(confirmButton, label);
+    }
+
+    private void initActivityRemoveConfirmationPopup() {
+        Label label = new Label(LabelsModel.REMOVE_ACTIVITYPOPUP_LABEL);
+        JFXButton confirmButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_YES);
+        confirmButton.setOnAction(e -> {
+            //TODO remove activity
+            System.out.println("Remove Activity clicked");
+            this.confirmationPopup.close();
+        });
+        initConfirmationPopup(confirmButton, label);
     }
 
     private Background getBackgroundOfColor(String color) {
@@ -283,10 +307,8 @@ public class Controller {
         this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 Controller.this.showSnackbar(newValue.getDescription());
-                System.out.println("Set button visible");
                 Controller.this.deleteActivityButton.setVisible(true);
             } else {
-                System.out.println("Set button invisible");
                 Controller.this.deleteActivityButton.setVisible(false);
             }
         });
@@ -348,9 +370,16 @@ public class Controller {
         this.activityNamesList.setItems(FXCollections.observableList(activities));
         this.activityNamesList.setExpanded(true);
         this.activityNamesList.depthProperty().set(1);
+        this.activityNamesList.setPrefHeight
+                (activities.size() * LIST_VIEW_ROW_HEIGHT + 2 + activities.size() * LIST_VIEW_ROW_PADDING);
     }
 
     private void displayValidationResult(ValidationResult validationResult) {
         showSnackbar(validationResult.getAllMessages());
+    }
+
+    private void drawOnCanvas() {
+        this.dataRepresentationCanvas.getGraphicsContext2D().fillRect(
+                0, 0, this.dataRepresentationCanvas.getWidth(), this.dataRepresentationCanvas.getHeight());
     }
 }
