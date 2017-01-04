@@ -2,7 +2,7 @@ package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
-import com.mprtcz.timeloggerdesktop.dao.InMemoryActivityCustomDao;
+import com.mprtcz.timeloggerdesktop.dao.DatabaseActivityCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.Service;
@@ -67,7 +67,7 @@ public class Controller {
     private String newActivityDescription;
     private static final int SNACKBAR_DURATION = 5000; //[ms]
     private static final String BACKGROUND_COLOR = "#F4F4F4";
-    private static final CustomDao DAO_PROVIDER = new InMemoryActivityCustomDao();
+
 
     @FXML
     void onAddRecordButtonClicked() {
@@ -125,6 +125,7 @@ public class Controller {
 
     private void initializeService() {
         try {
+            CustomDao DAO_PROVIDER = new DatabaseActivityCustomDao();
             this.service = new Service(new ActivityValidator(), new RecordValidator(), DAO_PROVIDER);
         } catch (Exception e) {
             e.printStackTrace();

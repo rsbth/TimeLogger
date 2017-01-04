@@ -8,6 +8,7 @@ import com.mprtcz.timeloggerdesktop.validators.ActivityValidator;
 import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,10 +65,11 @@ public class Service {
 
     public ValidationResult addNewRecord(LocalTime startTime, LocalTime endTime,
                                          LocalDate startDate, LocalDate endDate, Activity activity) {
-        Record recordToValidate = new Record(startTime, endTime, startDate, endDate, activity);
-        System.out.println("recordToValidate = " + recordToValidate);
-        ValidationResult validationResult = this.recordValidator.validateNewRecordData(recordToValidate);
+        LocalDateTime localDateTime = LocalDateTime.of(startDate, startTime);
+        ValidationResult validationResult = this.recordValidator.validateNewRecordData(
+                startTime, endTime, startDate, endDate, activity);
         if (validationResult.isErrorFree()) {
+            Record newRecord = new Record(startTime, endTime, startDate, endDate, activity);
             //TODO record saving
         }
         return validationResult;
@@ -75,7 +77,7 @@ public class Service {
 
     private void chooseActivityColor(Activity activity) throws Exception {
         List<Activity> activities = getActivities();
-        if(Activity.colorCodes.size() >= activities.size()) {
+        if (Activity.colorCodes.size() >= activities.size()) {
             activity.setColor(Activity.colorCodes.get(activities.size()));
         } else {
             activity.setColor(Activity.colorCodes.get(0));
