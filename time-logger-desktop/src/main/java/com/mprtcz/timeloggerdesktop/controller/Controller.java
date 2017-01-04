@@ -28,7 +28,6 @@ import javafx.util.Callback;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -64,7 +63,6 @@ public class Controller {
     private Service service;
     private String newActivityName;
     private String newActivityDescription;
-    private List<Activity> activities = new ArrayList<>();
     private static final int SNACKBAR_DURATION = 5000; //[ms]
     private static final String BACKGROUND_COLOR = "#F4F4F4";
 
@@ -101,7 +99,6 @@ public class Controller {
         initializeDateTimeControls();
         setListViewFactory();
         this.addActivityButton.setShape(new Circle(8));
-        System.out.println(this.addActivityButton.getFont());
     }
 
     private void initializeService() {
@@ -146,11 +143,20 @@ public class Controller {
     }
 
     private void addNewActivity(String name, String description) {
+        System.out.println("name = " + name);
         try {
-            Thread thread = new Thread();
-            ValidationResult result = this.service.addActivity(name, description);
-            System.out.println("e = " + result);
-            this.populateListView();
+            Task<ValidationResult> task = new Task<ValidationResult>() {
+                @Override
+                protected ValidationResult call() throws Exception {
+                    System.out.println("name = " + name);
+                    return Controller.this.service.addActivity(name, description);
+                }
+            };
+            task.setOnSucceeded(event -> {
+                Controller.this.displayValidationResult(task.getValue());
+                Controller.this.populateListView();
+            });
+            new Thread(task).start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -310,4 +316,7 @@ public class Controller {
         this.activityNamesList.depthProperty().set(1);
     }
 
+    private void displayValidationResult(ValidationResult validationResult) {
+        showSnackbar(validationResult.getAllMessages());
+    }
 }
