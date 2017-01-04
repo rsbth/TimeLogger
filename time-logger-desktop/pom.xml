@@ -21,6 +21,27 @@
             <artifactId>lombok</artifactId>
             <version>1.14.8</version>
         </dependency>
+
+        <!-- this has a dependency on ormlite-core -->
+        <dependency>
+            <groupId>com.j256.ormlite</groupId>
+            <artifactId>ormlite-jdbc</artifactId>
+            <version>5.0</version>
+        </dependency>
+        <!-- You will need to add some sort of database driver too.
+             In this example we've used MySQL. -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.10</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.15.1</version>
+        </dependency>
     </dependencies>
 
     <build>

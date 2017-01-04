@@ -1,6 +1,5 @@
 package com.mprtcz.timeloggerdesktop.validators;
 
-import com.mprtcz.timeloggerdesktop.handlers.ValidationResult;
 import com.mprtcz.timeloggerdesktop.model.Record;
 
 /**

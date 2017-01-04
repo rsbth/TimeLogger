@@ -1,7 +1,7 @@
 package com.mprtcz.timeloggerdesktop.service;
 
-import com.mprtcz.timeloggerdesktop.dao.Dao;
-import com.mprtcz.timeloggerdesktop.handlers.ValidationResult;
+import com.mprtcz.timeloggerdesktop.dao.CustomDao;
+import com.mprtcz.timeloggerdesktop.validators.ValidationResult;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.Record;
 import com.mprtcz.timeloggerdesktop.validators.ActivityValidator;
@@ -19,12 +19,12 @@ public class Service {
 
     private ActivityValidator activityValidator;
     private RecordValidator recordValidator;
-    private Dao dao;
+    private CustomDao customDao;
 
     public Service(ActivityValidator activityValidator,
                    RecordValidator recordValidator,
-                   Dao dao) {
-        this.dao = dao;
+                   CustomDao customDao) {
+        this.customDao = customDao;
         this.activityValidator = activityValidator;
         this.recordValidator = recordValidator;
     }
@@ -34,29 +34,29 @@ public class Service {
     }
 
 
-    public List<Activity> getActivities() {
+    public List<Activity> getActivities() throws Exception {
         for (Activity a:
-             dao.getAll()) {
+             customDao.getAll()) {
             System.out.println("Color = " +a.getColor());
         }
-        return dao.getAll();
+        return customDao.getAll();
     }
 
-    public List<String> getActivityNames() {
+    public List<String> getActivityNames() throws Exception {
         return getActivities().stream().map(Activity::getName).collect(Collectors.toList());
     }
 
-    public ValidationResult addActivity(String name, String description) {
+    public ValidationResult addActivity(String name, String description) throws Exception {
         Activity activity = new Activity(name, description);
         return validateNewActivityAndSave(activity);
     }
 
-    public void saveActivity(Activity activity) {
+    public void saveActivity(Activity activity) throws Exception {
         chooseActivityColor(activity);
-        dao.save(activity);
+        customDao.save(activity);
     }
 
-    public ValidationResult validateNewActivityAndSave(Activity activity) {
+    public ValidationResult validateNewActivityAndSave(Activity activity) throws Exception {
         ValidationResult validationResult = activityValidator.validateNewActivity(activity, getActivities());
         if (validationResult.isErrorFree()) {
             saveActivity(activity);
@@ -75,7 +75,7 @@ public class Service {
         return validationResult;
     }
 
-    private void chooseActivityColor(Activity activity) {
+    private void chooseActivityColor(Activity activity) throws Exception {
         List<Activity> activities = getActivities();
         if(Activity.colorCodes.size() >= activities.size()) {
             activity.setColor(Activity.colorCodes.get(activities.size()));

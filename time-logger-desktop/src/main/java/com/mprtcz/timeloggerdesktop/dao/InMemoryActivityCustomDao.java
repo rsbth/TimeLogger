@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by mprtcz on 2017-01-03.
  */
-public class InMemoryActivityDao implements Dao {
+public class InMemoryActivityCustomDao implements CustomDao {
 
     public static List<Activity> activities = new ArrayList<>();
     static {

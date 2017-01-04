@@ -1,15 +1,16 @@
 package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
-import com.mprtcz.timeloggerdesktop.dao.InMemoryActivityDao;
-import com.mprtcz.timeloggerdesktop.handlers.ValidationResult;
+import com.mprtcz.timeloggerdesktop.dao.DatabaseActivityCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.Service;
 import com.mprtcz.timeloggerdesktop.utilities.StringConverter;
 import com.mprtcz.timeloggerdesktop.validators.ActivityValidator;
 import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
+import com.mprtcz.timeloggerdesktop.validators.ValidationResult;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -27,6 +28,7 @@ import javafx.util.Callback;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -62,6 +64,7 @@ public class Controller {
     private Service service;
     private String newActivityName;
     private String newActivityDescription;
+    private List<Activity> activities = new ArrayList<>();
     private static final int SNACKBAR_DURATION = 5000; //[ms]
     private static final String BACKGROUND_COLOR = "#F4F4F4";
 
@@ -79,7 +82,6 @@ public class Controller {
     void onAddActivityButtonCLicked() {
         this.addNewActivityPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT,
                 addActivityButton.getLayoutX(), addActivityButton.getLayoutY());
-
     }
 
     @FXML
@@ -90,8 +92,8 @@ public class Controller {
     @FXML
     private void initialize() {
         System.out.println("initialized");
-        this.service = new Service(new ActivityValidator(), new RecordValidator(), new InMemoryActivityDao());
         this.setLabels();
+        initializeService();
         populateListView();
         initAddActivityPopup();
         initEmptyDescriptionConfPopup();
@@ -102,6 +104,14 @@ public class Controller {
         System.out.println(this.addActivityButton.getFont());
     }
 
+    private void initializeService() {
+        try {
+            this.service = new Service(new ActivityValidator(), new RecordValidator(), new DatabaseActivityCustomDao());
+        } catch (Exception e) {
+            e.printStackTrace();
+            displayException(e);
+        }
+    }
 
     private void setLabels() {
         this.addRecordButton.setText(LabelsModel.SAVE_RECORD_BUTTON);
@@ -113,12 +123,20 @@ public class Controller {
     }
 
     private void populateListView() {
-        List<Activity> list = this.service.getActivities();
-        this.activityNamesList.setItems(FXCollections.observableList(list));
-        this.activityNamesList.setExpanded(true);
-        this.activityNamesList.depthProperty().set(1);
-
-        System.out.println("items" +this.activityNamesList.getChildrenUnmodifiable());
+        try {
+            Task<List<Activity>> task = new Task<List<Activity>>() {
+                @Override
+                protected List<Activity> call() throws Exception {
+                    return Controller.this.service.getActivities();
+                }
+            };
+            task.setOnSucceeded(event -> Controller.this.setActivityListItems(task.getValue()));
+            new Thread(task).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            displayException(e);
+        }
+        System.out.println("items" + this.activityNamesList.getChildrenUnmodifiable());
     }
 
     private void initAddActivityPopup() {
@@ -128,9 +146,15 @@ public class Controller {
     }
 
     private void addNewActivity(String name, String description) {
-        ValidationResult e = this.service.addActivity(name, description);
-        System.out.println("e = " + e);
-        this.populateListView();
+        try {
+            Thread thread = new Thread();
+            ValidationResult result = this.service.addActivity(name, description);
+            System.out.println("e = " + result);
+            this.populateListView();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private VBox generatePopupContent() {
@@ -257,11 +281,11 @@ public class Controller {
         this.activityNamesList.setCellFactory(new Callback<ListView<Activity>, ListCell<Activity>>() {
             @Override
             public ListCell<Activity> call(ListView<Activity> param) {
-                return new JFXListCell<Activity>(){
+                return new JFXListCell<Activity>() {
                     @Override
                     public void updateItem(Activity item, boolean empty) {
                         super.updateItem(item, empty);
-                        if(item!=null && !empty){
+                        if (item != null && !empty) {
                             HBox container = new HBox();
                             container.setMouseTransparent(true);
                             Label label = new Label(item.getName());
@@ -275,4 +299,15 @@ public class Controller {
             }
         });
     }
+
+    private void displayException(Exception e) {
+        showSnackbar(e.getMessage());
+    }
+
+    private void setActivityListItems(List<Activity> activities) {
+        this.activityNamesList.setItems(FXCollections.observableList(activities));
+        this.activityNamesList.setExpanded(true);
+        this.activityNamesList.depthProperty().set(1);
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.mprtcz.timeloggerdesktop.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,11 +13,22 @@ import java.util.List;
  */
 @Getter
 @Setter
+@DatabaseTable(tableName = "activities")
 public class Activity {
+
+    @DatabaseField(generatedId = true)
     private Long id;
+
+    @DatabaseField(canBeNull = false)
     private String name;
+
+    @DatabaseField
     private String description;
+
+    @DatabaseField(canBeNull = false)
     private String color;
+
+    public Activity() {}
 
     public Activity(String name, String description) {
         this.name = name;
@@ -28,10 +41,7 @@ public class Activity {
         this.color = color;
     }
 
-
-
     public static List<String> colorCodes = new ArrayList<>();
-
     static {
         colorCodes.add("#ffcdd2");
         colorCodes.add("#f8bbd0");

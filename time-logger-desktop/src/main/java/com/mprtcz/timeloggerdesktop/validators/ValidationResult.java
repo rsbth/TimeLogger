@@ -1,4 +1,4 @@
-package com.mprtcz.timeloggerdesktop.handlers;
+package com.mprtcz.timeloggerdesktop.validators;
 
 import lombok.Getter;
 import lombok.ToString;

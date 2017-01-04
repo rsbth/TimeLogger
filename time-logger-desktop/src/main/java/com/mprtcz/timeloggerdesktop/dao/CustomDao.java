@@ -7,8 +7,8 @@ import java.util.List;
 /**
  * Created by mprtcz on 2017-01-03.
  */
-public interface Dao {
-    void save(Activity activity);
+public interface CustomDao {
+    void save(Activity activity) throws Exception;
 
-    List<Activity> getAll();
+    List<Activity> getAll() throws Exception;
 }
