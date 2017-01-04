@@ -24,8 +24,9 @@ public class ValidationResult {
         END_TIME_NULL("End time cannot be null"),
         START_DATE_NULL("Start date cannot be null"),
         END_DATE_NULL("End Date cannot be null"),
-        END_TIME_BEFORE("End time is before start time"),
         END_DATE_BEFORE("End date is before start date"),
+        END_START_EQUAL("The activity cannot take 0 hours"),
+        ACTIVITY_NULL("Activity cannot be null"),
         ;
 
         private String value;
@@ -37,11 +38,6 @@ public class ValidationResult {
 
     private List<CustomErrorEnum> customErrorEnumList = new ArrayList<>();
     private String customMessage;
-
-    public ValidationResult(CustomErrorEnum customErrorEnum, String customMessage) {
-        this.customErrorEnumList.add(customErrorEnum);
-        this.customMessage = customMessage;
-    }
 
     public ValidationResult(CustomErrorEnum customErrorEnum) {
         this.customErrorEnumList.add(customErrorEnum);

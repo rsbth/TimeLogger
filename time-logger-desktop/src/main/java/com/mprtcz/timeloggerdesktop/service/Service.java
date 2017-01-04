@@ -64,13 +64,13 @@ public class Service {
     }
 
     public ValidationResult addNewRecord(LocalTime startTime, LocalTime endTime,
-                                         LocalDate startDate, LocalDate endDate, Activity activity) {
+                                         LocalDate startDate, LocalDate endDate, Activity activity) throws Exception {
         LocalDateTime localDateTime = LocalDateTime.of(startDate, startTime);
         ValidationResult validationResult = this.recordValidator.validateNewRecordData(
                 startTime, endTime, startDate, endDate, activity);
         if (validationResult.isErrorFree()) {
             Record newRecord = new Record(startTime, endTime, startDate, endDate, activity);
-            //TODO record saving
+            customDao.save(newRecord);
         }
         return validationResult;
     }

@@ -12,13 +12,10 @@ import java.time.LocalTime;
 public class RecordValidator {
     private ValidationResult validationResult;
 
-    public RecordValidator() {
-        this.validationResult = new ValidationResult();
-    }
-
     public ValidationResult validateNewRecordData(
             LocalTime startTime, LocalTime endTime, LocalDate startDate, LocalDate endDate, Activity activity) {
         ValidationObject v = new ValidationObject(startTime, endTime, startDate, endDate, activity);
+        this.validationResult = new ValidationResult();
         nullCheck(v);
         hourConsecutivenessCheck(v);
         return this.validationResult;
@@ -37,16 +34,17 @@ public class RecordValidator {
         if(v.endDate == null) {
             this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.END_DATE_NULL);
         }
+        if(v.activity == null) {
+            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.ACTIVITY_NULL);
+        }
     }
 
     private void hourConsecutivenessCheck(ValidationObject v) {
-        if(v.startDate.isAfter(v.endDate)) { //end date before start date
-            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.END_DATE_BEFORE);
+        if(v.startDateTime.equals(v.endDateTime)) {
+            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.END_START_EQUAL);
         }
-        if(v.startDate == v.endDate) {
-            if(v.startTime.isAfter(v.endTime)) { // end time before start time within the same day
-                this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.END_TIME_BEFORE);
-            }
+        if(v.startDateTime.isAfter(v.endDateTime)) {
+            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.END_DATE_BEFORE);
         }
     }
     

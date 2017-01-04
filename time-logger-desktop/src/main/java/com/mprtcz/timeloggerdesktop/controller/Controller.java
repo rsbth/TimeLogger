@@ -71,12 +71,7 @@ public class Controller {
 
     @FXML
     void onAddRecordButtonClicked() {
-        System.out.println("startDatePicker = " + startDatePicker.getValue());
-        System.out.println("endDatePicker = " + endDatePicker.getValue());
-        System.out.println("startTimePicker = " + startTimePicker.getTime());
-        System.out.println("endTimePicker = " + endTimePicker.getTime());
-        System.out.println("Selected item " + activityNamesList.getSelectionModel().selectedItemProperty().getValue());
-        if(activityNamesList.getSelectionModel().selectedItemProperty().getValue() == null) {
+        if (activityNamesList.getSelectionModel().selectedItemProperty().getValue() == null) {
             showSnackbar("Choose an activity");
             return;
         }
@@ -95,6 +90,7 @@ public class Controller {
             new Thread(task).start();
         } catch (Exception e) {
             e.printStackTrace();
+            showSnackbar(e.getMessage());
         }
     }
 
@@ -285,7 +281,9 @@ public class Controller {
     }
 
     private void showSnackbar(String value) {
-        if(value == null || Objects.equals(value, "")) {return;}
+        if (value == null || Objects.equals(value, "")) {
+            return;
+        }
         if (this.activityDetailSnackbar.getPopupContainer() != null) {
             this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
         }
