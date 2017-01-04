@@ -40,12 +40,14 @@ public class ValidationResult {
     private String customMessage;
 
     public ValidationResult(CustomErrorEnum customErrorEnum) {
+        this.customErrorEnumList = new ArrayList<>();
         this.customErrorEnumList.add(customErrorEnum);
     }
 
     public ValidationResult() {}
 
     public void addErrorEnum(CustomErrorEnum customErrorEnum) {
+        this.customErrorEnumList = new ArrayList<>();
         this.customErrorEnumList.add(customErrorEnum);
     }
 

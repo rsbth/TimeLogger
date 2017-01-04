@@ -11,11 +11,10 @@ public class ActivityValidator {
 
     private ValidationResult validationResult;
 
-    public ActivityValidator() {
-        this.validationResult = new ValidationResult();
-    }
+    public ActivityValidator() {}
 
     public ValidationResult validateNewActivity(Activity activity, List<Activity> activities) {
+        this.validationResult = new ValidationResult();
         if(activity.getName().equals("")) {
             this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.ACTIVITY_NAME_EMPTY);
         }

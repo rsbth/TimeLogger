@@ -166,7 +166,6 @@ public class Controller {
             e.printStackTrace();
             displayException(e);
         }
-        System.out.println("items" + this.activityNamesList.getChildrenUnmodifiable());
     }
 
     private void initAddActivityPopup() {
@@ -176,12 +175,10 @@ public class Controller {
     }
 
     private void addNewActivity(String name, String description) {
-        System.out.println("name = " + name);
         try {
             Task<ValidationResult> task = new Task<ValidationResult>() {
                 @Override
                 protected ValidationResult call() throws Exception {
-                    System.out.println("name = " + name);
                     return Controller.this.service.addActivity(name, description);
                 }
             };
@@ -350,10 +347,16 @@ public class Controller {
                         if (item != null && !empty) {
                             HBox container = new HBox();
                             container.setMouseTransparent(true);
+                            Label coloredLabel = new Label("      ");
+                            Label marginLabel = new Label("      ");
                             Label label = new Label(item.getName());
-                            label.setBackground(getBackgroundOfColor(item.getColor()));
+                            coloredLabel.setBackground(getBackgroundOfColor(item.getColor()));
+                            coloredLabel.setStyle("-fx-border-insets: 5px;");
+                            container.setStyle(" -fx-alignment: center");
+                            container.setStyle(" -fx-alignment: center");
+                            container.getChildren().add(coloredLabel);
+                            container.getChildren().add(marginLabel);
                             container.getChildren().add(label);
-                            container.setBackground(getBackgroundOfColor(item.getColor()));
                             setGraphic(container);
                         }
                     }

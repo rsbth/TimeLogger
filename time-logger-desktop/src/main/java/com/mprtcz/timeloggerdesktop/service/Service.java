@@ -44,6 +44,8 @@ public class Service {
     }
 
     public ValidationResult addActivity(String name, String description) throws Exception {
+        System.out.println("name = " + name);
+        System.out.println("description = " + description);
         Activity activity = new Activity(name, description);
         return validateNewActivityAndSave(activity);
     }
