@@ -1,7 +1,8 @@
 package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
-import com.mprtcz.timeloggerdesktop.dao.DatabaseActivityCustomDao;
+import com.mprtcz.timeloggerdesktop.dao.CustomDao;
+import com.mprtcz.timeloggerdesktop.dao.InMemoryActivityCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.Service;
@@ -30,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Created by mprtcz on 2017-01-02.
@@ -65,6 +67,7 @@ public class Controller {
     private String newActivityDescription;
     private static final int SNACKBAR_DURATION = 5000; //[ms]
     private static final String BACKGROUND_COLOR = "#F4F4F4";
+    private static final CustomDao DAO_PROVIDER = new InMemoryActivityCustomDao();
 
     @FXML
     void onAddRecordButtonClicked() {
@@ -72,8 +75,27 @@ public class Controller {
         System.out.println("endDatePicker = " + endDatePicker.getValue());
         System.out.println("startTimePicker = " + startTimePicker.getTime());
         System.out.println("endTimePicker = " + endTimePicker.getTime());
-        this.service.addNewRecord(startTimePicker.getTime(), endTimePicker.getTime(),
-                startDatePicker.getValue(), endDatePicker.getValue());
+        System.out.println("Selected item " + activityNamesList.getSelectionModel().selectedItemProperty().getValue());
+        if(activityNamesList.getSelectionModel().selectedItemProperty().getValue() == null) {
+            showSnackbar("Choose an activity");
+            return;
+        }
+        try {
+            Task<ValidationResult> task = new Task<ValidationResult>() {
+                @Override
+                protected ValidationResult call() throws Exception {
+                    return Controller.this.service.addNewRecord(startTimePicker.getTime(), endTimePicker.getTime(),
+                            startDatePicker.getValue(), endDatePicker.getValue(),
+                            activityNamesList.getSelectionModel().selectedItemProperty().getValue());
+                }
+            };
+            task.setOnSucceeded(event -> {
+                Controller.this.displayValidationResult(task.getValue());
+            });
+            new Thread(task).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -103,7 +125,7 @@ public class Controller {
 
     private void initializeService() {
         try {
-            this.service = new Service(new ActivityValidator(), new RecordValidator(), new DatabaseActivityCustomDao());
+            this.service = new Service(new ActivityValidator(), new RecordValidator(), DAO_PROVIDER);
         } catch (Exception e) {
             e.printStackTrace();
             displayException(e);
@@ -262,6 +284,7 @@ public class Controller {
     }
 
     private void showSnackbar(String value) {
+        if(value == null || Objects.equals(value, "")) {return;}
         if (this.activityDetailSnackbar.getPopupContainer() != null) {
             this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
         }

@@ -6,6 +6,7 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.mprtcz.timeloggerdesktop.model.Activity;
+import com.mprtcz.timeloggerdesktop.model.Record;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -21,22 +22,37 @@ public class DatabaseActivityCustomDao implements CustomDao {
 
     private ConnectionSource connectionSource = new JdbcConnectionSource(SQLITE_DATABASE_URL);
 
-    private Dao<Activity, Long> dao;
+    private Dao<Activity, Long> activityDao;
+    private Dao<Record, Long> recordDao;
 
     public DatabaseActivityCustomDao() throws SQLException {
-        this.dao = DaoManager.createDao(connectionSource, Activity.class);
-        if(!this.dao.isTableExists()) {
+        this.activityDao = DaoManager.createDao(connectionSource, Activity.class);
+        this.recordDao = DaoManager.createDao(connectionSource, Record.class);
+        if(!this.activityDao.isTableExists()) {
             TableUtils.createTable(connectionSource, Activity.class);
+        }
+        if(!this.recordDao.isTableExists()) {
+            TableUtils.createTable(connectionSource, Record.class);
         }
     }
 
     @Override
-    public void save(Activity activity) throws SQLException {
-        this.dao.create(activity);
+    public <T> void save(T t) throws Exception {
+        if(t instanceof Activity) {
+            activityDao.create((Activity) t);
+        }
+        if(t instanceof Record) {
+            recordDao.create((Record) t);
+        }
     }
 
     @Override
-    public List<Activity> getAll() throws SQLException {
-        return this.dao.queryForAll();
+    public List<Activity> getAllActivities() throws SQLException {
+        return this.activityDao.queryForAll();
+    }
+
+    @Override
+    public List<Record> getAllRecords() throws SQLException {
+        return this.recordDao.queryForAll();
     }
 }

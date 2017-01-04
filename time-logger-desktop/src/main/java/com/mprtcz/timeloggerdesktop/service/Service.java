@@ -35,11 +35,7 @@ public class Service {
 
 
     public List<Activity> getActivities() throws Exception {
-        for (Activity a:
-             customDao.getAll()) {
-            System.out.println("Color = " +a.getColor());
-        }
-        return customDao.getAll();
+        return customDao.getAllActivities();
     }
 
     public List<String> getActivityNames() throws Exception {
@@ -66,8 +62,10 @@ public class Service {
         }
     }
 
-    public ValidationResult addNewRecord(LocalTime startTime, LocalTime endTime, LocalDate startDate, LocalDate endDate) {
-        Record recordToValidate = new Record(startTime, endTime, startDate, endDate);
+    public ValidationResult addNewRecord(LocalTime startTime, LocalTime endTime,
+                                         LocalDate startDate, LocalDate endDate, Activity activity) {
+        Record recordToValidate = new Record(startTime, endTime, startDate, endDate, activity);
+        System.out.println("recordToValidate = " + recordToValidate);
         ValidationResult validationResult = this.recordValidator.validateNewRecordData(recordToValidate);
         if (validationResult.isErrorFree()) {
             //TODO record saving
