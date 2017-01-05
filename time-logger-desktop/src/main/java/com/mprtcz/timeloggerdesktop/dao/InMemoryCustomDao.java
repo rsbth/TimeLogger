@@ -16,7 +16,7 @@ public class InMemoryCustomDao implements CustomDao {
     private static List<Activity> activities = new ArrayList<>();
     static {
         activities.add(new Activity(1L, "name", "description", "#ffcdd2"));
-        activities.add(new Activity(1L, "name2", "long description", "#f8bbd0"));
+        activities.add(new Activity(2L, "name2", "long description", "#f8bbd0"));
         activities.add(new Activity(3L, "name3", "even longer description", "#e1bee7"));
         activities.add(new Activity(4L, "name4", "even longer description \nwhich will contain more than 50 " +
                 "word necessary to identify whether a string cutting method appears to work correctly", "#d1c4e9"));
@@ -39,7 +39,7 @@ public class InMemoryCustomDao implements CustomDao {
     public void update(Activity activity) throws Exception {
         int id = activities.indexOf(activity);
         if(id != -1) {
-            activities.add(id, activity);
+            activities.set(id, activity);
         }
     }
 
@@ -56,7 +56,7 @@ public class InMemoryCustomDao implements CustomDao {
     @Override
     public Activity findActivityById(Long id) throws Exception {
         Integer idInt = Math.toIntExact(id);
-        return activities.get(idInt);
+        return activities.get(idInt-1);
     }
 
     private long getBiggestId() {

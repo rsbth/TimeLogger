@@ -4,8 +4,9 @@ import com.jfoenix.controls.*;
 import com.mprtcz.timeloggerdesktop.customfxelements.ConfirmationPopup;
 import com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
-import com.mprtcz.timeloggerdesktop.dao.InMemoryCustomDao;
+import com.mprtcz.timeloggerdesktop.dao.DatabaseCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
+import com.mprtcz.timeloggerdesktop.model.DataRepresentation;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.Service;
 import com.mprtcz.timeloggerdesktop.utilities.StringConverter;
@@ -17,7 +18,6 @@ import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -67,7 +67,7 @@ public class Controller {
     @FXML
     private BorderPane borderPane;
     @FXML
-    private Canvas dataRepresentationCanvas;
+    private JFXTreeTableView treeTableView;
     @FXML
     private HBox dateInsertionHBox;
     @FXML
@@ -107,6 +107,7 @@ public class Controller {
             });
             this.addTaskExceptionListener(task);
             new Thread(task).start();
+            this.getTableData();
         } catch (Exception e) {
             e.printStackTrace();
             showSnackbar(e.getMessage());
@@ -143,11 +144,12 @@ public class Controller {
         this.deleteActivityButton.setVisible(false);
         this.addActivityButton.setShape(new Circle(8));
         this.dateInsertionHBox.setVisible(false);
+        getTableData();
     }
 
     private void initializeService() {
         try {
-            CustomDao daoProvider = new InMemoryCustomDao();
+            CustomDao daoProvider = new DatabaseCustomDao();
             this.service = new Service(new ActivityValidator(), new RecordValidator(), daoProvider);
         } catch (Exception e) {
             e.printStackTrace();
@@ -201,7 +203,6 @@ public class Controller {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void processSaveActivity(JFXTextField newActivityNameTextField, JFXTextField newActivityDescriptionTextField,
@@ -354,4 +355,26 @@ public class Controller {
             this.addActivityDialog.close();
         }
     }
+
+    private void getTableData() {
+        Task<DataRepresentation> task = new Task<DataRepresentation>() {
+            @Override
+            protected DataRepresentation call() throws Exception {
+                return Controller.this.service.getHours();
+            }
+        };
+        task.setOnSucceeded(event -> {
+            Controller.this.populateTable(task.getValue());
+        });
+        this.addTaskExceptionListener(task);
+        new Thread(task).start();
+    }
+
+    private void populateTable(DataRepresentation data) {
+        System.out.println("Controller.populateTable");
+        LocalDate earliestDay = data.getEarliest().toLocalDate();
+        //TODO fill table view
+    }
+
+
 }

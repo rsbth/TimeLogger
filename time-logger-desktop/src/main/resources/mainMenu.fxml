@@ -4,8 +4,8 @@
 <?import com.jfoenix.controls.JFXDatePicker?>
 <?import com.jfoenix.controls.JFXListView?>
 <?import com.jfoenix.controls.JFXSnackbar?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -31,6 +31,9 @@
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
                   </VBox>
                   <VBox alignment="TOP_CENTER" fillWidth="false" style="-fx-background-color: white;">
                      <children>
@@ -51,7 +54,11 @@
                   <Insets top="5.0" />
                </padding>
             </HBox>
-            <Canvas fx:id="dataRepresentationCanvas" height="200.0" width="200.0" />
+            <JFXTreeTableView fx:id="treeTableView">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </JFXTreeTableView>
          </children>
       </VBox>
    </center>

@@ -1,11 +1,12 @@
 package com.mprtcz.timeloggerdesktop.service;
 
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
-import com.mprtcz.timeloggerdesktop.validators.ValidationResult;
 import com.mprtcz.timeloggerdesktop.model.Activity;
+import com.mprtcz.timeloggerdesktop.model.DataRepresentation;
 import com.mprtcz.timeloggerdesktop.model.Record;
 import com.mprtcz.timeloggerdesktop.validators.ActivityValidator;
 import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
+import com.mprtcz.timeloggerdesktop.validators.ValidationResult;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,6 +39,16 @@ public class Service {
     public List<Activity> getActivities() throws Exception {
         List<Activity> activities = customDao.getAllActivities();
         System.out.println("ACTIVITIES = " + activities.toString());
+        System.out.println("activities.size() = " + activities.size());
+        for (Activity a :
+                activities) {
+            if (a.getActivityRecords() == null) {
+                break;
+            }
+            System.out.println("a.getActivityRecords() = " + a.getActivityRecords().toString());
+            System.out.println("a.getActivityRecords().size() = " + a.getActivityRecords().size());
+        }
+        DataRepresentation dataRepresentation = new DataRepresentation(activities);
         return activities;
     }
 
@@ -76,7 +87,9 @@ public class Service {
             Record newRecord = new Record(startTime, endTime, startDate, endDate, activity);
             Activity rootActivity = customDao.findActivityById(activity.getId());
             rootActivity.addRecord(newRecord);
+            System.out.println("rootActivity.toString() = " + rootActivity.toString());
             customDao.update(rootActivity);
+            getActivities();
         }
         return validationResult;
     }
@@ -88,5 +101,9 @@ public class Service {
         } else {
             activity.setColor(Activity.colorCodes.get(0));
         }
+    }
+
+    public DataRepresentation getHours() throws Exception {
+        return new DataRepresentation(getActivities());
     }
 }

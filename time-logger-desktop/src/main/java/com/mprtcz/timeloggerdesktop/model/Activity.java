@@ -38,6 +38,7 @@ public class Activity {
     public Activity(String name, String description) {
         this.name = name;
         this.description = description;
+        this.activityRecords = new ArrayList<>();
     }
 
     public Activity(Long id, String name, String description, String color) {
@@ -48,6 +49,9 @@ public class Activity {
     }
 
     public void addRecord(Record record) {
+        if(this.activityRecords == null) {
+            this.activityRecords = new ArrayList<>();
+        }
         this.activityRecords.add(record);
     }
 
@@ -76,7 +80,7 @@ public class Activity {
 
     @Override
     public String toString() {
-        return "Activity{" +
+        return "\nActivity{\n" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
