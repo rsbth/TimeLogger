@@ -59,6 +59,10 @@ public class Controller {
     @FXML
     private Label programNameLabel;
     @FXML
+    private Label startRecordLabel;
+    @FXML
+    private Label endRecordLabel;
+    @FXML
     private JFXSnackbar activityDetailSnackbar;
     @FXML
     private BorderPane borderPane;
@@ -158,6 +162,8 @@ public class Controller {
         this.startTimePicker.setPromptText(LabelsModel.START_HOUR_LABEL);
         this.endTimePicker.setPromptText(LabelsModel.END_HOUR_LABEL);
         this.programNameLabel.setText(LabelsModel.PROGRAM_NAME_LABEL);
+        this.startRecordLabel.setText(LabelsModel.START_RECORD_LABEL);
+        this.endRecordLabel.setText(LabelsModel.END_RECORD_LABEL);
     }
 
     private void populateListView() {

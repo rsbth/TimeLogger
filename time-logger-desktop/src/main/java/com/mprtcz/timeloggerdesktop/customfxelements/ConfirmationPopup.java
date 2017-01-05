@@ -49,8 +49,6 @@ public class ConfirmationPopup extends JFXPopup {
         return vBox;
     }
 
-
-
     private void setUpPopupProperties(JFXPopup popup, Pane pane, Region source) {
         popup.setContent(pane);
         popup.setSource(source);

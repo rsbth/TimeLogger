@@ -72,7 +72,7 @@ public class DialogElementsConstructor {
         return "-fx-background-color: " + color + ";";
     }
 
-    public static Background getBackgroundOfColor(String color) {
+    static Background getBackgroundOfColor(String color) {
         return new Background(new BackgroundFill(Color.web(color), CornerRadii.EMPTY, Insets.EMPTY));
     }
 
