@@ -22,7 +22,7 @@
    <center>
       <VBox alignment="TOP_CENTER">
          <children>
-            <HBox alignment="TOP_CENTER" fillHeight="false" prefHeight="132.0" prefWidth="200.0" VBox.vgrow="NEVER">
+            <HBox fx:id="dateInsertionHBox" alignment="TOP_CENTER" fillHeight="false" prefHeight="132.0" prefWidth="200.0" VBox.vgrow="NEVER">
                <children>
                   <VBox alignment="TOP_CENTER" fillWidth="false" prefWidth="167.0" HBox.hgrow="NEVER">
                      <children>

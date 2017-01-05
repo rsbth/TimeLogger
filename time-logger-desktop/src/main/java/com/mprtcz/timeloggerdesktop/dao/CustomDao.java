@@ -11,9 +11,11 @@ import java.util.List;
 public interface CustomDao {
     void save(Activity activity) throws Exception;
 
-    void save(Record record) throws Exception;
+    void update(Activity activity) throws Exception;
 
     List<Activity> getAllActivities() throws Exception;
 
     List<Record> getAllRecords() throws Exception;
+
+    Activity findActivityById(Long id) throws Exception;
 }

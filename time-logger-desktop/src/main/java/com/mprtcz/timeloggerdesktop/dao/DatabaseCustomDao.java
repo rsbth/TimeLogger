@@ -15,9 +15,6 @@ import java.util.List;
  * Created by mprtcz on 2017-01-04.
  */
 public class DatabaseCustomDao implements CustomDao {
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "password";
-    private static final String MYSQL_DATABASE_URL = "jdbc:mysql://localhost:3306/timeloggerdb";
     private static final String SQLITE_DATABASE_URL = "jdbc:sqlite:timeloggertest.db";
 
     private ConnectionSource connectionSource = new JdbcConnectionSource(SQLITE_DATABASE_URL);
@@ -42,8 +39,8 @@ public class DatabaseCustomDao implements CustomDao {
     }
 
     @Override
-    public void save(Record record) throws Exception {
-            recordDao.create(record);
+    public void update(Activity activity) throws Exception {
+        activityDao.update(activity);
     }
 
     @Override
@@ -54,5 +51,10 @@ public class DatabaseCustomDao implements CustomDao {
     @Override
     public List<Record> getAllRecords() throws SQLException {
         return this.recordDao.queryForAll();
+    }
+
+    @Override
+    public Activity findActivityById(Long id) throws Exception {
+        return this.activityDao.queryForId(id);
     }
 }

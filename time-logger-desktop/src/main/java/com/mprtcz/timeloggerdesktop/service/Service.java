@@ -36,6 +36,15 @@ public class Service {
 
 
     public List<Activity> getActivities() throws Exception {
+        System.out.println(customDao.getAllActivities().toString());
+        for (Activity a :
+                customDao.getAllActivities()) {
+            System.out.println("Activity = " + a);
+            for (Record r :
+                    a.getActivityRecords()) {
+                System.out.println("Record = " +r.toString());
+            }
+        }
         return customDao.getAllActivities();
     }
 
@@ -50,15 +59,15 @@ public class Service {
         return validateNewActivityAndSave(activity);
     }
 
-    public void saveActivity(Activity activity) throws Exception {
+    private void chooseColorAndSave(Activity activity) throws Exception {
         chooseActivityColor(activity);
         customDao.save(activity);
     }
 
-    public ValidationResult validateNewActivityAndSave(Activity activity) throws Exception {
+    private ValidationResult validateNewActivityAndSave(Activity activity) throws Exception {
         ValidationResult validationResult = activityValidator.validateNewActivity(activity, getActivities());
         if (validationResult.isErrorFree()) {
-            saveActivity(activity);
+            chooseColorAndSave(activity);
             return new ValidationResult(ValidationResult.CustomErrorEnum.SAVED);
         } else {
             return validationResult;
@@ -72,7 +81,9 @@ public class Service {
                 startTime, endTime, startDate, endDate, activity);
         if (validationResult.isErrorFree()) {
             Record newRecord = new Record(startTime, endTime, startDate, endDate, activity);
-            customDao.save(newRecord);
+            Activity rootActivity = customDao.findActivityById(activity.getId());
+            rootActivity.addRecord(newRecord);
+            customDao.update(rootActivity);
         }
         return validationResult;
     }

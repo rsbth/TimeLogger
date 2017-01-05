@@ -2,7 +2,7 @@ package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
-import com.mprtcz.timeloggerdesktop.dao.InMemoryCustomDao;
+import com.mprtcz.timeloggerdesktop.dao.DatabaseCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.Service;
@@ -63,6 +63,8 @@ public class Controller {
     private BorderPane borderPane;
     @FXML
     private Canvas dataRepresentationCanvas;
+    @FXML
+    private HBox dateInsertionHBox;
 
     private JFXPopup addNewActivityPopup;
     private JFXPopup confirmationPopup;
@@ -131,11 +133,12 @@ public class Controller {
         this.deleteActivityButton.setStyle("-fx-background-color: hotpink;");
         this.deleteActivityButton.setVisible(false);
         this.addActivityButton.setShape(new Circle(8));
+        this.dateInsertionHBox.setVisible(false);
     }
 
     private void initializeService() {
         try {
-            CustomDao daoProvider = new InMemoryCustomDao();
+            CustomDao daoProvider = new DatabaseCustomDao();
             this.service = new Service(new ActivityValidator(), new RecordValidator(), daoProvider);
         } catch (Exception e) {
             e.printStackTrace();
@@ -305,8 +308,10 @@ public class Controller {
             if (newValue != null) {
                 Controller.this.showSnackbar(newValue.getDescription());
                 Controller.this.deleteActivityButton.setVisible(true);
+                this.dateInsertionHBox.setVisible(true);
             } else {
                 Controller.this.deleteActivityButton.setVisible(false);
+                this.dateInsertionHBox.setVisible(false);
             }
         });
     }
@@ -382,7 +387,7 @@ public class Controller {
     }
 
     private void drawOnCanvas() {
-        this.dataRepresentationCanvas.getGraphicsContext2D().fillRect(
-                0, 0, this.dataRepresentationCanvas.getWidth(), this.dataRepresentationCanvas.getHeight());
+//        this.dataRepresentationCanvas.getGraphicsContext2D().fillRect(
+//                0, 0, this.dataRepresentationCanvas.getWidth(), this.dataRepresentationCanvas.getHeight());
     }
 }

@@ -1,11 +1,13 @@
 package com.mprtcz.timeloggerdesktop.model;
 
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -28,6 +30,9 @@ public class Activity {
     @DatabaseField(canBeNull = false)
     private String color;
 
+    @ForeignCollectionField(eager = true)
+    Collection<Record> activityRecords;
+
     public Activity() {}
 
     public Activity(String name, String description) {
@@ -35,10 +40,15 @@ public class Activity {
         this.description = description;
     }
 
-    public Activity(String name, String description, String color) {
+    public Activity(Long id, String name, String description, String color) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.color = color;
+    }
+
+    public void addRecord(Record record) {
+        this.activityRecords.add(record);
     }
 
     public static List<String> colorCodes = new ArrayList<>();
@@ -66,6 +76,12 @@ public class Activity {
 
     @Override
     public String toString() {
-        return name;
+        return "Activity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", color='" + color + '\'' +
+                ", activityRecords=" + activityRecords +
+                '}';
     }
 }
