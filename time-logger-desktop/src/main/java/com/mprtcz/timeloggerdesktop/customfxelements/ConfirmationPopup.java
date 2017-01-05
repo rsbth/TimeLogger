@@ -8,11 +8,14 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Created by mprtcz on 2017-01-05.
  */
+@Getter
+@Setter
 public class ConfirmationPopup extends JFXPopup {
     private String secondaryColor = "#FF5252";
     private String backgroundColor = "#F4F4F4";
@@ -23,26 +26,25 @@ public class ConfirmationPopup extends JFXPopup {
 
     public ConfirmationPopup(String labelString, Region source) {
         this.initElements(labelString);
-        this.setStyleOfConfirmCancelButtons();
+        DialogElementsConstructor.setStyleOfConfirmCancelButtons(this.confirmButton, this.cancelButton);
         this.label.setPadding(new Insets(10));
         this.addCloseHandler();
+        this.setUpPopupProperties(this, createLayout(), source);
+    }
+
+    private HBox createButtonHBox() {
         HBox hBox = new HBox(confirmButton, cancelButton);
         hBox.setStyle(" -fx-alignment: center");
         HBox.setMargin(confirmButton, new Insets(5));
         HBox.setMargin(cancelButton, new Insets(5));
-        HBox.setMargin(label, new Insets(5));
-        VBox vBox = new VBox(label, hBox);
-        vBox.setStyle(" -fx-alignment: center");
-        vBox.setBackground(this.getBackgroundOfColor(backgroundColor));
-        this.setUpPopupProperties(this, vBox, source);
+        return hBox;
     }
 
-    private void setStyleOfConfirmCancelButtons() {
-        this.confirmButton.setPadding(new Insets(10));
-        this.cancelButton.setPadding(new Insets(10));
-        this.confirmButton.setRipplerFill(Paint.valueOf("darkgreen"));
-        this.cancelButton.setRipplerFill(Paint.valueOf("red"));
-        this.cancelButton.setStyle(getBackgroundStyle(secondaryColor));
+    private VBox createLayout() {
+        VBox vBox = new VBox(this.label, createButtonHBox());
+        vBox.setStyle(" -fx-alignment: center");
+        vBox.setBackground(this.getBackgroundOfColor(backgroundColor));
+        return vBox;
     }
 
     private Background getBackgroundOfColor(String color) {
@@ -57,10 +59,6 @@ public class ConfirmationPopup extends JFXPopup {
         });
     }
 
-    private String getBackgroundStyle(String color) {
-        return "-fx-background-color: " + color +";";
-    }
-
     private void addCloseHandler() {
         this.cancelButton.setOnAction(e -> this.close());
     }
@@ -69,9 +67,5 @@ public class ConfirmationPopup extends JFXPopup {
         this.confirmButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_YES);
         this.label = new Label(labelString);
         this.cancelButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_NO);
-    }
-
-    public JFXButton getConfirmButton() {
-        return confirmButton;
     }
 }

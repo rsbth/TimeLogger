@@ -2,6 +2,7 @@ package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
 import com.mprtcz.timeloggerdesktop.customfxelements.ConfirmationPopup;
+import com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
 import com.mprtcz.timeloggerdesktop.dao.InMemoryCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
@@ -18,14 +19,12 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 
@@ -221,17 +220,6 @@ public class Controller {
         this.addActivityDialog.close();
     }
 
-    private void setPopupContentsStyles(JFXButton confirmAddButton,
-                                        JFXButton cancelAddButton,
-                                        JFXTextField newActivityNameTextField,
-                                        JFXTextField newActivityDescriptionTextField) {
-        newActivityNameTextField.setPromptText(LabelsModel.ADD_ACTIVITY_TEXT_FIELD);
-        newActivityDescriptionTextField.setPromptText(LabelsModel.ADD_ACTIVITY_DESCRIPTION_TEXT_FIELD);
-        this.setStyleOfConfirmCancelButtons(confirmAddButton, cancelAddButton);
-        newActivityNameTextField.setPadding(new Insets(10));
-        newActivityDescriptionTextField.setPadding(new Insets(10));
-    }
-
     private void initEmptyDescriptionConfirmationPopup() {
         this.confirmationPopup = new ConfirmationPopup(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_LABEL, this.topStackPane);
         this.confirmationPopup.getConfirmButton().setOnAction(e -> {
@@ -251,22 +239,6 @@ public class Controller {
 
     private Background getBackgroundOfColor(String color) {
         return new Background(new BackgroundFill(Color.web(color), CornerRadii.EMPTY, Insets.EMPTY));
-    }
-
-    private void setStyleOfConfirmCancelButtons(JFXButton confirmButton, JFXButton cancelButton) {
-        confirmButton.setPadding(new Insets(10));
-        cancelButton.setPadding(new Insets(10));
-        confirmButton.setRipplerFill(Paint.valueOf("darkgreen"));
-        cancelButton.setRipplerFill(Paint.valueOf("red"));
-        cancelButton.setStyle(getBackgroundStyle(SECONDARY_COLOR));
-    }
-
-    private void setUpPopupProperties(JFXPopup popup, Pane pane, Control source) {
-        popup.setContent(pane);
-        popup.setSource(source);
-        popup.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
-            popup.close();
-        });
     }
 
     private void setUpListViewListener() {
@@ -360,38 +332,14 @@ public class Controller {
 
     private void loadDialog() {
         closeSnackBarIfExists();
-        JFXButton confirmAddButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CONFIRM_BUTTON);
-        JFXButton cancelAddButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CANCEL_BUTTON);
-        JFXTextField newActivityNameTextField = new JFXTextField();
-        JFXTextField newActivityDescriptionTextField = new JFXTextField();
-        confirmAddButton.setOnAction(e -> System.out.println("Clicked"));
-        confirmAddButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                Controller.this.processSaveActivity(newActivityNameTextField,
-                        newActivityDescriptionTextField, true, event);
-            }
-        });
-        cancelAddButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                Controller.this.processSaveActivity(newActivityNameTextField,
-                        newActivityDescriptionTextField, false, event);
-            }
-        });
-        setPopupContentsStyles(confirmAddButton, cancelAddButton, newActivityNameTextField, newActivityDescriptionTextField);
-        VBox buttonsVBox = new VBox(confirmAddButton, cancelAddButton);
-        VBox textFieldVBox = new VBox(newActivityNameTextField, newActivityDescriptionTextField);
-        textFieldVBox.setMinWidth(200);
-        VBox.setMargin(confirmAddButton, new Insets(5));
-        VBox.setMargin(cancelAddButton, new Insets(5));
-        VBox.setMargin(newActivityNameTextField, new Insets(5));
-        VBox.setMargin(newActivityDescriptionTextField, new Insets(5));
-        Label titleLabel = new Label(LabelsModel.ENTER_ACTIVITY_LABEL);
-        HBox hBox = new HBox(textFieldVBox, buttonsVBox);
-        VBox overlayVBox = new VBox(titleLabel, hBox);
-        overlayVBox.setStyle(" -fx-alignment: center");
-        VBox.setMargin(titleLabel, new Insets(5));
+        DialogElementsConstructor dialogElementsConstructor = new DialogElementsConstructor();
+        dialogElementsConstructor.getConfirmAddButton().setOnMouseClicked(event ->
+                Controller.this.processSaveActivity(dialogElementsConstructor.getNewActivityNameTextField(),
+                dialogElementsConstructor.getNewActivityDescriptionTextField(), true, event));
+        dialogElementsConstructor.getCancelAddButton().setOnMouseClicked(event ->
+                Controller.this.processSaveActivity(dialogElementsConstructor.getNewActivityNameTextField(),
+                dialogElementsConstructor.getNewActivityDescriptionTextField(), false, event));
+        VBox overlayVBox = dialogElementsConstructor.generateContent();
         this.addActivityDialog = new JFXDialog(topStackPane, overlayVBox, JFXDialog.DialogTransition.BOTTOM);
 
         this.addActivityDialog.show();
