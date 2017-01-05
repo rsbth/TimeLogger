@@ -36,16 +36,9 @@ public class Service {
 
 
     public List<Activity> getActivities() throws Exception {
-        System.out.println(customDao.getAllActivities().toString());
-        for (Activity a :
-                customDao.getAllActivities()) {
-            System.out.println("Activity = " + a);
-            for (Record r :
-                    a.getActivityRecords()) {
-                System.out.println("Record = " +r.toString());
-            }
-        }
-        return customDao.getAllActivities();
+        List<Activity> activities = customDao.getAllActivities();
+        System.out.println("ACTIVITIES = " + activities.toString());
+        return activities;
     }
 
     public List<String> getActivityNames() throws Exception {

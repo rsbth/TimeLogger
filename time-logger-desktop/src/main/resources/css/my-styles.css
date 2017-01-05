@@ -23,7 +23,7 @@
     -fx-font-family: "Roboto";
     -fx-font-size: 16px;
     -fx-button-type: RAISED;
-    -fx-background-color: lightgreen;
+    -fx-background-color: rgb(33, 150, 243);
 }
 
 .root {

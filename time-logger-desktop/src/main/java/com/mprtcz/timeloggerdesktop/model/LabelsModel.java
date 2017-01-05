@@ -18,4 +18,5 @@ public class LabelsModel {
     public static final String CONFIRMATION_POPUP_NO = "No";
     public static final String CONFIRMATION_POPUP_YES = "Yes";
     public static final String REMOVE_ACTIVITYPOPUP_LABEL = "Remove this activity?";
+    public static final String ENTER_ACTIVITY_LABEL = "Enter new Activity's data";
 }

@@ -1,8 +1,9 @@
 package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
+import com.mprtcz.timeloggerdesktop.customfxelements.ConfirmationPopup;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
-import com.mprtcz.timeloggerdesktop.dao.DatabaseCustomDao;
+import com.mprtcz.timeloggerdesktop.dao.InMemoryCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.Service;
@@ -65,15 +66,19 @@ public class Controller {
     private Canvas dataRepresentationCanvas;
     @FXML
     private HBox dateInsertionHBox;
+    @FXML
+    private StackPane topStackPane;
 
-    private JFXPopup addNewActivityPopup;
-    private JFXPopup confirmationPopup;
+    private ConfirmationPopup confirmationPopup;
+    private JFXDialog addActivityDialog;
 
     private Service service;
     private String newActivityName;
     private String newActivityDescription;
     private static final int SNACKBAR_DURATION = 5000; //[ms]
     private static final String BACKGROUND_COLOR = "#F4F4F4";
+    private static final String PRIMARY_COLOR = "rgb(33, 150, 243)";
+    private static final String SECONDARY_COLOR = "#FF5252";
     private static final int LIST_VIEW_ROW_HEIGHT = 25;
     private static final int LIST_VIEW_ROW_PADDING = 20;
 
@@ -96,6 +101,7 @@ public class Controller {
             task.setOnSucceeded(event -> {
                 Controller.this.displayValidationResult(task.getValue());
             });
+            this.addTaskExceptionListener(task);
             new Thread(task).start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,8 +111,7 @@ public class Controller {
 
     @FXML
     void onAddActivityButtonCLicked() {
-        this.initAddActivityPopup();
-        this.addNewActivityPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 0, 0);
+        this.loadDialog();
     }
 
     @FXML
@@ -130,7 +135,7 @@ public class Controller {
         this.initializeDateTimeControls();
         this.setListViewFactory();
         this.drawOnCanvas();
-        this.deleteActivityButton.setStyle("-fx-background-color: hotpink;");
+        this.deleteActivityButton.setStyle(getBackgroundStyle(SECONDARY_COLOR));
         this.deleteActivityButton.setVisible(false);
         this.addActivityButton.setShape(new Circle(8));
         this.dateInsertionHBox.setVisible(false);
@@ -138,7 +143,7 @@ public class Controller {
 
     private void initializeService() {
         try {
-            CustomDao daoProvider = new DatabaseCustomDao();
+            CustomDao daoProvider = new InMemoryCustomDao();
             this.service = new Service(new ActivityValidator(), new RecordValidator(), daoProvider);
         } catch (Exception e) {
             e.printStackTrace();
@@ -164,17 +169,13 @@ public class Controller {
                 }
             };
             task.setOnSucceeded(event -> Controller.this.setActivityListItems(task.getValue()));
+            task.setOnFailed(event -> System.out.println(task.exceptionProperty().toString()));
+            this.addTaskExceptionListener(task);
             new Thread(task).start();
         } catch (Exception e) {
             e.printStackTrace();
             displayException(e);
         }
-    }
-
-    private void initAddActivityPopup() {
-        this.addNewActivityPopup = new JFXPopup();
-        VBox vBox = generateAddActivityPopupContent();
-        this.setUpPopupProperties(this.addNewActivityPopup, vBox, this.addActivityButton);
     }
 
     private void addNewActivity(String name, String description) {
@@ -189,6 +190,7 @@ public class Controller {
                 Controller.this.displayValidationResult(task.getValue());
                 Controller.this.populateListView();
             });
+            this.addTaskExceptionListener(task);
             new Thread(task).start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -196,28 +198,8 @@ public class Controller {
 
     }
 
-    private VBox generateAddActivityPopupContent() {
-        JFXButton confirmAddButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CONFIRM_BUTTON);
-        JFXButton cancelAddButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CANCEL_BUTTON);
-        JFXTextField newActivityNameTextField = new JFXTextField();
-        JFXTextField newActivityDescriptionTextField = new JFXTextField();
-        confirmAddButton.setOnAction(e -> this.processSaveActivity(newActivityNameTextField,
-                newActivityDescriptionTextField, true));
-        cancelAddButton.setOnAction(e -> this.processSaveActivity(newActivityNameTextField,
-                newActivityDescriptionTextField, false));
-        setPopupContentsStyles(confirmAddButton, cancelAddButton, newActivityNameTextField, newActivityDescriptionTextField);
-        HBox hBox = new HBox(confirmAddButton, cancelAddButton);
-        HBox.setMargin(confirmAddButton, new Insets(5));
-        HBox.setMargin(cancelAddButton, new Insets(5));
-        HBox.setMargin(newActivityNameTextField, new Insets(5));
-        HBox.setMargin(newActivityDescriptionTextField, new Insets(5));
-        VBox vBox = new VBox(newActivityNameTextField, newActivityDescriptionTextField, hBox);
-        vBox.setBackground(this.getBackgroundOfColor(BACKGROUND_COLOR));
-        return vBox;
-    }
-
     private void processSaveActivity(JFXTextField newActivityNameTextField, JFXTextField newActivityDescriptionTextField,
-                                     boolean withActivitySave) {
+                                     boolean withActivitySave, MouseEvent event) {
         if (newActivityNameTextField.getText().equals("") && withActivitySave) {
             return;
         }
@@ -226,14 +208,17 @@ public class Controller {
                 this.newActivityName = newActivityNameTextField.getText();
                 this.newActivityDescription = newActivityDescriptionTextField.getText();
                 this.initEmptyDescriptionConfirmationPopup();
-                this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 0, 0);
+                System.out.println("event.getX() = " + event.getX());
+                System.out.println("event.getY() = " + event.getY());
+                this.confirmationPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT,
+                        event.getX(), event.getY());
             } else {
                 this.addNewActivity(newActivityNameTextField.getText(), newActivityDescriptionTextField.getText());
             }
         }
         newActivityNameTextField.setText("");
         newActivityDescriptionTextField.setText("");
-        this.addNewActivityPopup.close();
+        this.addActivityDialog.close();
     }
 
     private void setPopupContentsStyles(JFXButton confirmAddButton,
@@ -247,40 +232,21 @@ public class Controller {
         newActivityDescriptionTextField.setPadding(new Insets(10));
     }
 
-    private void initConfirmationPopup(JFXButton confirmButton, Label label) {
-        this.confirmationPopup = new JFXPopup();
-        JFXButton cancelAddButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_NO);
-        this.setStyleOfConfirmCancelButtons(confirmButton, cancelAddButton);
-        label.setPadding(new Insets(10));
-        cancelAddButton.setOnAction(e -> this.confirmationPopup.close());
-        HBox hBox = new HBox(confirmButton, cancelAddButton);
-        HBox.setMargin(confirmButton, new Insets(5));
-        HBox.setMargin(cancelAddButton, new Insets(5));
-        HBox.setMargin(label, new Insets(5));
-        VBox vBox = new VBox(label, hBox);
-        vBox.setBackground(this.getBackgroundOfColor(BACKGROUND_COLOR));
-        this.setUpPopupProperties(this.confirmationPopup, vBox, this.addActivityButton);
-    }
-
     private void initEmptyDescriptionConfirmationPopup() {
-        Label label = new Label(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_LABEL);
-        JFXButton confirmButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_YES);
-        confirmButton.setOnAction(e -> {
+        this.confirmationPopup = new ConfirmationPopup(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_LABEL, this.topStackPane);
+        this.confirmationPopup.getConfirmButton().setOnAction(e -> {
             this.addNewActivity(this.newActivityName, this.newActivityDescription);
             this.confirmationPopup.close();
         });
-        initConfirmationPopup(confirmButton, label);
     }
 
     private void initActivityRemoveConfirmationPopup() {
-        Label label = new Label(LabelsModel.REMOVE_ACTIVITYPOPUP_LABEL);
-        JFXButton confirmButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_YES);
-        confirmButton.setOnAction(e -> {
+        this.confirmationPopup = new ConfirmationPopup(LabelsModel.REMOVE_ACTIVITYPOPUP_LABEL, this.deleteActivityButton);
+        this.confirmationPopup.getConfirmButton().setOnAction(e -> {
             //TODO remove activity
             System.out.println("Remove Activity clicked");
             this.confirmationPopup.close();
         });
-        initConfirmationPopup(confirmButton, label);
     }
 
     private Background getBackgroundOfColor(String color) {
@@ -292,7 +258,7 @@ public class Controller {
         cancelButton.setPadding(new Insets(10));
         confirmButton.setRipplerFill(Paint.valueOf("darkgreen"));
         cancelButton.setRipplerFill(Paint.valueOf("red"));
-        cancelButton.setStyle("-fx-background-color: hotpink;");
+        cancelButton.setStyle(getBackgroundStyle(SECONDARY_COLOR));
     }
 
     private void setUpPopupProperties(JFXPopup popup, Pane pane, Control source) {
@@ -320,10 +286,8 @@ public class Controller {
         if (value == null || Objects.equals(value, "")) {
             return;
         }
-        if (this.activityDetailSnackbar.getPopupContainer() != null) {
-            this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
-        }
-        System.out.println("is Visible " + this.activityDetailSnackbar.isHover());
+        closeSnackBarIfExists();
+        closeDialogIfExists();
         this.activityDetailSnackbar = new JFXSnackbar(borderPane);
         EventHandler<Event> eventHandler = event ->
                 Controller.this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
@@ -357,8 +321,7 @@ public class Controller {
                             Label label = new Label(item.getName());
                             coloredLabel.setBackground(getBackgroundOfColor(item.getColor()));
                             coloredLabel.setStyle("-fx-border-insets: 5px;");
-                            container.setStyle(" -fx-alignment: center");
-                            container.setStyle(" -fx-alignment: center");
+                            container.setStyle(" -fx-alignment: center-left");
                             container.getChildren().add(coloredLabel);
                             container.getChildren().add(marginLabel);
                             container.getChildren().add(label);
@@ -390,4 +353,66 @@ public class Controller {
 //        this.dataRepresentationCanvas.getGraphicsContext2D().fillRect(
 //                0, 0, this.dataRepresentationCanvas.getWidth(), this.dataRepresentationCanvas.getHeight());
     }
+
+    private String getBackgroundStyle(String color) {
+        return "-fx-background-color: " + color +";";
+    }
+
+    private void loadDialog() {
+        closeSnackBarIfExists();
+        JFXButton confirmAddButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CONFIRM_BUTTON);
+        JFXButton cancelAddButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CANCEL_BUTTON);
+        JFXTextField newActivityNameTextField = new JFXTextField();
+        JFXTextField newActivityDescriptionTextField = new JFXTextField();
+        confirmAddButton.setOnAction(e -> System.out.println("Clicked"));
+        confirmAddButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Controller.this.processSaveActivity(newActivityNameTextField,
+                        newActivityDescriptionTextField, true, event);
+            }
+        });
+        cancelAddButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Controller.this.processSaveActivity(newActivityNameTextField,
+                        newActivityDescriptionTextField, false, event);
+            }
+        });
+        setPopupContentsStyles(confirmAddButton, cancelAddButton, newActivityNameTextField, newActivityDescriptionTextField);
+        VBox buttonsVBox = new VBox(confirmAddButton, cancelAddButton);
+        VBox textFieldVBox = new VBox(newActivityNameTextField, newActivityDescriptionTextField);
+        textFieldVBox.setMinWidth(200);
+        VBox.setMargin(confirmAddButton, new Insets(5));
+        VBox.setMargin(cancelAddButton, new Insets(5));
+        VBox.setMargin(newActivityNameTextField, new Insets(5));
+        VBox.setMargin(newActivityDescriptionTextField, new Insets(5));
+        Label titleLabel = new Label(LabelsModel.ENTER_ACTIVITY_LABEL);
+        HBox hBox = new HBox(textFieldVBox, buttonsVBox);
+        VBox overlayVBox = new VBox(titleLabel, hBox);
+        overlayVBox.setStyle(" -fx-alignment: center");
+        VBox.setMargin(titleLabel, new Insets(5));
+        this.addActivityDialog = new JFXDialog(topStackPane, overlayVBox, JFXDialog.DialogTransition.BOTTOM);
+
+        this.addActivityDialog.show();
+    }
+
+    private void addTaskExceptionListener(Task<?> task) {
+        task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
+            Exception exception = (Exception) newValue;
+            exception.printStackTrace();
+            showSnackbar(exception.getMessage());
+        });
+    }
+     private void closeSnackBarIfExists() {
+         if (this.activityDetailSnackbar.getPopupContainer() != null) {
+             this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
+         }
+     }
+
+     private void closeDialogIfExists() {
+         if(this.addActivityDialog != null) {
+             this.addActivityDialog.close();
+         }
+     }
 }

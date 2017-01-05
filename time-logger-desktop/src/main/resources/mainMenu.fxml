@@ -9,16 +9,10 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="402.0" prefWidth="588.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mprtcz.timeloggerdesktop.controller.Controller">
-   <top>
-      <Label fx:id="programNameLabel" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-         </BorderPane.margin>
-      </Label>
-   </top>
    <center>
       <VBox alignment="TOP_CENTER">
          <children>
@@ -83,6 +77,18 @@
       </VBox>
    </left>
    <bottom>
-      <JFXSnackbar fx:id="activityDetailSnackbar" snapToPixel="false" BorderPane.alignment="CENTER" />
+      <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+         <children>
+            <JFXSnackbar fx:id="activityDetailSnackbar" snapToPixel="false" />
+            <StackPane fx:id="topStackPane" prefHeight="150.0" prefWidth="200.0" />
+         </children>
+      </VBox>
    </bottom>
+   <top>
+      <HBox alignment="CENTER" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="programNameLabel" text="Label" />
+         </children>
+      </HBox>
+   </top>
 </BorderPane>
