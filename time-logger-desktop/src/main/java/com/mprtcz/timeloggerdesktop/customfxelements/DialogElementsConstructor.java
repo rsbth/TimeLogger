@@ -2,11 +2,12 @@ package com.mprtcz.timeloggerdesktop.customfxelements;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
+import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import lombok.Getter;
 
@@ -69,5 +70,24 @@ public class DialogElementsConstructor {
 
     private static String getBackgroundStyle(String color) {
         return "-fx-background-color: " + color + ";";
+    }
+
+    public static Background getBackgroundOfColor(String color) {
+        return new Background(new BackgroundFill(Color.web(color), CornerRadii.EMPTY, Insets.EMPTY));
+    }
+
+    public static Region createListViewCellLayout(Activity item) {
+        HBox container = new HBox();
+        container.setMouseTransparent(true);
+        Label coloredLabel = new Label("      ");
+        Label marginLabel = new Label("      ");
+        Label label = new Label(item.getName());
+        coloredLabel.setBackground(getBackgroundOfColor(item.getColor()));
+        coloredLabel.setStyle("-fx-border-insets: 5px;");
+        container.setStyle(" -fx-alignment: center-left");
+        container.getChildren().add(coloredLabel);
+        container.getChildren().add(marginLabel);
+        container.getChildren().add(label);
+        return container;
     }
 }

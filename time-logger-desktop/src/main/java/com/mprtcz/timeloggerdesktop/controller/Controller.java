@@ -17,14 +17,15 @@ import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 
@@ -221,7 +222,7 @@ public class Controller {
     }
 
     private void initEmptyDescriptionConfirmationPopup() {
-        this.confirmationPopup = new ConfirmationPopup(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_LABEL, this.topStackPane);
+        this.confirmationPopup = new ConfirmationPopup(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_LABEL, this.addActivityDialog);
         this.confirmationPopup.getConfirmButton().setOnAction(e -> {
             this.addNewActivity(this.newActivityName, this.newActivityDescription);
             this.confirmationPopup.close();
@@ -235,10 +236,6 @@ public class Controller {
             System.out.println("Remove Activity clicked");
             this.confirmationPopup.close();
         });
-    }
-
-    private Background getBackgroundOfColor(String color) {
-        return new Background(new BackgroundFill(Color.web(color), CornerRadii.EMPTY, Insets.EMPTY));
     }
 
     private void setUpListViewListener() {
@@ -263,8 +260,6 @@ public class Controller {
         this.activityDetailSnackbar = new JFXSnackbar(borderPane);
         EventHandler<Event> eventHandler = event ->
                 Controller.this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
-
-        System.out.println("Controller.showSnackbar");
         this.activityDetailSnackbar.show(StringConverter.insertLineSeparator(value, 50),
                 "X", SNACKBAR_DURATION, eventHandler);
     }
@@ -286,18 +281,7 @@ public class Controller {
                     public void updateItem(Activity item, boolean empty) {
                         super.updateItem(item, empty);
                         if (item != null && !empty) {
-                            HBox container = new HBox();
-                            container.setMouseTransparent(true);
-                            Label coloredLabel = new Label("      ");
-                            Label marginLabel = new Label("      ");
-                            Label label = new Label(item.getName());
-                            coloredLabel.setBackground(getBackgroundOfColor(item.getColor()));
-                            coloredLabel.setStyle("-fx-border-insets: 5px;");
-                            container.setStyle(" -fx-alignment: center-left");
-                            container.getChildren().add(coloredLabel);
-                            container.getChildren().add(marginLabel);
-                            container.getChildren().add(label);
-                            setGraphic(container);
+                            setGraphic(DialogElementsConstructor.createListViewCellLayout(item));
                         }
                     }
                 };
@@ -327,7 +311,7 @@ public class Controller {
     }
 
     private String getBackgroundStyle(String color) {
-        return "-fx-background-color: " + color +";";
+        return "-fx-background-color: " + color + ";";
     }
 
     private void loadDialog() {
@@ -335,10 +319,10 @@ public class Controller {
         DialogElementsConstructor dialogElementsConstructor = new DialogElementsConstructor();
         dialogElementsConstructor.getConfirmAddButton().setOnMouseClicked(event ->
                 Controller.this.processSaveActivity(dialogElementsConstructor.getNewActivityNameTextField(),
-                dialogElementsConstructor.getNewActivityDescriptionTextField(), true, event));
+                        dialogElementsConstructor.getNewActivityDescriptionTextField(), true, event));
         dialogElementsConstructor.getCancelAddButton().setOnMouseClicked(event ->
                 Controller.this.processSaveActivity(dialogElementsConstructor.getNewActivityNameTextField(),
-                dialogElementsConstructor.getNewActivityDescriptionTextField(), false, event));
+                        dialogElementsConstructor.getNewActivityDescriptionTextField(), false, event));
         VBox overlayVBox = dialogElementsConstructor.generateContent();
         this.addActivityDialog = new JFXDialog(topStackPane, overlayVBox, JFXDialog.DialogTransition.BOTTOM);
 
@@ -352,15 +336,16 @@ public class Controller {
             showSnackbar(exception.getMessage());
         });
     }
-     private void closeSnackBarIfExists() {
-         if (this.activityDetailSnackbar.getPopupContainer() != null) {
-             this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
-         }
-     }
 
-     private void closeDialogIfExists() {
-         if(this.addActivityDialog != null) {
-             this.addActivityDialog.close();
-         }
-     }
+    private void closeSnackBarIfExists() {
+        if (this.activityDetailSnackbar.getPopupContainer() != null) {
+            this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
+        }
+    }
+
+    private void closeDialogIfExists() {
+        if (this.addActivityDialog != null) {
+            this.addActivityDialog.close();
+        }
+    }
 }

@@ -6,8 +6,10 @@ import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,13 +45,11 @@ public class ConfirmationPopup extends JFXPopup {
     private VBox createLayout() {
         VBox vBox = new VBox(this.label, createButtonHBox());
         vBox.setStyle(" -fx-alignment: center");
-        vBox.setBackground(this.getBackgroundOfColor(backgroundColor));
+        vBox.setBackground(DialogElementsConstructor.getBackgroundOfColor(backgroundColor));
         return vBox;
     }
 
-    private Background getBackgroundOfColor(String color) {
-        return new Background(new BackgroundFill(Color.web(color), CornerRadii.EMPTY, Insets.EMPTY));
-    }
+
 
     private void setUpPopupProperties(JFXPopup popup, Pane pane, Region source) {
         popup.setContent(pane);
