@@ -1,6 +1,7 @@
 package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
+import com.jfoenix.effects.JFXDepthManager;
 import com.mprtcz.timeloggerdesktop.customfxelements.ConfirmationPopup;
 import com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
@@ -59,6 +60,8 @@ public class Controller {
     @FXML
     private Label programNameLabel;
     @FXML
+    private Label summaryLabel;
+    @FXML
     private Label startRecordLabel;
     @FXML
     private Label endRecordLabel;
@@ -72,6 +75,13 @@ public class Controller {
     private HBox dateInsertionHBox;
     @FXML
     private StackPane topStackPane;
+    @FXML
+    JFXNodesList nodeList;
+    @FXML
+    VBox startTimeVBox;
+    @FXML
+    VBox endTimeVBox;
+
 
     private ConfirmationPopup confirmationPopup;
     private JFXDialog addActivityDialog;
@@ -83,7 +93,7 @@ public class Controller {
     private static final String BACKGROUND_COLOR = "#F4F4F4";
     private static final String PRIMARY_COLOR = "rgb(33, 150, 243)";
     private static final String SECONDARY_COLOR = "#FF5252";
-    private static final int LIST_VIEW_ROW_HEIGHT = 25;
+    private static final int LIST_VIEW_ROW_HEIGHT = 26;
     private static final int LIST_VIEW_ROW_PADDING = 20;
 
 
@@ -145,6 +155,7 @@ public class Controller {
         this.addActivityButton.setShape(new Circle(8));
         this.dateInsertionHBox.setVisible(false);
         getTableData();
+        setDepths();
     }
 
     private void initializeService() {
@@ -166,6 +177,14 @@ public class Controller {
         this.programNameLabel.setText(LabelsModel.PROGRAM_NAME_LABEL);
         this.startRecordLabel.setText(LabelsModel.START_RECORD_LABEL);
         this.endRecordLabel.setText(LabelsModel.END_RECORD_LABEL);
+    }
+
+    private void setDepths() {
+        this.programNameLabel.setBackground(DialogElementsConstructor.getBackgroundOfColor("white"));
+        JFXDepthManager.setDepth(this.programNameLabel, 1);
+        JFXDepthManager.setDepth(this.startTimeVBox, 1);
+        JFXDepthManager.setDepth(this.endTimeVBox, 1);
+        JFXDepthManager.setDepth(this.summaryLabel, 1);
     }
 
     private void populateListView() {
@@ -251,9 +270,12 @@ public class Controller {
                 Controller.this.showSnackbar(newValue.getDescription());
                 Controller.this.deleteActivityButton.setVisible(true);
                 this.dateInsertionHBox.setVisible(true);
+                this.summaryLabel.setVisible(true);
+                Controller.this.updateSummary();
             } else {
                 Controller.this.deleteActivityButton.setVisible(false);
                 this.dateInsertionHBox.setVisible(false);
+                this.summaryLabel.setVisible(false);
             }
         });
     }
@@ -273,9 +295,16 @@ public class Controller {
 
     private void initializeDateTimeControls() {
         this.startDatePicker.setValue(LocalDate.now());
+        this.startDatePicker.setOnAction(getSummaryEventHandler());
         this.endDatePicker.setValue(LocalDate.now());
+        this.endDatePicker.setOnAction(getSummaryEventHandler());
         this.startTimePicker.setTime(LocalTime.of(0, 0));
+        this.startTimePicker.setOnMouseClicked(getSummaryEventHandler());
+        this.startTimePicker.setOnHiding(getSummaryEventHandler());
         this.endTimePicker.setTime(LocalTime.of(0, 0));
+        this.endTimePicker.setOnMouseClicked(getSummaryEventHandler());
+        this.endTimePicker.setOnHiding(getSummaryEventHandler());
+        this.summaryLabel.setVisible(false);
         Locale.setDefault(Locale.ENGLISH);
     }
 
@@ -376,5 +405,17 @@ public class Controller {
         //TODO fill table view
     }
 
+    private void updateSummary() {
+        System.out.println("UPDATED!");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(this.activityNamesList.getSelectionModel().selectedItemProperty().getValue().getName()).append("\n");
+        stringBuilder.append(this.startDatePicker.getValue()).append(" ").append(this.startTimePicker.getTime()).append("\n");
+        stringBuilder.append("- \n");
+        stringBuilder.append(this.endDatePicker.getValue()).append(" ").append(this.endTimePicker.getTime()).append("\n");
+        this.summaryLabel.setText(stringBuilder.toString());
+    }
 
+    private <T extends Event> EventHandler<T> getSummaryEventHandler() {
+        return event -> Controller.this.updateSummary();
+    }
 }

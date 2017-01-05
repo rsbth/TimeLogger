@@ -68,11 +68,11 @@ public class DialogElementsConstructor {
         cancelButton.setStyle(getBackgroundStyle(SECONDARY_COLOR));
     }
 
-    private static String getBackgroundStyle(String color) {
+    public static String getBackgroundStyle(String color) {
         return "-fx-background-color: " + color + ";";
     }
 
-    static Background getBackgroundOfColor(String color) {
+    public static Background getBackgroundOfColor(String color) {
         return new Background(new BackgroundFill(Color.web(color), CornerRadii.EMPTY, Insets.EMPTY));
     }
 
