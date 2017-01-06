@@ -2,10 +2,7 @@ package com.mprtcz.timeloggerdesktop.controller;
 
 import com.jfoenix.controls.*;
 import com.jfoenix.effects.JFXDepthManager;
-import com.mprtcz.timeloggerdesktop.customfxelements.ConfirmationPopup;
-import com.mprtcz.timeloggerdesktop.customfxelements.DateTimeInitializer;
-import com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor;
-import com.mprtcz.timeloggerdesktop.customfxelements.StyleSetter;
+import com.mprtcz.timeloggerdesktop.customfxelements.*;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
 import com.mprtcz.timeloggerdesktop.dao.DatabaseCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
@@ -29,7 +26,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 
@@ -60,7 +56,7 @@ public class Controller {
     @FXML
     private Label summaryLabel;
     @FXML
-    private JFXColorPicker colorPicker;
+    private JFXButton changeColorButton;
     @FXML
     private Label startRecordLabel;
     @FXML
@@ -81,18 +77,16 @@ public class Controller {
     VBox endTimeVBox;
 
     private ConfirmationPopup confirmationPopup;
-    private JFXDialog addActivityDialog;
-
+    private JFXDialog bottomDialog;
     private Activity lastSelectedActivity;
-
     private StyleSetter styleSetter;
-
     private Service service;
     private String newActivityName;
     private String newActivityDescription;
+
     private static final int SNACKBAR_DURATION = 5000; //[ms]
     private static final String BACKGROUND_COLOR = "#F4F4F4";
-    private static final String PRIMARY_COLOR = "rgb(33, 150, 243)";
+    private static final String PRIMARY_COLOR = "#2196f3";
     private static final String SECONDARY_COLOR = "#FF5252";
     private static final int LIST_VIEW_ROW_HEIGHT = 26;
     private static final int LIST_VIEW_ROW_PADDING = 20;
@@ -126,14 +120,13 @@ public class Controller {
     }
 
     @FXML
-    public void onColorPickerClicked() {
-        System.out.println("Color pickr clicked");
-        this.lastSelectedActivity = this.activityNamesList.getSelectionModel().getSelectedItem();
+    void onChangeColorButtonClicked() {
+        this.loadColorDialog();
     }
 
     @FXML
     void onAddActivityButtonCLicked() {
-        this.loadDialog();
+        this.loadAddDialog();
     }
 
     @FXML
@@ -167,10 +160,11 @@ public class Controller {
         this.styleSetter.getListViewControlsDependants().add(this.deleteActivityButton);
         this.styleSetter.getListViewControlsDependants().add(this.dataInsertionVBox);
         this.styleSetter.getListViewControlsDependants().add(this.summaryLabel);
-        this.styleSetter.getListViewControlsDependants().add(this.colorPicker);
+        this.styleSetter.getListViewControlsDependants().add(this.changeColorButton);
         this.styleSetter.setVisibility(false);
         this.styleSetter.getButtonsList().add(this.addActivityButton);
         this.styleSetter.getButtonsList().add(this.addRecordButton);
+        this.styleSetter.getButtonsList().add(this.changeColorButton);
         this.styleSetter.setButtonsColor(PRIMARY_COLOR);
     }
 
@@ -192,6 +186,7 @@ public class Controller {
         this.endTimePicker.setPromptText(LabelsModel.END_HOUR_LABEL);
         this.startRecordLabel.setText(LabelsModel.START_RECORD_LABEL);
         this.endRecordLabel.setText(LabelsModel.END_RECORD_LABEL);
+        this.changeColorButton.setText(LabelsModel.CHANGE_COLOR_BUTTON);
     }
 
     private void setAdditionalStyles() {
@@ -201,24 +196,12 @@ public class Controller {
         JFXDepthManager.setDepth(this.canvas, 1);
         this.deleteActivityButton.setStyle(getBackgroundStyle(SECONDARY_COLOR));
         this.addActivityButton.setShape(new Circle(8));
-        colorPicker.setOnAction(t -> {
-            Color c = colorPicker.getValue();
-            int red = (int) (c.getRed() * 255);
-            int green = (int) (c.getGreen() * 255);
-            int blue = (int) (c.getBlue() * 255);
-            String newColor = String.format("#%02x%02x%02x", red, green, blue);
-            Controller.this.onColorChanged(newColor);
-        });
     }
 
-    private void onColorChanged(String newColor) {
-        Activity activity = this.lastSelectedActivity;
+    private void updateChangedActivityAndUI(Activity activity) {
         if (activity == null) {
             return;
         }
-
-        activity.setColor(newColor);
-
         new Thread(() -> {
             try {
                 Controller.this.service.updateActivity(activity);
@@ -228,6 +211,7 @@ public class Controller {
         }).start();
         this.lastSelectedActivity = null;
         populateListView();
+        getTableData();
     }
 
     private void populateListView() {
@@ -287,11 +271,11 @@ public class Controller {
         }
         newActivityNameTextField.setText("");
         newActivityDescriptionTextField.setText("");
-        this.addActivityDialog.close();
+        this.bottomDialog.close();
     }
 
     private void initEmptyDescriptionConfirmationPopup() {
-        this.confirmationPopup = new ConfirmationPopup(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_LABEL, this.addActivityDialog);
+        this.confirmationPopup = new ConfirmationPopup(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_LABEL, this.bottomDialog);
         this.confirmationPopup.getConfirmButton().setOnAction(e -> {
             this.addNewActivity(this.newActivityName, this.newActivityDescription);
             this.confirmationPopup.close();
@@ -312,7 +296,7 @@ public class Controller {
             if (newValue != null) {
                 Controller.this.onListViewItemClicked(newValue);
             } else {
-                this.styleSetter.setVisibility(false);
+//                this.styleSetter.setVisibility(false);
             }
         });
     }
@@ -387,19 +371,37 @@ public class Controller {
         return "-fx-background-color: " + color + ";";
     }
 
-    private void loadDialog() {
+    private void loadAddDialog() {
         closeSnackBarIfExists();
+        closeDialogIfExists();
         DialogElementsConstructor dialogElementsConstructor = new DialogElementsConstructor();
-        dialogElementsConstructor.getConfirmAddButton().setOnMouseClicked(event ->
+        dialogElementsConstructor.getConfirmButton().setOnMouseClicked(event ->
                 Controller.this.processSaveActivity(dialogElementsConstructor.getNewActivityNameTextField(),
                         dialogElementsConstructor.getNewActivityDescriptionTextField(), true, event));
-        dialogElementsConstructor.getCancelAddButton().setOnMouseClicked(event ->
+        dialogElementsConstructor.getCancelButton().setOnMouseClicked(event ->
                 Controller.this.processSaveActivity(dialogElementsConstructor.getNewActivityNameTextField(),
                         dialogElementsConstructor.getNewActivityDescriptionTextField(), false, event));
-        VBox overlayVBox = dialogElementsConstructor.generateContent();
-        this.addActivityDialog = new JFXDialog(topStackPane, overlayVBox, JFXDialog.DialogTransition.BOTTOM);
+        VBox overlayVBox = (VBox) dialogElementsConstructor.generateContent();
+        this.bottomDialog = new JFXDialog(topStackPane, overlayVBox, JFXDialog.DialogTransition.BOTTOM);
 
-        this.addActivityDialog.show();
+        this.bottomDialog.show();
+    }
+
+    private void loadColorDialog() {
+        closeDialogIfExists();
+        closeSnackBarIfExists();
+        Activity selectedActivity = this.activityNamesList.getSelectionModel().getSelectedItem();
+        if(selectedActivity == null) {return;}
+        ColorDialog colorDialog = new ColorDialog(selectedActivity);
+        colorDialog.getCancelButton().setOnMouseClicked(event -> Controller.this.bottomDialog.close());
+        colorDialog.getConfirmButton().setOnMouseClicked(
+                event -> {
+                    Controller.this.updateChangedActivityAndUI(colorDialog.getUpdatedColorActivity());
+                    Controller.this.bottomDialog.close();
+                });
+        this.bottomDialog = new JFXDialog(topStackPane, colorDialog.createLayout(), JFXDialog.DialogTransition.BOTTOM);
+
+        this.bottomDialog.show();
     }
 
     private void addTaskExceptionListener(Task<?> task) {
@@ -417,8 +419,8 @@ public class Controller {
     }
 
     private void closeDialogIfExists() {
-        if (this.addActivityDialog != null) {
-            this.addActivityDialog.close();
+        if (this.bottomDialog != null) {
+            this.bottomDialog.close();
         }
     }
 

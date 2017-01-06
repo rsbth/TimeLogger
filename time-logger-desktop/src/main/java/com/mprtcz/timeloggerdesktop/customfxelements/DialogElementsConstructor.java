@@ -4,11 +4,8 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -20,32 +17,33 @@ import lombok.Getter;
 @Getter
 public class DialogElementsConstructor {
     private static final String SECONDARY_COLOR = "#FF5252";
+    private static final String PRIMARY_COLOR = "#2196f3";
 
-    private JFXButton confirmAddButton;
-    private JFXButton cancelAddButton;
+    private JFXButton confirmButton;
+    private JFXButton cancelButton;
     private JFXTextField newActivityNameTextField;
     private JFXTextField newActivityDescriptionTextField;
     private Label titleLabel;
 
     public DialogElementsConstructor() {
-        this.confirmAddButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CONFIRM_BUTTON);
-        this.cancelAddButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CANCEL_BUTTON);
+        this.confirmButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CONFIRM_BUTTON);
+        this.cancelButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CANCEL_BUTTON);
         this.titleLabel = new Label(LabelsModel.ENTER_ACTIVITY_LABEL);
         this.newActivityNameTextField = new JFXTextField();
         this.newActivityDescriptionTextField = new JFXTextField();
     }
 
-    public VBox generateContent() {
+    public Region generateContent() {
         setPopupContentsStyles();
         return createLayout();
     }
 
-    private VBox createLayout() {
-        VBox buttonsVBox = new VBox(confirmAddButton, cancelAddButton);
+    public Region createLayout() {
+        VBox buttonsVBox = new VBox(confirmButton, cancelButton);
         VBox textFieldVBox = new VBox(newActivityNameTextField, newActivityDescriptionTextField);
         textFieldVBox.setMinWidth(200);
-        VBox.setMargin(confirmAddButton, new Insets(5));
-        VBox.setMargin(cancelAddButton, new Insets(5));
+        VBox.setMargin(confirmButton, new Insets(5));
+        VBox.setMargin(cancelButton, new Insets(5));
         VBox.setMargin(newActivityNameTextField, new Insets(5));
         VBox.setMargin(newActivityDescriptionTextField, new Insets(5));
         HBox hBox = new HBox(textFieldVBox, buttonsVBox);
@@ -55,10 +53,10 @@ public class DialogElementsConstructor {
         return overlayVBox;
     }
 
-    private void setPopupContentsStyles() {
+    void setPopupContentsStyles() {
         this.newActivityNameTextField.setPromptText(LabelsModel.ADD_ACTIVITY_TEXT_FIELD);
         this.newActivityDescriptionTextField.setPromptText(LabelsModel.ADD_ACTIVITY_DESCRIPTION_TEXT_FIELD);
-        setStyleOfConfirmCancelButtons(confirmAddButton, cancelAddButton);
+        setStyleOfConfirmCancelButtons(confirmButton, cancelButton);
         this.newActivityNameTextField.setPadding(new Insets(10));
         this.newActivityDescriptionTextField.setPadding(new Insets(10));
     }
@@ -69,6 +67,7 @@ public class DialogElementsConstructor {
         confirmButton.setRipplerFill(Paint.valueOf("darkgreen"));
         cancelButton.setRipplerFill(Paint.valueOf("red"));
         cancelButton.setStyle(getBackgroundStyle(SECONDARY_COLOR));
+        confirmButton.setStyle(getBackgroundStyle(PRIMARY_COLOR));
     }
 
     public static String getBackgroundStyle(String color) {
@@ -92,14 +91,5 @@ public class DialogElementsConstructor {
         container.getChildren().add(marginLabel);
         container.getChildren().add(label);
         return container;
-    }
-
-    private void addColorLabelListener(Label label) {
-        label.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                ColorPicker colorPicker = new ColorPicker();
-            }
-        });
     }
 }
