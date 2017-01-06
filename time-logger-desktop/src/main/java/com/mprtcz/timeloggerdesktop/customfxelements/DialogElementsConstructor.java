@@ -4,8 +4,11 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -89,5 +92,14 @@ public class DialogElementsConstructor {
         container.getChildren().add(marginLabel);
         container.getChildren().add(label);
         return container;
+    }
+
+    private void addColorLabelListener(Label label) {
+        label.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                ColorPicker colorPicker = new ColorPicker();
+            }
+        });
     }
 }

@@ -19,11 +19,15 @@
     -fx-background-color: white;
 }
 
-.jfx-button {
+.picker-color {
+    -fx-background-color: white;
+}
+
+.button {
     -fx-font-family: "Roboto";
     -fx-font-size: 16px;
     -fx-button-type: RAISED;
-    -fx-background-color: rgb(33, 150, 243);
+    /*-fx-background-color: rgb(33, 150, 243);*/
 }
 
 .root {

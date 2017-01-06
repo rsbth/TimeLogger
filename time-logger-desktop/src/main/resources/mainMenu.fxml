@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXColorPicker?>
 <?import com.jfoenix.controls.JFXDatePicker?>
 <?import com.jfoenix.controls.JFXListView?>
 <?import com.jfoenix.controls.JFXSnackbar?>
@@ -110,6 +111,7 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </JFXButton>
+                  <JFXColorPicker fx:id="colorPicker" onMouseClicked="#onColorPickerClicked" />
                </children>
             </HBox>
          </children>

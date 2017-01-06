@@ -3,7 +3,9 @@ package com.mprtcz.timeloggerdesktop.controller;
 import com.jfoenix.controls.*;
 import com.jfoenix.effects.JFXDepthManager;
 import com.mprtcz.timeloggerdesktop.customfxelements.ConfirmationPopup;
+import com.mprtcz.timeloggerdesktop.customfxelements.DateTimeInitializer;
 import com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor;
+import com.mprtcz.timeloggerdesktop.customfxelements.StyleSetter;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
 import com.mprtcz.timeloggerdesktop.dao.DatabaseCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
@@ -27,13 +29,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -57,10 +57,10 @@ public class Controller {
     private JFXButton addActivityButton;
     @FXML
     private JFXListView<Activity> activityNamesList;
-//    @FXML
-//    private Label programNameLabel;
     @FXML
     private Label summaryLabel;
+    @FXML
+    private JFXColorPicker colorPicker;
     @FXML
     private Label startRecordLabel;
     @FXML
@@ -80,9 +80,12 @@ public class Controller {
     @FXML
     VBox endTimeVBox;
 
-
     private ConfirmationPopup confirmationPopup;
     private JFXDialog addActivityDialog;
+
+    private Activity lastSelectedActivity;
+
+    private StyleSetter styleSetter;
 
     private Service service;
     private String newActivityName;
@@ -123,6 +126,12 @@ public class Controller {
     }
 
     @FXML
+    public void onColorPickerClicked() {
+        System.out.println("Color pickr clicked");
+        this.lastSelectedActivity = this.activityNamesList.getSelectionModel().getSelectedItem();
+    }
+
+    @FXML
     void onAddActivityButtonCLicked() {
         this.loadDialog();
     }
@@ -147,17 +156,22 @@ public class Controller {
         this.setUpListViewListener();
         this.initializeDateTimeControls();
         this.setListViewFactory();
-        this.drawOnCanvas();
-        this.deleteActivityButton.setStyle(getBackgroundStyle(SECONDARY_COLOR));
-        this.deleteActivityButton.setVisible(false);
-        this.addActivityButton.setShape(new Circle(8));
-        this.dataInsertionVBox.setVisible(false);
+        this.collectItemsDependantOnListView();
         getTableData();
-        setDepths();
-        System.out.println("this.canvas.getParent() = " + this.canvas.getParent().getParent());
+        setAdditionalStyles();
         this.canvas.widthProperty().bind(this.dataInsertionVBox.widthProperty());
-        BorderPane borderPane = (BorderPane) this.canvas.getParent().getParent();
-        System.out.println("borderPane.getWidth() = " + borderPane.getWidth());
+    }
+
+    private void collectItemsDependantOnListView() {
+        this.styleSetter = new StyleSetter();
+        this.styleSetter.getListViewControlsDependants().add(this.deleteActivityButton);
+        this.styleSetter.getListViewControlsDependants().add(this.dataInsertionVBox);
+        this.styleSetter.getListViewControlsDependants().add(this.summaryLabel);
+        this.styleSetter.getListViewControlsDependants().add(this.colorPicker);
+        this.styleSetter.setVisibility(false);
+        this.styleSetter.getButtonsList().add(this.addActivityButton);
+        this.styleSetter.getButtonsList().add(this.addRecordButton);
+        this.styleSetter.setButtonsColor(PRIMARY_COLOR);
     }
 
     private void initializeService() {
@@ -176,18 +190,44 @@ public class Controller {
         this.endDatePicker.setPromptText(LabelsModel.END_DATE_LABEL);
         this.startTimePicker.setPromptText(LabelsModel.START_HOUR_LABEL);
         this.endTimePicker.setPromptText(LabelsModel.END_HOUR_LABEL);
-//        this.programNameLabel.setText(LabelsModel.PROGRAM_NAME_LABEL);
         this.startRecordLabel.setText(LabelsModel.START_RECORD_LABEL);
         this.endRecordLabel.setText(LabelsModel.END_RECORD_LABEL);
     }
 
-    private void setDepths() {
-//        this.programNameLabel.setBackground(DialogElementsConstructor.getBackgroundOfColor("white"));
-//        JFXDepthManager.setDepth(this.programNameLabel, 1);
+    private void setAdditionalStyles() {
         JFXDepthManager.setDepth(this.startTimeVBox, 1);
         JFXDepthManager.setDepth(this.endTimeVBox, 1);
         JFXDepthManager.setDepth(this.summaryLabel, 1);
         JFXDepthManager.setDepth(this.canvas, 1);
+        this.deleteActivityButton.setStyle(getBackgroundStyle(SECONDARY_COLOR));
+        this.addActivityButton.setShape(new Circle(8));
+        colorPicker.setOnAction(t -> {
+            Color c = colorPicker.getValue();
+            int red = (int) (c.getRed() * 255);
+            int green = (int) (c.getGreen() * 255);
+            int blue = (int) (c.getBlue() * 255);
+            String newColor = String.format("#%02x%02x%02x", red, green, blue);
+            Controller.this.onColorChanged(newColor);
+        });
+    }
+
+    private void onColorChanged(String newColor) {
+        Activity activity = this.lastSelectedActivity;
+        if (activity == null) {
+            return;
+        }
+
+        activity.setColor(newColor);
+
+        new Thread(() -> {
+            try {
+                Controller.this.service.updateActivity(activity);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+        this.lastSelectedActivity = null;
+        populateListView();
     }
 
     private void populateListView() {
@@ -270,17 +310,19 @@ public class Controller {
     private void setUpListViewListener() {
         this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                Controller.this.showSnackbar(newValue.getDescription());
-                Controller.this.deleteActivityButton.setVisible(true);
-                this.dataInsertionVBox.setVisible(true);
-                this.summaryLabel.setVisible(true);
-                Controller.this.updateSummary();
+                Controller.this.onListViewItemClicked(newValue);
             } else {
-                Controller.this.deleteActivityButton.setVisible(false);
-                this.dataInsertionVBox.setVisible(false);
-                this.summaryLabel.setVisible(false);
+                this.styleSetter.setVisibility(false);
             }
         });
+    }
+
+    private void onListViewItemClicked(Activity item) {
+        this.showSnackbar(item.getDescription());
+        System.out.println("ListViewItemClicked");
+        this.lastSelectedActivity = this.activityNamesList.getSelectionModel().getSelectedItem();
+        this.styleSetter.setVisibility(true);
+        this.updateSummary();
     }
 
     private void showSnackbar(String value) {
@@ -297,18 +339,15 @@ public class Controller {
     }
 
     private void initializeDateTimeControls() {
-        this.startDatePicker.setValue(LocalDate.now());
-        this.startDatePicker.setOnAction(getSummaryEventHandler());
-        this.endDatePicker.setValue(LocalDate.now());
-        this.endDatePicker.setOnAction(getSummaryEventHandler());
-        this.startTimePicker.setTime(LocalTime.of(0, 0));
-        this.startTimePicker.setOnMouseClicked(getSummaryEventHandler());
-        this.startTimePicker.setOnHiding(getSummaryEventHandler());
-        this.endTimePicker.setTime(LocalTime.of(0, 0));
-        this.endTimePicker.setOnMouseClicked(getSummaryEventHandler());
-        this.endTimePicker.setOnHiding(getSummaryEventHandler());
+        DateTimeInitializer dateTimeInitializer = new DateTimeInitializer();
+        dateTimeInitializer.getItemsList().add(startDatePicker);
+        dateTimeInitializer.getItemsList().add(endDatePicker);
+        dateTimeInitializer.getItemsList().add(startTimePicker);
+        dateTimeInitializer.getItemsList().add(endTimePicker);
+
+        dateTimeInitializer.initializeElements(getSummaryEventHandler());
+
         this.summaryLabel.setVisible(false);
-        Locale.setDefault(Locale.ENGLISH);
     }
 
     private void setListViewFactory() {
@@ -342,11 +381,6 @@ public class Controller {
 
     private void displayValidationResult(ValidationResult validationResult) {
         showSnackbar(validationResult.getAllMessages());
-    }
-
-    private void drawOnCanvas() {
-//        this.dataRepresentationCanvas.getGraphicsContext2D().fillRect(
-//                0, 0, this.dataRepresentationCanvas.getWidth(), this.dataRepresentationCanvas.getHeight());
     }
 
     private String getBackgroundStyle(String color) {
@@ -389,16 +423,13 @@ public class Controller {
     }
 
     private void getTableData() {
-        DataRepresentation dataRepresentation;
         Task<DataRepresentation> task = new Task<DataRepresentation>() {
             @Override
             protected DataRepresentation call() throws Exception {
                 return Controller.this.service.getHours();
             }
         };
-        task.setOnSucceeded(event -> {
-            Controller.this.drawDataOnCanvas(task.getValue());
-        });
+        task.setOnSucceeded(event -> Controller.this.drawDataOnCanvas(task.getValue()));
         this.addTaskExceptionListener(task);
         new Thread(task).start();
     }
@@ -408,7 +439,6 @@ public class Controller {
     }
 
     private void updateSummary() {
-        System.out.println("UPDATED!");
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.activityNamesList.getSelectionModel().selectedItemProperty().getValue().getName()).append("\n");
         stringBuilder.append(this.startDatePicker.getValue()).append(" ").append(this.startTimePicker.getTime()).append("\n");

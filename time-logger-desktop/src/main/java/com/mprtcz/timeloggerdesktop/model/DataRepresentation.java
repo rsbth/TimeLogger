@@ -67,7 +67,6 @@ public class DataRepresentation {
     }
 
     private void fillHoursWithActivities() {
-        System.out.println("this.allRecords.size() = " + this.allRecords.size());
         for (Record record : this.allRecords) {
             LocalDateTime start = LocalDateTime.ofInstant(record.getStartDateTime().toInstant(), ZoneId.systemDefault());
             LocalDateTime end = LocalDateTime.ofInstant(record.getEndDateTime().toInstant(), ZoneId.systemDefault());
@@ -126,8 +125,6 @@ public class DataRepresentation {
             }
             long dayDelta = earliest.until(this.hours.get(i).getDatetime(), ChronoUnit.DAYS);
             long hour = this.hours.get(i).getDatetime().getHour();
-            System.out.println("hour = " + hour);
-            System.out.println("dayDelta = " + dayDelta);
             graphicsContext.setFill(Paint.valueOf(color));
             graphicsContext.fillRect( unit*(hour + 1), 10*(dayDelta +1), unit, 10);
             String day = this.hours.get(i).getDatetime().getDayOfMonth() +"." + this.hours.get(i).getDatetime().getMonthValue();

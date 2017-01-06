@@ -94,6 +94,10 @@ public class Service {
         return validationResult;
     }
 
+    public void updateActivity(Activity activity) throws Exception {
+        this.customDao.update(activity);
+    }
+
     private void chooseActivityColor(Activity activity) throws Exception {
         List<Activity> activities = getActivities();
         if (Activity.colorCodes.size() >= activities.size()) {
