@@ -26,7 +26,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 
 import java.util.List;
@@ -48,15 +47,9 @@ public class Controller {
     @FXML
     private JFXButton addRecordButton;
     @FXML
-    private JFXButton deleteActivityButton;
-    @FXML
-    private JFXButton addActivityButton;
-    @FXML
     private JFXListView<Activity> activityNamesList;
     @FXML
     private Label summaryLabel;
-    @FXML
-    private JFXButton changeColorButton;
     @FXML
     private Label startRecordLabel;
     @FXML
@@ -68,7 +61,7 @@ public class Controller {
     @FXML
     private VBox dataInsertionVBox;
     @FXML
-    private StackPane topStackPane;
+    private StackPane bottomStackPane;
     @FXML
     private Canvas canvas;
     @FXML
@@ -136,8 +129,7 @@ public class Controller {
 
     @FXML
     void onDeleteActivityButtonClicked() {
-        this.initActivityRemoveConfirmationPopup();
-        this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 0, 0);
+
     }
 
     @FXML
@@ -157,14 +149,10 @@ public class Controller {
 
     private void collectItemsDependantOnListView() {
         this.styleSetter = new StyleSetter();
-        this.styleSetter.getListViewControlsDependants().add(this.deleteActivityButton);
         this.styleSetter.getListViewControlsDependants().add(this.dataInsertionVBox);
         this.styleSetter.getListViewControlsDependants().add(this.summaryLabel);
-        this.styleSetter.getListViewControlsDependants().add(this.changeColorButton);
         this.styleSetter.setVisibility(false);
-        this.styleSetter.getButtonsList().add(this.addActivityButton);
         this.styleSetter.getButtonsList().add(this.addRecordButton);
-        this.styleSetter.getButtonsList().add(this.changeColorButton);
         this.styleSetter.setButtonsColor(PRIMARY_COLOR);
     }
 
@@ -186,7 +174,6 @@ public class Controller {
         this.endTimePicker.setPromptText(LabelsModel.END_HOUR_LABEL);
         this.startRecordLabel.setText(LabelsModel.START_RECORD_LABEL);
         this.endRecordLabel.setText(LabelsModel.END_RECORD_LABEL);
-        this.changeColorButton.setText(LabelsModel.CHANGE_COLOR_BUTTON);
     }
 
     private void setAdditionalStyles() {
@@ -194,8 +181,6 @@ public class Controller {
         JFXDepthManager.setDepth(this.endTimeVBox, 1);
         JFXDepthManager.setDepth(this.summaryLabel, 1);
         JFXDepthManager.setDepth(this.canvas, 1);
-        this.deleteActivityButton.setStyle(getBackgroundStyle(SECONDARY_COLOR));
-        this.addActivityButton.setShape(new Circle(8));
     }
 
     private void updateChangedActivityAndUI(Activity activity) {
@@ -283,7 +268,7 @@ public class Controller {
     }
 
     private void initActivityRemoveConfirmationPopup() {
-        this.confirmationPopup = new ConfirmationPopup(LabelsModel.REMOVE_ACTIVITYPOPUP_LABEL, this.deleteActivityButton);
+        this.confirmationPopup = new ConfirmationPopup(LabelsModel.REMOVE_ACTIVITYPOPUP_LABEL, this.bottomStackPane);
         this.confirmationPopup.getConfirmButton().setOnAction(e -> {
             //TODO remove activity
             System.out.println("Remove Activity clicked");
@@ -307,6 +292,27 @@ public class Controller {
         this.lastSelectedActivity = this.activityNamesList.getSelectionModel().getSelectedItem();
         this.styleSetter.setVisibility(true);
         this.updateSummary();
+        this.showListViewOptions();
+
+    }
+
+    private void showListViewOptions() {
+        ListOptionsPopup listOptionsPopup = new ListOptionsPopup();
+        listOptionsPopup.setSource(this.bottomStackPane);
+        listOptionsPopup.getAddButton().setOnAction(event -> {
+            listOptionsPopup.close();
+            Controller.this.loadAddDialog();
+        });
+        listOptionsPopup.getChangeColorButton().setOnAction(event -> {
+            listOptionsPopup.close();
+            Controller.this.loadColorDialog();
+        });
+        listOptionsPopup.getRemoveButton().setOnAction(event -> {
+            Controller.this.initActivityRemoveConfirmationPopup();
+            Controller.this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 10, -10);
+        });
+        listOptionsPopup.setOnMouseExited(event -> listOptionsPopup.close());
+        listOptionsPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 10, -50);
     }
 
     private void showSnackbar(String value) {
@@ -382,7 +388,7 @@ public class Controller {
                 Controller.this.processSaveActivity(dialogElementsConstructor.getNewActivityNameTextField(),
                         dialogElementsConstructor.getNewActivityDescriptionTextField(), false, event));
         VBox overlayVBox = (VBox) dialogElementsConstructor.generateContent();
-        this.bottomDialog = new JFXDialog(topStackPane, overlayVBox, JFXDialog.DialogTransition.BOTTOM);
+        this.bottomDialog = new JFXDialog(bottomStackPane, overlayVBox, JFXDialog.DialogTransition.BOTTOM);
 
         this.bottomDialog.show();
     }
@@ -399,7 +405,7 @@ public class Controller {
                     Controller.this.updateChangedActivityAndUI(colorDialog.getUpdatedColorActivity());
                     Controller.this.bottomDialog.close();
                 });
-        this.bottomDialog = new JFXDialog(topStackPane, colorDialog.createLayout(), JFXDialog.DialogTransition.BOTTOM);
+        this.bottomDialog = new JFXDialog(bottomStackPane, colorDialog.createLayout(), JFXDialog.DialogTransition.BOTTOM);
 
         this.bottomDialog.show();
     }

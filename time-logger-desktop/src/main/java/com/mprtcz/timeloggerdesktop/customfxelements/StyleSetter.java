@@ -29,4 +29,5 @@ public class StyleSetter {
             button.setStyle(getBackgroundStyle(color));
         }
     }
+
 }

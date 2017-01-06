@@ -66,4 +66,6 @@ public class ConfirmationPopup extends JFXPopup {
         this.label = new Label(labelString);
         this.cancelButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_NO);
     }
+
+
 }
