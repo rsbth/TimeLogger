@@ -19,12 +19,12 @@ import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
@@ -57,8 +57,8 @@ public class Controller {
     private JFXButton addActivityButton;
     @FXML
     private JFXListView<Activity> activityNamesList;
-    @FXML
-    private Label programNameLabel;
+//    @FXML
+//    private Label programNameLabel;
     @FXML
     private Label summaryLabel;
     @FXML
@@ -70,13 +70,11 @@ public class Controller {
     @FXML
     private BorderPane borderPane;
     @FXML
-    private JFXTreeTableView treeTableView;
-    @FXML
-    private HBox dateInsertionHBox;
+    private VBox dataInsertionVBox;
     @FXML
     private StackPane topStackPane;
     @FXML
-    JFXNodesList nodeList;
+    private Canvas canvas;
     @FXML
     VBox startTimeVBox;
     @FXML
@@ -153,9 +151,13 @@ public class Controller {
         this.deleteActivityButton.setStyle(getBackgroundStyle(SECONDARY_COLOR));
         this.deleteActivityButton.setVisible(false);
         this.addActivityButton.setShape(new Circle(8));
-        this.dateInsertionHBox.setVisible(false);
+        this.dataInsertionVBox.setVisible(false);
         getTableData();
         setDepths();
+        System.out.println("this.canvas.getParent() = " + this.canvas.getParent().getParent());
+        this.canvas.widthProperty().bind(this.dataInsertionVBox.widthProperty());
+        BorderPane borderPane = (BorderPane) this.canvas.getParent().getParent();
+        System.out.println("borderPane.getWidth() = " + borderPane.getWidth());
     }
 
     private void initializeService() {
@@ -174,17 +176,18 @@ public class Controller {
         this.endDatePicker.setPromptText(LabelsModel.END_DATE_LABEL);
         this.startTimePicker.setPromptText(LabelsModel.START_HOUR_LABEL);
         this.endTimePicker.setPromptText(LabelsModel.END_HOUR_LABEL);
-        this.programNameLabel.setText(LabelsModel.PROGRAM_NAME_LABEL);
+//        this.programNameLabel.setText(LabelsModel.PROGRAM_NAME_LABEL);
         this.startRecordLabel.setText(LabelsModel.START_RECORD_LABEL);
         this.endRecordLabel.setText(LabelsModel.END_RECORD_LABEL);
     }
 
     private void setDepths() {
-        this.programNameLabel.setBackground(DialogElementsConstructor.getBackgroundOfColor("white"));
-        JFXDepthManager.setDepth(this.programNameLabel, 1);
+//        this.programNameLabel.setBackground(DialogElementsConstructor.getBackgroundOfColor("white"));
+//        JFXDepthManager.setDepth(this.programNameLabel, 1);
         JFXDepthManager.setDepth(this.startTimeVBox, 1);
         JFXDepthManager.setDepth(this.endTimeVBox, 1);
         JFXDepthManager.setDepth(this.summaryLabel, 1);
+        JFXDepthManager.setDepth(this.canvas, 1);
     }
 
     private void populateListView() {
@@ -269,12 +272,12 @@ public class Controller {
             if (newValue != null) {
                 Controller.this.showSnackbar(newValue.getDescription());
                 Controller.this.deleteActivityButton.setVisible(true);
-                this.dateInsertionHBox.setVisible(true);
+                this.dataInsertionVBox.setVisible(true);
                 this.summaryLabel.setVisible(true);
                 Controller.this.updateSummary();
             } else {
                 Controller.this.deleteActivityButton.setVisible(false);
-                this.dateInsertionHBox.setVisible(false);
+                this.dataInsertionVBox.setVisible(false);
                 this.summaryLabel.setVisible(false);
             }
         });
@@ -386,6 +389,7 @@ public class Controller {
     }
 
     private void getTableData() {
+        DataRepresentation dataRepresentation;
         Task<DataRepresentation> task = new Task<DataRepresentation>() {
             @Override
             protected DataRepresentation call() throws Exception {
@@ -393,16 +397,14 @@ public class Controller {
             }
         };
         task.setOnSucceeded(event -> {
-            Controller.this.populateTable(task.getValue());
+            Controller.this.drawDataOnCanvas(task.getValue());
         });
         this.addTaskExceptionListener(task);
         new Thread(task).start();
     }
 
-    private void populateTable(DataRepresentation data) {
-        System.out.println("Controller.populateTable");
-        LocalDate earliestDay = data.getEarliest().toLocalDate();
-        //TODO fill table view
+    private void drawDataOnCanvas(DataRepresentation dataRepresentation) {
+        dataRepresentation.drawOnCanvas(this.canvas);
     }
 
     private void updateSummary() {

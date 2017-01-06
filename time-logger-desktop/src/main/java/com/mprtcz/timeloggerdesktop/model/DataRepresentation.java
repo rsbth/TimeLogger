@@ -1,5 +1,8 @@
 package com.mprtcz.timeloggerdesktop.model;
 
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -109,6 +112,36 @@ public class DataRepresentation {
         return -1;
     }
 
+    public void drawOnCanvas(Canvas canvas) {
+        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        double width = canvas.getWidth();
+        int unit = (int) width/25;
+        drawHeader(graphicsContext, unit);
+        for (int i = 0; i < this.hours.size(); i++) {
+            String color;
+            if(this.hours.get(i).getActivitiesDuringThisHour().size() > 0) {
+                color = this.hours.get(i).getActivitiesDuringThisHour().get(0).getColor();
+            } else {
+                color = "#ffffff";
+            }
+            long dayDelta = earliest.until(this.hours.get(i).getDatetime(), ChronoUnit.DAYS);
+            long hour = this.hours.get(i).getDatetime().getHour();
+            System.out.println("hour = " + hour);
+            System.out.println("dayDelta = " + dayDelta);
+            graphicsContext.setFill(Paint.valueOf(color));
+            graphicsContext.fillRect( unit*(hour + 1), 10*(dayDelta +1), unit, 10);
+            String day = this.hours.get(i).getDatetime().getDayOfMonth() +"." + this.hours.get(i).getDatetime().getMonthValue();
+            graphicsContext.setFill(Paint.valueOf("black"));
+            graphicsContext.fillText(day, 0, (dayDelta + 2) * 10);
+        }
+    }
+
+    private void drawHeader(GraphicsContext graphicsContext, int unit) {
+        graphicsContext.setFill(Paint.valueOf("black"));
+        for (int i = 1; i < 25; i++) {
+            graphicsContext.fillText(String.valueOf(i - 1), unit * i, 10, 10);
+        }
+    }
 
     public static void main(String[] args) {
         System.out.println(ZoneId.getAvailableZoneIds());
