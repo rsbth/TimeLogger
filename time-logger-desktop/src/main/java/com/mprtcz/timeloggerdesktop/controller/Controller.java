@@ -69,7 +69,6 @@ public class Controller {
     private Service service;
     private String newActivityName;
     private String newActivityDescription;
-    private ListOptionsPopup listOptionsPopup;
     private AddRecordPopup addRecordPopup;
     private Map<String, JFXButton> bottomButtons;
 
@@ -241,37 +240,7 @@ public class Controller {
 
     private void onListViewItemClicked(Activity item) {
         this.showSnackbar(item.getDescription());
-        System.out.println("ListViewItemClicked");
         this.styleSetter.setVisibility(true);
-//        this.showListViewOptions();
-    }
-
-    private void showListViewOptions() {
-        if (this.listOptionsPopup != null) {
-            this.listOptionsPopup.close();
-        }
-        this.listOptionsPopup = new ListOptionsPopup();
-        this.listOptionsPopup.setSource(this.bottomStackPane);
-        this.listOptionsPopup.getAddButton().setOnAction(event -> {
-            this.listOptionsPopup.close();
-            Controller.this.loadAddDialog();
-        });
-        this.listOptionsPopup.getChangeColorButton().setOnAction(event -> {
-            this.listOptionsPopup.close();
-            Controller.this.loadColorDialog();
-        });
-        this.listOptionsPopup.getRemoveButton().setOnAction(event -> {
-            Controller.this.initActivityRemoveConfirmationPopup();
-            Controller.this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 10, -10);
-        });
-        this.listOptionsPopup.getAddRecordButton().setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Controller.this.invokeAddRecordPanel();
-            }
-        });
-        this.listOptionsPopup.setOnMouseExited(event -> this.listOptionsPopup.close());
-        this.listOptionsPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 10, -50);
     }
 
     private void showAddRecordPopup() {
@@ -303,19 +272,14 @@ public class Controller {
             };
             task.setOnSucceeded(event -> {
                 Controller.this.displayValidationResult(task.getValue());
+                Controller.this.getTableData();
             });
             this.addTaskExceptionListener(task);
             new Thread(task).start();
-            this.getTableData();
         } catch (Exception e) {
             e.printStackTrace();
             showSnackbar(e.getMessage());
         }
-    }
-
-    private void invokeAddRecordPanel() {
-        System.out.println("Ohei~!");
-        showAddRecordPopup();
     }
 
     private void showSnackbar(String value) {
@@ -432,8 +396,7 @@ public class Controller {
     }
 
     private void drawDataOnCanvas(DataRepresentation dataRepresentation) {
+        System.out.println("Controller.drawDataOnCanvas");
         dataRepresentation.drawOnCanvas(this.canvas);
     }
-
-
 }
