@@ -1,7 +1,6 @@
 package com.mprtcz.timeloggerdesktop.customfxelements;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.effects.JFXDepthManager;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -78,13 +77,12 @@ public class StyleSetter {
         if(button instanceof JFXButton) {
             ((JFXButton)button).setGraphic(new ImageView(imagePath));
             ((JFXButton)button).setContentDisplay(ContentDisplay.TOP);
-            ((JFXButton)button).setStyle(" -fx-text-fill: white; -fx-font: 12 Roboto");
+            ((JFXButton)button).setStyle(" -fx-text-fill: white; -fx-font: 12 Roboto; -fx-button-type: FLAT;");
         }
     }
 
     public static JFXButton stylizeButton(JFXButton button, ImageView icon) {
         button.setGraphic(icon);
-        JFXDepthManager.setDepth(button, 1);
         button.setShape(new Circle(40));
         button.setMinSize(40, 40);
         button.setStyle(getBackgroundStyle(StyleSetter.PRIMARY_COLOR));

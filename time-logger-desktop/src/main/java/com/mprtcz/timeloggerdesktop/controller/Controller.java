@@ -92,13 +92,15 @@ public class Controller {
     }
 
     @FXML
-    public void onAddRecordButtonClicked() {}
+    public void onAddRecordButtonClicked() { this.showAddRecordPopup();}
     @FXML
-    public void onRemoveActivityButtonClicked() {}
+    public void onRemoveActivityButtonClicked() { this.initActivityRemoveConfirmationPopup(); }
     @FXML
-    public void onChangeColorButtonClicked() {}
+    public void onChangeColorButtonClicked() { this.loadColorDialog(); }
     @FXML
-    public void onAddActivityButtonClicked() {}
+    public void onAddActivityButtonClicked() {
+        this.loadAddDialog();
+    }
 
 
     private void collectItemsDependantOnListView() {
@@ -221,6 +223,7 @@ public class Controller {
             System.out.println("Remove Activity clicked");
             this.confirmationPopup.close();
         });
+        this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 10, -10);
     }
 
     private void setUpListViewListener() {
@@ -240,7 +243,7 @@ public class Controller {
         this.showSnackbar(item.getDescription());
         System.out.println("ListViewItemClicked");
         this.styleSetter.setVisibility(true);
-        this.showListViewOptions();
+//        this.showListViewOptions();
     }
 
     private void showListViewOptions() {
@@ -281,7 +284,7 @@ public class Controller {
             }
         });
         this.addRecordPopup.setSource(this.activityNamesList);
-        this.addRecordPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 10, 10);
+        this.addRecordPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 50, 10);
     }
 
     private void closeAddRecordPopupIfExists() {

@@ -22,7 +22,7 @@
 .button {
     -fx-font-family: "Roboto";
     -fx-font-size: 16px;
-    /*-fx-button-type: RAISED;*/
+    -fx-button-type: RAISED;
 }
 
 .root {

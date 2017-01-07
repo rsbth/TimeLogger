@@ -56,9 +56,6 @@ public class AddRecordPopup extends JFXPopup {
         endVBox.setAlignment(Pos.CENTER);
         JFXDepthManager.setDepth(startVBox, 1);
         JFXDepthManager.setDepth(endVBox, 1);
-        JFXDepthManager.setDepth(this.summaryLabel, 1);
-        JFXDepthManager.setDepth(this.okButton, 1);
-        JFXDepthManager.setDepth(this.closeButton, 1);
         HBox buttonsHBox = new HBox(this.okButton, this.closeButton);
         buttonsHBox.setAlignment(Pos.CENTER);
         HBox.setMargin(okButton, defaultInsets);

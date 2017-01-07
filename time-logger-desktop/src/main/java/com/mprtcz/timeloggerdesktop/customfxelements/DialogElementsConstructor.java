@@ -66,8 +66,6 @@ public class DialogElementsConstructor {
         cancelButton.setPadding(new Insets(10));
         confirmButton.setRipplerFill(Paint.valueOf("darkgreen"));
         cancelButton.setRipplerFill(Paint.valueOf("red"));
-        JFXDepthManager.setDepth(confirmButton, 5);
-        JFXDepthManager.setDepth(cancelButton, 5);
         cancelButton.setStyle(getBackgroundStyle(  StyleSetter.SECONDARY_COLOR));
         confirmButton.setStyle(getBackgroundStyle( StyleSetter.PRIMARY_COLOR));
     }
