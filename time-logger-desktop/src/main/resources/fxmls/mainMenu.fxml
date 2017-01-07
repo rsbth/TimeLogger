@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXListView?>
-<?import com.jfoenix.controls.JFXPopup?>
 <?import com.jfoenix.controls.JFXSnackbar?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -16,7 +16,13 @@
          <children>
             <JFXSnackbar fx:id="activityDetailSnackbar" snapToPixel="false" />
             <StackPane fx:id="bottomStackPane" prefHeight="150.0" prefWidth="200.0" />
-            <JFXPopup fx:id="listButtonsPopup" />
+            <HBox fx:id="bottomHBox" alignment="TOP_CENTER" spacing="10.0">
+               <children>
+                  <JFXButton fx:id="addRecordButton" onAction="#onAddRecordButtonClicked" text="add" />
+                  <JFXButton fx:id="removeActivityButton" onAction="#onRemoveActivityButtonClicked" text="remove" />
+                  <JFXButton fx:id="changeColorButton" onAction="#onChangeColorButtonClicked" text="color" />
+               </children>
+            </HBox>
          </children>
       </VBox>
    </bottom>
@@ -32,9 +38,8 @@
       </VBox>
    </center>
    <top>
-      <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER_RIGHT">
          <children>
-            <Label fx:id="topLabel" prefHeight="17.0" prefWidth="348.0" textAlignment="CENTER" />
             <JFXListView fx:id="activityNamesList" depthProperty="1" maxWidth="300.0" minWidth="300.0" prefHeight="168.0" prefWidth="300.0">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -43,6 +48,18 @@
                   <Insets top="10.0" />
                </VBox.margin>
             </JFXListView>
+            <HBox fx:id="addActivityHbox" alignment="TOP_RIGHT">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <children>
+                  <JFXButton fx:id="addActivityButton" onAction="#onAddActivityButtonClicked">
+                     <HBox.margin>
+                        <Insets bottom="10.0" right="7.0" />
+                     </HBox.margin>
+                  </JFXButton>
+               </children>
+            </HBox>
          </children>
       </VBox>
    </top>

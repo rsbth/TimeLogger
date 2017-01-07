@@ -1,5 +1,6 @@
 package com.mprtcz.timeloggerdesktop.customfxelements;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXColorPicker;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import javafx.geometry.Insets;
@@ -31,10 +32,12 @@ public class ColorDialog extends DialogElementsConstructor {
     @Override
     public Region createLayout() {
         Insets insets = new Insets(10);
-        HBox buttonHBox = new HBox(getConfirmButton(), getCancelButton());
+        JFXButton cancelButton = getCancelButton();
+        cancelButton.prefWidthProperty().bind(colorPicker.widthProperty());
+        HBox buttonHBox = new HBox(getConfirmButton(), cancelButton);
         HBox labelHBox = new HBox(getTitleLabel(), colorPicker);
-        buttonHBox.setAlignment(Pos.CENTER_LEFT);
-        labelHBox.setAlignment(Pos.CENTER_LEFT);
+        buttonHBox.setAlignment(Pos.BOTTOM_RIGHT);
+        labelHBox.setAlignment(Pos.CENTER);
         HBox.setMargin(colorPicker, insets);
         HBox.setMargin(getTitleLabel(), insets);
         HBox.setMargin(getConfirmButton(), insets);

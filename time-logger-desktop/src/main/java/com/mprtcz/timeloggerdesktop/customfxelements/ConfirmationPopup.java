@@ -2,6 +2,7 @@ package com.mprtcz.timeloggerdesktop.customfxelements;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
+import com.jfoenix.effects.JFXDepthManager;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -19,9 +20,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ConfirmationPopup extends JFXPopup {
-    private String secondaryColor = "#FF5252";
-    private String backgroundColor = "#F4F4F4";
-
     private JFXButton confirmButton;
     private JFXButton cancelButton;
     private Label label;
@@ -45,7 +43,7 @@ public class ConfirmationPopup extends JFXPopup {
     private VBox createLayout() {
         VBox vBox = new VBox(this.label, createButtonHBox());
         vBox.setStyle(" -fx-alignment: center");
-        vBox.setBackground(DialogElementsConstructor.getBackgroundOfColor(backgroundColor));
+        vBox.setBackground(DialogElementsConstructor.getBackgroundOfColor(StyleSetter.BACKGROUND_COLOR));
         return vBox;
     }
 
@@ -65,6 +63,8 @@ public class ConfirmationPopup extends JFXPopup {
         this.confirmButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_YES);
         this.label = new Label(labelString);
         this.cancelButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_NO);
+        JFXDepthManager.setDepth(this.confirmButton, 1);
+        JFXDepthManager.setDepth(this.cancelButton, 1);
     }
 
 

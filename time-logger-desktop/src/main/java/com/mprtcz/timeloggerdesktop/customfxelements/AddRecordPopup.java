@@ -5,7 +5,6 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.effects.JFXDepthManager;
 import com.mprtcz.timeloggerdesktop.model.Activity;
-import com.mprtcz.timeloggerdesktop.model.Record;
 import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -27,9 +26,6 @@ import static com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstr
  */
 @Getter
 public class AddRecordPopup extends JFXPopup {
-    private static final String BACKGROUND_COLOR = "#F4F4F4";
-    private static final String PRIMARY_COLOR = "#2196f3";
-    private static final String SECONDARY_COLOR = "#FF5252";
 
     private JFXDatePicker startDatePicker;
     private JFXDatePicker endDatePicker;
@@ -41,7 +37,6 @@ public class AddRecordPopup extends JFXPopup {
     private JFXButton closeButton;
     private Label summaryLabel;
     private Activity activity;
-    private Record resultRecord;
 
     public AddRecordPopup(Activity activity) {
         this.activity = activity;
@@ -62,6 +57,8 @@ public class AddRecordPopup extends JFXPopup {
         JFXDepthManager.setDepth(startVBox, 1);
         JFXDepthManager.setDepth(endVBox, 1);
         JFXDepthManager.setDepth(this.summaryLabel, 1);
+        JFXDepthManager.setDepth(this.okButton, 1);
+        JFXDepthManager.setDepth(this.closeButton, 1);
         HBox buttonsHBox = new HBox(this.okButton, this.closeButton);
         buttonsHBox.setAlignment(Pos.CENTER);
         HBox.setMargin(okButton, defaultInsets);
@@ -70,7 +67,7 @@ public class AddRecordPopup extends JFXPopup {
         VBox.setMargin(startVBox, defaultInsets);
         VBox.setMargin(endVBox, defaultInsets);
         VBox.setMargin(summaryLabel, defaultInsets);
-        vBox.setBackground(getBackgroundOfColor(BACKGROUND_COLOR));
+        vBox.setBackground(getBackgroundOfColor(StyleSetter.BACKGROUND_COLOR));
         JFXDepthManager.setDepth(this, 1);
         return vBox;
     }
@@ -100,13 +97,13 @@ public class AddRecordPopup extends JFXPopup {
     }
 
     private void setStyles() {
-        this.okButton.setBackground(getBackgroundOfColor(PRIMARY_COLOR));
-        this.closeButton.setBackground(getBackgroundOfColor(SECONDARY_COLOR));
-        this.startTimePicker.setDefaultColor(Paint.valueOf(PRIMARY_COLOR));
-        this.endTimePicker.setDefaultColor(Paint.valueOf(PRIMARY_COLOR));
-        this.startDatePicker.setDefaultColor(Paint.valueOf(PRIMARY_COLOR));
-        this.endDatePicker.setDefaultColor(Paint.valueOf(PRIMARY_COLOR));
-        this.summaryLabel.setBackground(getBackgroundOfColor(BACKGROUND_COLOR));
+        this.okButton.setBackground(getBackgroundOfColor(StyleSetter.PRIMARY_COLOR));
+        this.closeButton.setBackground(getBackgroundOfColor(StyleSetter.SECONDARY_COLOR));
+        this.startTimePicker.setDefaultColor(Paint.valueOf(StyleSetter.PRIMARY_COLOR));
+        this.endTimePicker.setDefaultColor(Paint.valueOf(StyleSetter.PRIMARY_COLOR));
+        this.startDatePicker.setDefaultColor(Paint.valueOf(StyleSetter.PRIMARY_COLOR));
+        this.endDatePicker.setDefaultColor(Paint.valueOf(StyleSetter.PRIMARY_COLOR));
+        this.summaryLabel.setBackground(getBackgroundOfColor(StyleSetter.BACKGROUND_COLOR));
         this.summaryLabel.setStyle(" -fx-padding: 10");
     }
 
@@ -114,7 +111,7 @@ public class AddRecordPopup extends JFXPopup {
         this.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.ESCAPE) {
+                if (event.getCode() == KeyCode.ESCAPE) {
                     AddRecordPopup.this.close();
                 }
             }

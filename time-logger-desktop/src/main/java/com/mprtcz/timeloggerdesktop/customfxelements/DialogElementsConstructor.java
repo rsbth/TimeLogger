@@ -2,6 +2,7 @@ package com.mprtcz.timeloggerdesktop.customfxelements;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.effects.JFXDepthManager;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import javafx.geometry.Insets;
@@ -16,8 +17,6 @@ import lombok.Getter;
  */
 @Getter
 public class DialogElementsConstructor {
-    private static final String SECONDARY_COLOR = "#FF5252";
-    private static final String PRIMARY_COLOR = "#2196f3";
 
     private JFXButton confirmButton;
     private JFXButton cancelButton;
@@ -26,8 +25,9 @@ public class DialogElementsConstructor {
     private Label titleLabel;
 
     public DialogElementsConstructor() {
-        this.confirmButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CONFIRM_BUTTON);
         this.cancelButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CANCEL_BUTTON);
+        this.confirmButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CONFIRM_BUTTON);
+        this.confirmButton.prefWidthProperty().bind(this.cancelButton.widthProperty());
         this.titleLabel = new Label(LabelsModel.ENTER_ACTIVITY_LABEL);
         this.newActivityNameTextField = new JFXTextField();
         this.newActivityDescriptionTextField = new JFXTextField();
@@ -39,7 +39,7 @@ public class DialogElementsConstructor {
     }
 
     public Region createLayout() {
-        VBox buttonsVBox = new VBox(confirmButton, cancelButton);
+        VBox buttonsVBox = new VBox( cancelButton, confirmButton);
         VBox textFieldVBox = new VBox(newActivityNameTextField, newActivityDescriptionTextField);
         textFieldVBox.setMinWidth(200);
         VBox.setMargin(confirmButton, new Insets(5));
@@ -66,8 +66,10 @@ public class DialogElementsConstructor {
         cancelButton.setPadding(new Insets(10));
         confirmButton.setRipplerFill(Paint.valueOf("darkgreen"));
         cancelButton.setRipplerFill(Paint.valueOf("red"));
-        cancelButton.setStyle(getBackgroundStyle(SECONDARY_COLOR));
-        confirmButton.setStyle(getBackgroundStyle(PRIMARY_COLOR));
+        JFXDepthManager.setDepth(confirmButton, 5);
+        JFXDepthManager.setDepth(cancelButton, 5);
+        cancelButton.setStyle(getBackgroundStyle(  StyleSetter.SECONDARY_COLOR));
+        confirmButton.setStyle(getBackgroundStyle( StyleSetter.PRIMARY_COLOR));
     }
 
     public static String getBackgroundStyle(String color) {

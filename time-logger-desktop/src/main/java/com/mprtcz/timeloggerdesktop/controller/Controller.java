@@ -20,16 +20,19 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -48,7 +51,17 @@ public class Controller {
     @FXML
     private Canvas canvas;
     @FXML
-    private Label topLabel;
+    private HBox bottomHBox;
+    @FXML
+    private JFXButton addRecordButton;
+    @FXML
+    private JFXButton removeActivityButton;
+    @FXML
+    private JFXButton changeColorButton;
+    @FXML
+    private JFXButton addActivityButton;
+    @FXML
+    private HBox addActivityHbox;
 
     private ConfirmationPopup confirmationPopup;
     private JFXDialog bottomDialog;
@@ -58,11 +71,9 @@ public class Controller {
     private String newActivityDescription;
     private ListOptionsPopup listOptionsPopup;
     private AddRecordPopup addRecordPopup;
+    private Map<String, JFXButton> bottomButtons;
 
     private static final int SNACKBAR_DURATION = 5000; //[ms]
-    private static final String BACKGROUND_COLOR = "#F4F4F4";
-    private static final String PRIMARY_COLOR = "#2196f3";
-    private static final String SECONDARY_COLOR = "#FF5252";
     private static final int LIST_VIEW_ROW_HEIGHT = 26;
     private static final int LIST_VIEW_ROW_PADDING = 20;
 
@@ -75,14 +86,24 @@ public class Controller {
         this.setUpListViewListener();
         this.setListViewFactory();
         this.collectItemsDependantOnListView();
-        getTableData();
-        setAdditionalStyles();
+        this.collectBottomButtons();
+        this.getTableData();
+        this.setAdditionalStyles();
     }
+
+    @FXML
+    public void onAddRecordButtonClicked() {}
+    @FXML
+    public void onRemoveActivityButtonClicked() {}
+    @FXML
+    public void onChangeColorButtonClicked() {}
+    @FXML
+    public void onAddActivityButtonClicked() {}
+
 
     private void collectItemsDependantOnListView() {
         this.styleSetter = new StyleSetter();
         this.styleSetter.setVisibility(false);
-        this.styleSetter.setButtonsColor(PRIMARY_COLOR);
     }
 
     private void initializeService() {
@@ -95,11 +116,21 @@ public class Controller {
         }
     }
 
+    private void collectBottomButtons() {
+        this.bottomButtons = new HashMap<>();
+        this.bottomButtons.put("addRecord", this.addRecordButton);
+        this.bottomButtons.put("removeActivity", this.removeActivityButton);
+        this.bottomButtons.put("changeColor", this.changeColorButton);
+    }
+
     private void setAdditionalStyles() {
         JFXDepthManager.setDepth(this.canvas, 1);
-        JFXDepthManager.setDepth(this.topLabel, 1);
-        this.topLabel.setBackground(DialogElementsConstructor.getBackgroundOfColor("white"));
-        this.topLabel.prefWidthProperty().bind(this.borderPane.widthProperty());
+        StyleSetter.setBottomPanelStyle(this.bottomHBox);
+        JFXDepthManager.setDepth(this.bottomHBox, 5);
+        this.bottomHBox.setVisible(false);
+        StyleSetter.setBottomButtonIcons(this.bottomButtons);
+        StyleSetter.stylizeButton(this.addActivityButton, new ImageView(StyleSetter.ADD_ICON));
+        this.addActivityHbox.maxWidthProperty().bind(this.activityNamesList.widthProperty());
     }
 
     private void updateChangedActivityAndUI(Activity activity) {
@@ -196,9 +227,11 @@ public class Controller {
         this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 closeAddRecordPopupIfExists();
+                this.bottomHBox.setVisible(true);
                 Controller.this.onListViewItemClicked(newValue);
             } else {
 //                this.styleSetter.setVisibility(false);
+                this.bottomHBox.setVisible(false);
             }
         });
     }
@@ -398,4 +431,6 @@ public class Controller {
     private void drawDataOnCanvas(DataRepresentation dataRepresentation) {
         dataRepresentation.drawOnCanvas(this.canvas);
     }
+
+
 }
