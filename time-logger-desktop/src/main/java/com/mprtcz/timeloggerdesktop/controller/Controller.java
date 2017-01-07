@@ -20,6 +20,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
@@ -46,6 +47,8 @@ public class Controller {
     private StackPane bottomStackPane;
     @FXML
     private Canvas canvas;
+    @FXML
+    private Label topLabel;
 
     private ConfirmationPopup confirmationPopup;
     private JFXDialog bottomDialog;
@@ -94,6 +97,9 @@ public class Controller {
 
     private void setAdditionalStyles() {
         JFXDepthManager.setDepth(this.canvas, 1);
+        JFXDepthManager.setDepth(this.topLabel, 1);
+        this.topLabel.setBackground(DialogElementsConstructor.getBackgroundOfColor("white"));
+        this.topLabel.prefWidthProperty().bind(this.borderPane.widthProperty());
     }
 
     private void updateChangedActivityAndUI(Activity activity) {

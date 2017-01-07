@@ -5,12 +5,12 @@
 <?import com.jfoenix.controls.JFXSnackbar?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="568.0" prefWidth="302.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mprtcz.timeloggerdesktop.controller.Controller">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="397.0" prefWidth="302.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mprtcz.timeloggerdesktop.controller.Controller">
    <bottom>
       <VBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
@@ -20,20 +20,30 @@
          </children>
       </VBox>
    </bottom>
-   <top>
-      <HBox alignment="CENTER" BorderPane.alignment="CENTER">
+   <center>
+      <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
             <Canvas fx:id="canvas" height="100.0" width="300.0">
-               <HBox.margin>
-                  <Insets bottom="15.0" right="12.0" top="15.0" />
-               </HBox.margin></Canvas>
-         </children></HBox>
-   </top>
-   <center>
-      <JFXListView fx:id="activityNamesList" depthProperty="1" maxWidth="300.0" minWidth="300.0" prefHeight="168.0" prefWidth="300.0" BorderPane.alignment="CENTER">
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-      </JFXListView>
+               <VBox.margin>
+                  <Insets right="12.0" top="10.0" />
+               </VBox.margin>
+            </Canvas>
+         </children>
+      </VBox>
    </center>
+   <top>
+      <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="topLabel" prefHeight="17.0" prefWidth="348.0" textAlignment="CENTER" />
+            <JFXListView fx:id="activityNamesList" depthProperty="1" maxWidth="300.0" minWidth="300.0" prefHeight="168.0" prefWidth="300.0">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </JFXListView>
+         </children>
+      </VBox>
+   </top>
 </BorderPane>

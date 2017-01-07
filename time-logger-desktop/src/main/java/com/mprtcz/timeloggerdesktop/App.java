@@ -16,7 +16,7 @@ public class App extends Application {
         System.out.println(getClass().getResource("/"));
         Parent root = loader.load();
 
-        Scene scene = new Scene(root, 350, 800);
+        Scene scene = new Scene(root, 350, 500);
 
         scene.getStylesheets().add(App.class.getResource("/css/jfoenix-fonts.css").toExternalForm());
 //        scene.getStylesheets().add(App.class.getResource("/css/jfoenix-design.css").toExternalForm());
