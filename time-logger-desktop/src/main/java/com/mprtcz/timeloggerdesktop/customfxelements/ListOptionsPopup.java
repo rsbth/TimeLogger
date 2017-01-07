@@ -28,24 +28,27 @@ public class ListOptionsPopup extends JFXPopup {
     public JFXButton addButton;
     public JFXButton removeButton;
     public JFXButton changeColorButton;
+    public JFXButton addRecordButton;
 
     public ListOptionsPopup() {
         this.setContent(generateContent());
     }
 
     private Region generateContent() {
-        JFXPopup jfxPopup = new JFXPopup();
         Insets insets = new Insets(10);
         this.addButton = getStylizedButton(new ImageView("/icons/ic_library_add_18pt.png"));
         HBox addHBox = getStylizedHBox(addButton, "Add Activity");
+        this.addRecordButton = getStylizedButton(new ImageView("/icons/ic_queue_18pt.png"));
+        HBox addRecordHBox = getStylizedHBox(addRecordButton, "Add Record");
         this.removeButton = getStylizedButton(new ImageView("/icons/ic_delete_18pt.png"));
         HBox removeHBox =  getStylizedHBox(removeButton, "Remove Activity");
         this.changeColorButton = getStylizedButton(new ImageView("/icons/ic_fingerprint_18pt.png"));
         HBox colorHBox = getStylizedHBox(changeColorButton, "Change Color");
-        VBox vBox = new VBox(addHBox, removeHBox, colorHBox);
+        VBox vBox = new VBox(addRecordHBox, removeHBox, colorHBox, addHBox);
         VBox.setMargin(addHBox, insets);
         VBox.setMargin(removeHBox, insets);
         VBox.setMargin(colorHBox, insets);
+        VBox.setMargin(addRecordHBox, insets);
         this.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             this.close();
         });

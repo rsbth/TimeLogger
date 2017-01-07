@@ -46,4 +46,5 @@ public class Record {
                 ", endDateTime=" + endDateTime +
                 '}';
     }
+
 }

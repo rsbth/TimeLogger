@@ -115,7 +115,7 @@ public class DataRepresentation {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         double width = canvas.getWidth();
         int unit = (int) width/25;
-        drawHeader(graphicsContext, unit);
+//        drawHeader(graphicsContext, unit);
         for (int i = 0; i < this.hours.size(); i++) {
             String color;
             if(this.hours.get(i).getActivitiesDuringThisHour().size() > 0) {
@@ -126,10 +126,7 @@ public class DataRepresentation {
             long dayDelta = earliest.until(this.hours.get(i).getDatetime(), ChronoUnit.DAYS);
             long hour = this.hours.get(i).getDatetime().getHour();
             graphicsContext.setFill(Paint.valueOf(color));
-            graphicsContext.fillRect( unit*(hour + 1), 10*(dayDelta +1), unit, 10);
-            String day = this.hours.get(i).getDatetime().getDayOfMonth() +"." + this.hours.get(i).getDatetime().getMonthValue();
-            graphicsContext.setFill(Paint.valueOf("black"));
-            graphicsContext.fillText(day, 0, (dayDelta + 2) * 10);
+            graphicsContext.fillRect( unit*(hour + 1), 10*dayDelta, unit, 10);
         }
     }
 

@@ -1,4 +1,4 @@
 .idea
-src/main/resources/mainMenu1.fxml
+src/main/resources/fxmls/mainMenu1.fxml
 target/
 time-logger-desktop.iml

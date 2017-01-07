@@ -15,11 +15,11 @@ import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
 import com.mprtcz.timeloggerdesktop.validators.ValidationResult;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
@@ -37,45 +37,25 @@ import java.util.Objects;
 public class Controller {
 
     @FXML
-    private JFXDatePicker startDatePicker;
-    @FXML
-    private JFXDatePicker endTimePicker;
-    @FXML
-    private JFXDatePicker startTimePicker;
-    @FXML
-    private JFXDatePicker endDatePicker;
-    @FXML
-    private JFXButton addRecordButton;
-    @FXML
     private JFXListView<Activity> activityNamesList;
-    @FXML
-    private Label summaryLabel;
-    @FXML
-    private Label startRecordLabel;
-    @FXML
-    private Label endRecordLabel;
     @FXML
     private JFXSnackbar activityDetailSnackbar;
     @FXML
     private BorderPane borderPane;
     @FXML
-    private VBox dataInsertionVBox;
-    @FXML
     private StackPane bottomStackPane;
     @FXML
     private Canvas canvas;
-    @FXML
-    VBox startTimeVBox;
-    @FXML
-    VBox endTimeVBox;
 
     private ConfirmationPopup confirmationPopup;
     private JFXDialog bottomDialog;
-    private Activity lastSelectedActivity;
     private StyleSetter styleSetter;
     private Service service;
     private String newActivityName;
     private String newActivityDescription;
+    private ListOptionsPopup listOptionsPopup;
+    private Activity lastSelectedActivity;
+    private AddRecordPopup addRecordPopup;
 
     private static final int SNACKBAR_DURATION = 5000; //[ms]
     private static final String BACKGROUND_COLOR = "#F4F4F4";
@@ -86,73 +66,21 @@ public class Controller {
 
 
     @FXML
-    void onAddRecordButtonClicked() {
-        if (activityNamesList.getSelectionModel().selectedItemProperty().getValue() == null) {
-            showSnackbar("Choose an activity");
-            return;
-        }
-        try {
-            Task<ValidationResult> task = new Task<ValidationResult>() {
-                @Override
-                protected ValidationResult call() throws Exception {
-                    return Controller.this.service.addNewRecord(startTimePicker.getTime(), endTimePicker.getTime(),
-                            startDatePicker.getValue(), endDatePicker.getValue(),
-                            activityNamesList.getSelectionModel().selectedItemProperty().getValue());
-                }
-            };
-            task.setOnSucceeded(event -> {
-                Controller.this.displayValidationResult(task.getValue());
-            });
-            this.addTaskExceptionListener(task);
-            new Thread(task).start();
-            this.getTableData();
-        } catch (Exception e) {
-            e.printStackTrace();
-            showSnackbar(e.getMessage());
-        }
-    }
-
-    @FXML
-    void onChangeColorButtonClicked() {
-        this.loadColorDialog();
-    }
-
-    @FXML
-    void onAddActivityButtonCLicked() {
-        this.loadAddDialog();
-    }
-
-    @FXML
-    void onEndTimeChanged() {
-        System.out.println(this.endTimePicker.getTime());
-    }
-
-    @FXML
-    void onDeleteActivityButtonClicked() {
-
-    }
-
-    @FXML
     private void initialize() {
         System.out.println("initialized");
-        this.setLabels();
         this.initializeService();
         this.populateListView();
         this.setUpListViewListener();
-        this.initializeDateTimeControls();
         this.setListViewFactory();
         this.collectItemsDependantOnListView();
         getTableData();
         setAdditionalStyles();
-        this.canvas.widthProperty().bind(this.dataInsertionVBox.widthProperty());
+//        this.canvas.widthProperty().bind(this.dataInsertionVBox.widthProperty());
     }
 
     private void collectItemsDependantOnListView() {
         this.styleSetter = new StyleSetter();
-        this.styleSetter.getListViewControlsDependants().add(this.dataInsertionVBox);
-        this.styleSetter.getListViewControlsDependants().add(this.summaryLabel);
         this.styleSetter.setVisibility(false);
-        this.styleSetter.getButtonsList().add(this.addRecordButton);
         this.styleSetter.setButtonsColor(PRIMARY_COLOR);
     }
 
@@ -166,20 +94,7 @@ public class Controller {
         }
     }
 
-    private void setLabels() {
-        this.addRecordButton.setText(LabelsModel.SAVE_RECORD_BUTTON);
-        this.startDatePicker.setPromptText(LabelsModel.START_DATE_LABEL);
-        this.endDatePicker.setPromptText(LabelsModel.END_DATE_LABEL);
-        this.startTimePicker.setPromptText(LabelsModel.START_HOUR_LABEL);
-        this.endTimePicker.setPromptText(LabelsModel.END_HOUR_LABEL);
-        this.startRecordLabel.setText(LabelsModel.START_RECORD_LABEL);
-        this.endRecordLabel.setText(LabelsModel.END_RECORD_LABEL);
-    }
-
     private void setAdditionalStyles() {
-        JFXDepthManager.setDepth(this.startTimeVBox, 1);
-        JFXDepthManager.setDepth(this.endTimeVBox, 1);
-        JFXDepthManager.setDepth(this.summaryLabel, 1);
         JFXDepthManager.setDepth(this.canvas, 1);
     }
 
@@ -194,7 +109,6 @@ public class Controller {
                 e.printStackTrace();
             }
         }).start();
-        this.lastSelectedActivity = null;
         populateListView();
         getTableData();
     }
@@ -246,8 +160,6 @@ public class Controller {
                 this.newActivityName = newActivityNameTextField.getText();
                 this.newActivityDescription = newActivityDescriptionTextField.getText();
                 this.initEmptyDescriptionConfirmationPopup();
-                System.out.println("event.getX() = " + event.getX());
-                System.out.println("event.getY() = " + event.getY());
                 this.confirmationPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT,
                         event.getX(), event.getY());
             } else {
@@ -279,6 +191,8 @@ public class Controller {
     private void setUpListViewListener() {
         this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                closeAddRecordPopupIfExists();
+                this.lastSelectedActivity = this.activityNamesList.getSelectionModel().getSelectedItem();
                 Controller.this.onListViewItemClicked(newValue);
             } else {
 //                this.styleSetter.setVisibility(false);
@@ -289,30 +203,80 @@ public class Controller {
     private void onListViewItemClicked(Activity item) {
         this.showSnackbar(item.getDescription());
         System.out.println("ListViewItemClicked");
-        this.lastSelectedActivity = this.activityNamesList.getSelectionModel().getSelectedItem();
         this.styleSetter.setVisibility(true);
-        this.updateSummary();
         this.showListViewOptions();
-
     }
 
     private void showListViewOptions() {
-        ListOptionsPopup listOptionsPopup = new ListOptionsPopup();
-        listOptionsPopup.setSource(this.bottomStackPane);
-        listOptionsPopup.getAddButton().setOnAction(event -> {
-            listOptionsPopup.close();
+        if (this.listOptionsPopup != null) {
+            this.listOptionsPopup.close();
+        }
+        this.listOptionsPopup = new ListOptionsPopup();
+        this.listOptionsPopup.setSource(this.bottomStackPane);
+        this.listOptionsPopup.getAddButton().setOnAction(event -> {
+            this.listOptionsPopup.close();
             Controller.this.loadAddDialog();
         });
-        listOptionsPopup.getChangeColorButton().setOnAction(event -> {
-            listOptionsPopup.close();
+        this.listOptionsPopup.getChangeColorButton().setOnAction(event -> {
+            this.listOptionsPopup.close();
             Controller.this.loadColorDialog();
         });
-        listOptionsPopup.getRemoveButton().setOnAction(event -> {
+        this.listOptionsPopup.getRemoveButton().setOnAction(event -> {
             Controller.this.initActivityRemoveConfirmationPopup();
             Controller.this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 10, -10);
         });
-        listOptionsPopup.setOnMouseExited(event -> listOptionsPopup.close());
-        listOptionsPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 10, -50);
+        this.listOptionsPopup.getAddRecordButton().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Controller.this.invokeAddRecordPanel();
+            }
+        });
+        this.listOptionsPopup.setOnMouseExited(event -> this.listOptionsPopup.close());
+        this.listOptionsPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 10, -50);
+    }
+
+    private void showAddRecordPopup() {
+        this.addRecordPopup = new AddRecordPopup(this.activityNamesList.getSelectionModel().getSelectedItem());
+        this.addRecordPopup.getOkButton().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Controller.this.addRecordPopup.close();
+                saveRecord(Controller.this.addRecordPopup.getObjectToValidate());
+            }
+        });
+        this.addRecordPopup.setSource(this.activityNamesList);
+        this.addRecordPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 10, 10);
+    }
+
+    private void closeAddRecordPopupIfExists() {
+        if (this.addRecordPopup != null) {
+            this.addRecordPopup.close();
+        }
+    }
+
+    private void saveRecord(RecordValidator.ValidationObject validationObject) {
+        try {
+            Task<ValidationResult> task = new Task<ValidationResult>() {
+                @Override
+                protected ValidationResult call() throws Exception {
+                    return Controller.this.service.addNewRecord(validationObject);
+                }
+            };
+            task.setOnSucceeded(event -> {
+                Controller.this.displayValidationResult(task.getValue());
+            });
+            this.addTaskExceptionListener(task);
+            new Thread(task).start();
+            this.getTableData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showSnackbar(e.getMessage());
+        }
+    }
+
+    private void invokeAddRecordPanel() {
+        System.out.println("Ohei~!");
+        showAddRecordPopup();
     }
 
     private void showSnackbar(String value) {
@@ -326,18 +290,6 @@ public class Controller {
                 Controller.this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
         this.activityDetailSnackbar.show(StringConverter.insertLineSeparator(value, 50),
                 "X", SNACKBAR_DURATION, eventHandler);
-    }
-
-    private void initializeDateTimeControls() {
-        DateTimeInitializer dateTimeInitializer = new DateTimeInitializer();
-        dateTimeInitializer.getItemsList().add(startDatePicker);
-        dateTimeInitializer.getItemsList().add(endDatePicker);
-        dateTimeInitializer.getItemsList().add(startTimePicker);
-        dateTimeInitializer.getItemsList().add(endTimePicker);
-
-        dateTimeInitializer.initializeElements(getSummaryEventHandler());
-
-        this.summaryLabel.setVisible(false);
     }
 
     private void setListViewFactory() {
@@ -373,10 +325,6 @@ public class Controller {
         showSnackbar(validationResult.getAllMessages());
     }
 
-    private String getBackgroundStyle(String color) {
-        return "-fx-background-color: " + color + ";";
-    }
-
     private void loadAddDialog() {
         closeSnackBarIfExists();
         closeDialogIfExists();
@@ -397,7 +345,9 @@ public class Controller {
         closeDialogIfExists();
         closeSnackBarIfExists();
         Activity selectedActivity = this.activityNamesList.getSelectionModel().getSelectedItem();
-        if(selectedActivity == null) {return;}
+        if (selectedActivity == null) {
+            return;
+        }
         ColorDialog colorDialog = new ColorDialog(selectedActivity);
         colorDialog.getCancelButton().setOnMouseClicked(event -> Controller.this.bottomDialog.close());
         colorDialog.getConfirmButton().setOnMouseClicked(
@@ -444,18 +394,5 @@ public class Controller {
 
     private void drawDataOnCanvas(DataRepresentation dataRepresentation) {
         dataRepresentation.drawOnCanvas(this.canvas);
-    }
-
-    private void updateSummary() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(this.activityNamesList.getSelectionModel().selectedItemProperty().getValue().getName()).append("\n");
-        stringBuilder.append(this.startDatePicker.getValue()).append(" ").append(this.startTimePicker.getTime()).append("\n");
-        stringBuilder.append("- \n");
-        stringBuilder.append(this.endDatePicker.getValue()).append(" ").append(this.endTimePicker.getTime()).append("\n");
-        this.summaryLabel.setText(stringBuilder.toString());
-    }
-
-    private <T extends Event> EventHandler<T> getSummaryEventHandler() {
-        return event -> Controller.this.updateSummary();
     }
 }

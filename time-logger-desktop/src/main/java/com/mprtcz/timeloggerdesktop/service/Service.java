@@ -9,10 +9,8 @@ import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
 import com.mprtcz.timeloggerdesktop.validators.ValidationResult;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by mprtcz on 2017-01-02.
@@ -31,29 +29,15 @@ public class Service {
         this.recordValidator = recordValidator;
     }
 
-    Activity createNewActivity(String name, String description) {
-        return new Activity(name, description);
-    }
-
-
     public List<Activity> getActivities() throws Exception {
         List<Activity> activities = customDao.getAllActivities();
-        System.out.println("ACTIVITIES = " + activities.toString());
-        System.out.println("activities.size() = " + activities.size());
         for (Activity a :
                 activities) {
             if (a.getActivityRecords() == null) {
                 break;
             }
-            System.out.println("a.getActivityRecords() = " + a.getActivityRecords().toString());
-            System.out.println("a.getActivityRecords().size() = " + a.getActivityRecords().size());
         }
-        DataRepresentation dataRepresentation = new DataRepresentation(activities);
         return activities;
-    }
-
-    public List<String> getActivityNames() throws Exception {
-        return getActivities().stream().map(Activity::getName).collect(Collectors.toList());
     }
 
     public ValidationResult addActivity(String name, String description) throws Exception {
@@ -80,16 +64,24 @@ public class Service {
 
     public ValidationResult addNewRecord(LocalTime startTime, LocalTime endTime,
                                          LocalDate startDate, LocalDate endDate, Activity activity) throws Exception {
-        LocalDateTime localDateTime = LocalDateTime.of(startDate, startTime);
         ValidationResult validationResult = this.recordValidator.validateNewRecordData(
                 startTime, endTime, startDate, endDate, activity);
         if (validationResult.isErrorFree()) {
             Record newRecord = new Record(startTime, endTime, startDate, endDate, activity);
             Activity rootActivity = customDao.findActivityById(activity.getId());
             rootActivity.addRecord(newRecord);
-            System.out.println("rootActivity.toString() = " + rootActivity.toString());
             customDao.update(rootActivity);
-            getActivities();
+        }
+        return validationResult;
+    }
+
+    public ValidationResult addNewRecord(RecordValidator.ValidationObject object) throws Exception {
+        ValidationResult validationResult = this.recordValidator.validateNewRecordData(object);
+        if(validationResult.isErrorFree()) {
+            Record record = RecordValidator.ValidationObject.toRecord(object);
+            Activity rootActivity = customDao.findActivityById(record.getActivity().getId());
+            rootActivity.addRecord(record);
+            customDao.update(rootActivity);
         }
         return validationResult;
     }

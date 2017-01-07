@@ -1,6 +1,8 @@
 package com.mprtcz.timeloggerdesktop.validators;
 
 import com.mprtcz.timeloggerdesktop.model.Activity;
+import com.mprtcz.timeloggerdesktop.model.Record;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,9 +17,13 @@ public class RecordValidator {
     public ValidationResult validateNewRecordData(
             LocalTime startTime, LocalTime endTime, LocalDate startDate, LocalDate endDate, Activity activity) {
         ValidationObject v = new ValidationObject(startTime, endTime, startDate, endDate, activity);
+        return this.validateNewRecordData(v);
+    }
+
+    public ValidationResult validateNewRecordData(ValidationObject validationObject) {
         this.validationResult = new ValidationResult();
-        nullCheck(v);
-        hourConsecutivenessCheck(v);
+        nullCheck(validationObject);
+        hourConsecutivenessCheck(validationObject);
         return this.validationResult;
     }
 
@@ -47,8 +53,9 @@ public class RecordValidator {
             this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.END_DATE_BEFORE);
         }
     }
-    
-    private class ValidationObject {
+
+    @Getter
+    public static class ValidationObject {
         private LocalTime startTime;
         private LocalTime endTime;
         private LocalDate startDate;
@@ -57,7 +64,7 @@ public class RecordValidator {
         private LocalDateTime endDateTime;
         private Activity activity;
 
-        ValidationObject(LocalTime startTime, LocalTime endTime, LocalDate startDate, LocalDate endDate, Activity activity) {
+        public ValidationObject(LocalTime startTime, LocalTime endTime, LocalDate startDate, LocalDate endDate, Activity activity) {
             this.startTime = startTime;
             this.endTime = endTime;
             this.startDate = startDate;
@@ -65,6 +72,11 @@ public class RecordValidator {
             this.activity = activity;
             this.startDateTime = LocalDateTime.of(startDate, startTime);
             this.endDateTime = LocalDateTime.of(endDate, endTime);
+        }
+
+        public static Record toRecord(ValidationObject object) {
+            return new Record(object.getStartTime(), object.getEndTime(),
+                    object.getStartDate(), object.getEndDate(), object.getActivity());
         }
     }
 }

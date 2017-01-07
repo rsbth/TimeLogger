@@ -12,11 +12,11 @@ import javafx.stage.Stage;
 public class App extends Application {
 
     public void start(Stage window) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainMenu.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmls/mainMenu.fxml"));
         System.out.println(getClass().getResource("/"));
         Parent root = loader.load();
 
-        Scene scene = new Scene(root, 800, 800);
+        Scene scene = new Scene(root, 350, 800);
 
         scene.getStylesheets().add(App.class.getResource("/css/jfoenix-fonts.css").toExternalForm());
 //        scene.getStylesheets().add(App.class.getResource("/css/jfoenix-design.css").toExternalForm());
