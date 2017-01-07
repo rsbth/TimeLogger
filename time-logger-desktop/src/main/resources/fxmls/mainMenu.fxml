@@ -19,8 +19,8 @@
             <HBox fx:id="bottomHBox" alignment="TOP_CENTER" spacing="25.0">
                <children>
                   <JFXButton fx:id="addRecordButton" onAction="#onAddRecordButtonClicked" text="Add" />
-                  <JFXButton fx:id="removeActivityButton" onAction="#onRemoveActivityButtonClicked" text="Remove" />
                   <JFXButton fx:id="changeColorButton" onAction="#onChangeColorButtonClicked" text="Color" />
+                  <JFXButton fx:id="removeActivityButton" onAction="#onRemoveActivityButtonClicked" text="Remove" />
                </children>
             </HBox>
          </children>
@@ -31,7 +31,7 @@
          <children>
             <Canvas fx:id="canvas" height="100.0" width="300.0">
                <VBox.margin>
-                  <Insets right="12.0" top="10.0" />
+                  <Insets right="12.0" top="30.0" />
                </VBox.margin>
             </Canvas>
          </children>

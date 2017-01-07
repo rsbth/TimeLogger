@@ -60,10 +60,13 @@ public class DataRepresentation {
 
     private void createHoursList() {
         long hoursDelta = earliest.until(latest, ChronoUnit.HOURS);
+        System.out.println("hoursDelta = " + hoursDelta);
         LocalDateTime currentHour = earliest;
         this.hours = new ArrayList<>();
         for (int i = 0; i < hoursDelta; i++) {
-            this.hours.add(new Hour(currentHour));
+            Hour hour  = new Hour(currentHour);
+            this.hours.add(hour);
+            System.out.println("hour.toString() = " + hour.toString());
             currentHour = currentHour.plusHours(1L);
         }
     }
@@ -117,21 +120,33 @@ public class DataRepresentation {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         double width = canvas.getWidth();
         int unit = (int) width/25;
+        System.out.println("this.toString() = " + this.toString());
         if(DRAW_HEADERS) {
             drawHeader(graphicsContext, unit);
         }
         for (int i = 0; i < this.hours.size(); i++) {
+            Hour hourObject = this.hours.get(i);
             String color;
-            if(this.hours.get(i).getActivitiesDuringThisHour().size() > 0) {
-                color = this.hours.get(i).getActivitiesDuringThisHour().get(0).getColor();
+            System.out.println("this.hours.get(i).datetime.toString() = " + this.hours.get(i).datetime.toString());
+            if(hourObject.getActivitiesDuringThisHour().size() > 0) {
+                color = hourObject.getActivitiesDuringThisHour().get(0).getColor();
             } else {
                 color = "#ffffff";
             }
-            long dayDelta = earliest.until(this.hours.get(i).getDatetime(), ChronoUnit.DAYS);
-            long hour = this.hours.get(i).getDatetime().getHour();
+            System.out.println("hourObject.getDatetime() = " + hourObject.getDatetime());
+            System.out.println("this.earliest = " + this.earliest);
+            LocalDateTime earliestModulus = earliest;
+            System.out.println("earliestModulus = " + earliestModulus);
+            earliestModulus = earliestModulus.minusHours(earliestModulus.getHour());
+            System.out.println("earliestModulus minus hours = " + earliestModulus);
+            long dayDelta = earliestModulus.until(hourObject.getDatetime(), ChronoUnit.DAYS);
+            System.out.println("dayDelta = " + dayDelta);
+            long hour = hourObject.getDatetime().getHour();
             graphicsContext.setFill(Paint.valueOf(color));
-            graphicsContext.fillRect( unit*(hour + 1), 10*(dayDelta +1), unit, 10);
-            String day = this.hours.get(i).getDatetime().getDayOfMonth() +"." + this.hours.get(i).getDatetime().getMonthValue();
+            System.out.println("unit*(hour+1) = " + unit * (hour + 1));
+            System.out.println("10 * (dayDelta + 1) = " + 10 * (dayDelta + 1));
+            graphicsContext.fillRect( unit*(hour + 1), 10*(dayDelta + 1), unit, 10);
+            String day = hourObject.getDatetime().getDayOfMonth() +"." + hourObject.getDatetime().getMonthValue();
             graphicsContext.setFill(Paint.valueOf("black"));
             if(DRAW_HEADERS) {
                 graphicsContext.fillText(day, 0, (dayDelta + 2) * 10);
