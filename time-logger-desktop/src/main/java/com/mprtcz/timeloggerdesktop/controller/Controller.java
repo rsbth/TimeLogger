@@ -54,7 +54,6 @@ public class Controller {
     private String newActivityName;
     private String newActivityDescription;
     private ListOptionsPopup listOptionsPopup;
-    private Activity lastSelectedActivity;
     private AddRecordPopup addRecordPopup;
 
     private static final int SNACKBAR_DURATION = 5000; //[ms]
@@ -75,7 +74,6 @@ public class Controller {
         this.collectItemsDependantOnListView();
         getTableData();
         setAdditionalStyles();
-//        this.canvas.widthProperty().bind(this.dataInsertionVBox.widthProperty());
     }
 
     private void collectItemsDependantOnListView() {
@@ -192,7 +190,6 @@ public class Controller {
         this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 closeAddRecordPopupIfExists();
-                this.lastSelectedActivity = this.activityNamesList.getSelectionModel().getSelectedItem();
                 Controller.this.onListViewItemClicked(newValue);
             } else {
 //                this.styleSetter.setVisibility(false);

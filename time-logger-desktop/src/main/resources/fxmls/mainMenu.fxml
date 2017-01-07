@@ -23,9 +23,9 @@
    <top>
       <HBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
-            <Canvas fx:id="canvas" height="101.0" width="300.0">
+            <Canvas fx:id="canvas" height="100.0" width="300.0">
                <HBox.margin>
-                  <Insets bottom="15.0" top="15.0" />
+                  <Insets bottom="15.0" right="12.0" top="15.0" />
                </HBox.margin></Canvas>
          </children></HBox>
    </top>

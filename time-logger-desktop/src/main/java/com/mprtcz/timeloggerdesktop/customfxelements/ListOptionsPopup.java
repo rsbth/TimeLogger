@@ -11,9 +11,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import lombok.Getter;
 
+import static com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor.getBackgroundOfColor;
 import static com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor.getBackgroundStyle;
 
 /**
@@ -64,10 +66,13 @@ public class ListOptionsPopup extends JFXPopup {
     }
 
     private HBox getStylizedHBox(Button button, String labelString) {
-        Label addLabel = new Label(labelString);
-        HBox hBox = new HBox(button, addLabel);
+        Label label = new Label(labelString);
+        label.setBackground(getBackgroundOfColor("black"));
+        label.setTextFill(Color.web("lightgray"));
+        label.setPadding(new Insets(1));
+        HBox hBox = new HBox(button, label);
         hBox.setAlignment(Pos.CENTER_LEFT);
-        HBox.setMargin(addLabel, new Insets(10));
+        HBox.setMargin(label, new Insets(10));
         return hBox;
     }
 }
