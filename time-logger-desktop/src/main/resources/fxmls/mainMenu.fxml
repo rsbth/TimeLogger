@@ -16,11 +16,11 @@
          <children>
             <JFXSnackbar fx:id="activityDetailSnackbar" snapToPixel="false" />
             <StackPane fx:id="bottomStackPane" prefHeight="150.0" prefWidth="200.0" />
-            <HBox fx:id="bottomHBox" alignment="TOP_CENTER" spacing="10.0">
+            <HBox fx:id="bottomHBox" alignment="TOP_CENTER" spacing="25.0">
                <children>
-                  <JFXButton fx:id="addRecordButton" onAction="#onAddRecordButtonClicked" text="add" />
-                  <JFXButton fx:id="removeActivityButton" onAction="#onRemoveActivityButtonClicked" text="remove" />
-                  <JFXButton fx:id="changeColorButton" onAction="#onChangeColorButtonClicked" text="color" />
+                  <JFXButton fx:id="addRecordButton" onAction="#onAddRecordButtonClicked" text="Add" />
+                  <JFXButton fx:id="removeActivityButton" onAction="#onRemoveActivityButtonClicked" text="Remove" />
+                  <JFXButton fx:id="changeColorButton" onAction="#onChangeColorButtonClicked" text="Color" />
                </children>
             </HBox>
          </children>

@@ -91,11 +91,20 @@ public class Controller {
     }
 
     @FXML
-    public void onAddRecordButtonClicked() { this.showAddRecordPopup();}
+    public void onAddRecordButtonClicked() {
+        this.showAddRecordPopup();
+    }
+
     @FXML
-    public void onRemoveActivityButtonClicked() { this.initActivityRemoveConfirmationPopup(); }
+    public void onRemoveActivityButtonClicked() {
+        this.initActivityRemoveConfirmationPopup();
+    }
+
     @FXML
-    public void onChangeColorButtonClicked() { this.loadColorDialog(); }
+    public void onChangeColorButtonClicked() {
+        this.loadColorDialog();
+    }
+
     @FXML
     public void onAddActivityButtonClicked() {
         this.loadAddDialog();

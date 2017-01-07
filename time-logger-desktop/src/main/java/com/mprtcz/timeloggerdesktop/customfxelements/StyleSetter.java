@@ -24,8 +24,9 @@ import static com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstr
 @Getter
 public class StyleSetter {
     public static final String BACKGROUND_COLOR = "#F4F4F4";
-    public static final String PRIMARY_COLOR = "#2196f3";
-    public static final String SECONDARY_COLOR = "#BDBDBD";
+    public static final String PRIMARY_COLOR = "#3f51b5";
+    public static final String ACCENT_COLOR = "#f50057";
+    public static final String GRAY_COLOR = "#BDBDBD";
     public static final String ADD_ICON = "/icons/ic_add_white_18pt.png";
     public static final String REMOVE_ICON = "/icons/ic_clear_white_18pt.png";
     public static final String COLOR_ICON = "/icons/ic_color_lens_white_18pt.png";
@@ -36,13 +37,6 @@ public class StyleSetter {
     public void setVisibility(boolean value) {
         for (Region c : this.listViewControlsDependants) {
             c.setVisible(value);
-        }
-    }
-
-    public void setButtonsColor(String color) {
-        for (Button button :
-                this.buttonsList) {
-            button.setStyle(getBackgroundStyle(color));
         }
     }
 
@@ -85,7 +79,7 @@ public class StyleSetter {
         button.setGraphic(icon);
         button.setShape(new Circle(40));
         button.setMinSize(40, 40);
-        button.setStyle(getBackgroundStyle(StyleSetter.PRIMARY_COLOR));
+        button.setStyle(getBackgroundStyle(StyleSetter.ACCENT_COLOR));
         return button;
     }
 

@@ -2,7 +2,6 @@ package com.mprtcz.timeloggerdesktop.customfxelements;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.effects.JFXDepthManager;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import javafx.geometry.Insets;
@@ -66,8 +65,8 @@ public class DialogElementsConstructor {
         cancelButton.setPadding(new Insets(10));
         confirmButton.setRipplerFill(Paint.valueOf("darkgreen"));
         cancelButton.setRipplerFill(Paint.valueOf("red"));
-        cancelButton.setStyle(getBackgroundStyle(  StyleSetter.SECONDARY_COLOR));
-        confirmButton.setStyle(getBackgroundStyle( StyleSetter.PRIMARY_COLOR));
+        cancelButton.setStyle(getBackgroundStyle(  StyleSetter.GRAY_COLOR));
+        confirmButton.setStyle(getBackgroundStyle( StyleSetter.ACCENT_COLOR));
     }
 
     public static String getBackgroundStyle(String color) {

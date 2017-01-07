@@ -94,8 +94,8 @@ public class AddRecordPopup extends JFXPopup {
     }
 
     private void setStyles() {
-        this.okButton.setBackground(getBackgroundOfColor(StyleSetter.PRIMARY_COLOR));
-        this.closeButton.setBackground(getBackgroundOfColor(StyleSetter.SECONDARY_COLOR));
+        this.okButton.setBackground(getBackgroundOfColor(StyleSetter.ACCENT_COLOR));
+        this.closeButton.setBackground(getBackgroundOfColor(StyleSetter.GRAY_COLOR));
         this.startTimePicker.setDefaultColor(Paint.valueOf(StyleSetter.PRIMARY_COLOR));
         this.endTimePicker.setDefaultColor(Paint.valueOf(StyleSetter.PRIMARY_COLOR));
         this.startDatePicker.setDefaultColor(Paint.valueOf(StyleSetter.PRIMARY_COLOR));
