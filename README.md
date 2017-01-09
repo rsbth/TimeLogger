@@ -21,12 +21,12 @@ Every defined activity gets a color which can be later changed by the user and w
  ![colorgif](https://media.giphy.com/media/l4Jz4xdJPubiCz3pu/source.gif) 
  
  
- Every time the user leaves time period without ant activity entry, the application fills the chart's record void with
+ Every time the user leaves time period without any activity entry, the application fills the chart's record void with
   white space.
   Every line represents one day, divided by 24 hour blocks. 
   
 
-  When creating a new record for a given activity, tha user must pass the data about the record's starting time 
+  When creating a new record for a given activity, the user must pass the data about the record's starting time 
   and ending time. The default time in appearing popup will be set to the ending of the last record in the database.
   
   ![addingrecord](https://media.giphy.com/media/l4Jzi70Jp2lGOoi5y/source.gif)
