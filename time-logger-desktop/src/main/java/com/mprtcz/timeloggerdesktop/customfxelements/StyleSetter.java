@@ -14,6 +14,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import static com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor.getBackgroundOfColor;
 import static com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor.getBackgroundStyle;
@@ -51,24 +52,25 @@ public class StyleSetter {
         }
     }
 
-    public static void setBottomButtonIcons(Map<String, JFXButton> buttons) {
+    public static void setBottomButtonContent(Map<String, JFXButton> buttons, ResourceBundle messages) {
         for (Map.Entry entry : buttons.entrySet()) {
             if(entry.getKey().equals("addRecord")) {
-                setButtonImage(entry.getValue(), ADD_ICON);
+                setButtonContent(entry.getValue(), ADD_ICON, messages.getString("add_record_button"));
             }
             if(entry.getKey().equals("removeActivity")) {
-                setButtonImage(entry.getValue(), REMOVE_ICON);
+                setButtonContent(entry.getValue(), REMOVE_ICON, messages.getString("remove_activity_button"));
 
             }
             if(entry.getKey().equals("changeColor")) {
-                setButtonImage(entry.getValue(), COLOR_ICON);
+                setButtonContent(entry.getValue(), COLOR_ICON, messages.getString("color_record_button"));
             }
         }
 
     }
 
-    private static void setButtonImage(Object button, String imagePath) {
+    private static void setButtonContent(Object button, String imagePath, String text) {
         if(button instanceof JFXButton) {
+            ((JFXButton)button).setText(text);
             ((JFXButton)button).setGraphic(new ImageView(imagePath));
             ((JFXButton)button).setContentDisplay(ContentDisplay.TOP);
             ((JFXButton)button).setStyle(" -fx-text-fill: white; -fx-font: 12 Roboto; -fx-button-type: FLAT;");

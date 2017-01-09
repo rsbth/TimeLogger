@@ -2,7 +2,6 @@ package com.mprtcz.timeloggerdesktop.customfxelements;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPopup;
-import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -13,6 +12,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ResourceBundle;
 
 import static com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor.getBackgroundOfColor;
 import static com.mprtcz.timeloggerdesktop.customfxelements.StyleSetter.BACKGROUND_COLOR;
@@ -26,8 +27,10 @@ public class ConfirmationPopup extends JFXPopup {
     private JFXButton confirmButton;
     private JFXButton cancelButton;
     private Label label;
+    private ResourceBundle messages;
 
-    public ConfirmationPopup(String labelString, Region source) {
+    public ConfirmationPopup(String labelString, Region source, ResourceBundle messages) {
+        this.messages = messages;
         this.initElements(labelString);
         DialogElementsConstructor.setStyleOfConfirmCancelButtons(this.confirmButton, this.cancelButton);
         this.label.setPadding(new Insets(10));
@@ -63,9 +66,9 @@ public class ConfirmationPopup extends JFXPopup {
     }
 
     private void initElements(String labelString) {
-        this.confirmButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_YES);
+        this.confirmButton = new JFXButton(messages.getString("confirmation_popup_yes"));
         this.label = new Label(labelString);
-        this.cancelButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_NO);
+        this.cancelButton = new JFXButton(messages.getString("confirmation_popup_no"));
     }
 
     public static JFXPopup getTextPopup(String text, Region source, boolean isAlert) {

@@ -11,6 +11,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import lombok.Getter;
 
+import java.util.ResourceBundle;
+
 
 /**
  * Created by mprtcz on 2017-01-06.
@@ -21,8 +23,9 @@ public class ColorDialog extends DialogElementsConstructor {
     private JFXColorPicker colorPicker;
     private Activity activity;
 
-    public ColorDialog(Activity activity) {
-        super.getTitleLabel().setText("Select a Color");
+    public ColorDialog(Activity activity, ResourceBundle messages) {
+        super(messages);
+        super.getTitleLabel().setText(messages.getString("choose_color"));
         this.colorPicker = new JFXColorPicker();
         this.activity = activity;
         this.colorPicker.setValue(Color.web(activity.getColor()));

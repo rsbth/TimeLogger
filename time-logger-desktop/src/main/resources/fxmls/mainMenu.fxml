@@ -16,9 +16,9 @@
             <StackPane fx:id="bottomStackPane" prefHeight="150.0" prefWidth="200.0" />
             <HBox fx:id="bottomHBox" alignment="TOP_CENTER" spacing="25.0">
                <children>
-                  <JFXButton fx:id="addRecordButton" onAction="#onAddRecordButtonClicked" text="Add" />
-                  <JFXButton fx:id="changeColorButton" onAction="#onChangeColorButtonClicked" text="Color" />
-                  <JFXButton fx:id="removeActivityButton" onAction="#onRemoveActivityButtonClicked" text="Remove" />
+                  <JFXButton fx:id="addRecordButton" onAction="#onAddRecordButtonClicked" />
+                  <JFXButton fx:id="changeColorButton" onAction="#onChangeColorButtonClicked" />
+                  <JFXButton fx:id="removeActivityButton" onAction="#onRemoveActivityButtonClicked" />
                </children>
             </HBox>
          </children>

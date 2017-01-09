@@ -3,7 +3,6 @@ package com.mprtcz.timeloggerdesktop.customfxelements;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import com.mprtcz.timeloggerdesktop.model.Activity;
-import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.utilities.StringConverter;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -11,6 +10,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import lombok.Getter;
+
+import java.util.ResourceBundle;
 
 /**
  * Created by mprtcz on 2017-01-05.
@@ -23,12 +24,14 @@ public class DialogElementsConstructor {
     private JFXTextField newActivityNameTextField;
     private JFXTextField newActivityDescriptionTextField;
     private Label titleLabel;
+    private ResourceBundle messages;
 
-    public DialogElementsConstructor() {
-        this.cancelButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CANCEL_BUTTON);
-        this.confirmButton = new JFXButton(LabelsModel.ADD_ACTIVITY_CONFIRM_BUTTON);
+    public DialogElementsConstructor(ResourceBundle messages) {
+        this.messages = messages;
+        this.cancelButton = new JFXButton(messages.getString("cancel_button"));
+        this.confirmButton = new JFXButton(messages.getString("add_activity_confirm_button"));
         this.confirmButton.prefWidthProperty().bind(this.cancelButton.widthProperty());
-        this.titleLabel = new Label(LabelsModel.ENTER_ACTIVITY_LABEL);
+        this.titleLabel = new Label(messages.getString("enter_activity_label"));
         this.newActivityNameTextField = new JFXTextField();
         this.newActivityDescriptionTextField = new JFXTextField();
     }
@@ -54,8 +57,8 @@ public class DialogElementsConstructor {
     }
 
     void setPopupContentsStyles() {
-        this.newActivityNameTextField.setPromptText(LabelsModel.ADD_ACTIVITY_TEXT_FIELD);
-        this.newActivityDescriptionTextField.setPromptText(LabelsModel.ADD_ACTIVITY_DESCRIPTION_TEXT_FIELD);
+        this.newActivityNameTextField.setPromptText(messages.getString("add_activity_text_field"));
+        this.newActivityDescriptionTextField.setPromptText(messages.getString("add_activity_description_text_field"));
         setStyleOfConfirmCancelButtons(confirmButton, cancelButton);
         this.newActivityNameTextField.setPadding(new Insets(10));
         this.newActivityDescriptionTextField.setPadding(new Insets(10));

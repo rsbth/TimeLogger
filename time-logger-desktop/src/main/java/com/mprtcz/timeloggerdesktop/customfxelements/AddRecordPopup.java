@@ -20,6 +20,7 @@ import javafx.scene.paint.Paint;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ResourceBundle;
 
 import static com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor.getBackgroundOfColor;
 
@@ -39,8 +40,10 @@ public class AddRecordPopup extends JFXPopup {
     private JFXButton closeButton;
     private Label summaryLabel;
     private Activity activity;
+    private ResourceBundle messages;
 
-    public AddRecordPopup(Activity activity, LocalDateTime latestRecord) {
+    public AddRecordPopup(Activity activity, LocalDateTime latestRecord, ResourceBundle messages) {
+        this.messages = messages;
         this.activity = activity;
         this.initializeElements();
         this.addListeners();
@@ -86,10 +89,10 @@ public class AddRecordPopup extends JFXPopup {
         this.startTimePicker.setShowTime(true);
         this.endTimePicker = new JFXDatePicker();
         this.endTimePicker.setShowTime(true);
-        this.okButton = new JFXButton("Add");
-        this.closeButton = new JFXButton("Close");
-        this.startTimeLabel = new Label("Pick start time");
-        this.endTimeLabel = new Label("Pick End Time");
+        this.okButton = new JFXButton(this.messages.getString("save_record_button"));
+        this.closeButton = new JFXButton(this.messages.getString("cancel_button"));
+        this.startTimeLabel = new Label(this.messages.getString("start_date_label"));
+        this.endTimeLabel = new Label(this.messages.getString("end_date_label"));
         this.summaryLabel = new Label();
         this.summaryLabel.setVisible(false);
         setStyles();
@@ -144,6 +147,8 @@ public class AddRecordPopup extends JFXPopup {
 
     private void updateSummary() {
         this.summaryLabel.setVisible(true);
+        this.summaryLabel.setBackground(getBackgroundOfColor("white"));
+        JFXDepthManager.setDepth(this.summaryLabel, 1);
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.activity.getName()).append("\n");
         stringBuilder.append(this.startDatePicker.getValue()).append(" ").append(this.startTimePicker.getTime()).append("\n");

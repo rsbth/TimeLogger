@@ -7,7 +7,6 @@ import com.mprtcz.timeloggerdesktop.dao.CustomDao;
 import com.mprtcz.timeloggerdesktop.dao.DatabaseCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.DataRepresentation;
-import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.Service;
 import com.mprtcz.timeloggerdesktop.validators.ActivityValidator;
 import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
@@ -30,10 +29,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Created by mprtcz on 2017-01-02.
@@ -69,6 +65,7 @@ public class Controller {
     private AddRecordPopup addRecordPopup;
     private Map<String, JFXButton> bottomButtons;
     private LocalDateTime latestRecord;
+    private ResourceBundle messages;
 
     private static final int LIST_VIEW_ROW_HEIGHT = 24; // inint 26/20/7
     private static final int LIST_VIEW_ROW_PADDING = 20;
@@ -79,6 +76,7 @@ public class Controller {
     private void initialize() {
         System.out.println("initialized");
         this.initializeService();
+        this.initializeLanguage();
         this.populateListView();
         this.setUpListViewListener();
         this.setListViewFactory();
@@ -107,6 +105,11 @@ public class Controller {
         this.loadAddDialog();
     }
 
+    private void initializeLanguage() {
+        Locale locale = new Locale("pl PL");
+        this.messages = ResourceBundle.getBundle("MessagesBundle", locale);
+    }
+
     private void initializeService() {
         try {
             CustomDao daoProvider = new DatabaseCustomDao();
@@ -129,7 +132,7 @@ public class Controller {
         StyleSetter.setBottomPanelStyle(this.bottomHBox);
         JFXDepthManager.setDepth(this.bottomHBox, 5);
         this.bottomHBox.setVisible(false);
-        StyleSetter.setBottomButtonIcons(this.bottomButtons);
+        StyleSetter.setBottomButtonContent(this.bottomButtons, this.messages);
         StyleSetter.stylizeButton(this.addActivityButton, new ImageView(StyleSetter.ADD_ICON));
         this.addActivityHbox.maxWidthProperty().bind(this.activityNamesList.widthProperty());
     }
@@ -228,7 +231,7 @@ public class Controller {
     }
 
     private void initEmptyDescriptionConfirmationPopup() {
-        this.confirmationPopup = new ConfirmationPopup(LabelsModel.EMPTY_DESCRIPTION_CONFIRM_LABEL, this.bottomDialog);
+        this.confirmationPopup = new ConfirmationPopup(messages.getString("empty_description_confirm_label"), this.bottomDialog, this.messages);
         this.confirmationPopup.getConfirmButton().setOnAction(e -> {
             this.addNewActivity(this.newActivityName, this.newActivityDescription);
             this.confirmationPopup.close();
@@ -236,7 +239,7 @@ public class Controller {
     }
 
     private void initActivityRemoveConfirmationPopup() {
-        this.confirmationPopup = new ConfirmationPopup(LabelsModel.REMOVE_ACTIVITYPOPUP_LABEL, this.bottomStackPane);
+        this.confirmationPopup = new ConfirmationPopup(messages.getString("remove_activitypopup_label"), this.bottomStackPane, this.messages);
         this.confirmationPopup.getConfirmButton().setOnAction(e -> {
             //TODO remove activity
             System.out.println("Remove Activity clicked");
@@ -263,7 +266,7 @@ public class Controller {
     }
 
     private void showAddRecordPopup() {
-        this.addRecordPopup = new AddRecordPopup(this.activityNamesList.getSelectionModel().getSelectedItem(), this.latestRecord);
+        this.addRecordPopup = new AddRecordPopup(this.activityNamesList.getSelectionModel().getSelectedItem(), this.latestRecord, this.messages);
         this.addRecordPopup.getOkButton().setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -354,7 +357,7 @@ public class Controller {
 
     private void loadAddDialog() {
         closeDialogIfExists();
-        DialogElementsConstructor dialogElementsConstructor = new DialogElementsConstructor();
+        DialogElementsConstructor dialogElementsConstructor = new DialogElementsConstructor(messages);
         dialogElementsConstructor.getConfirmButton().setOnMouseClicked(event ->
                 Controller.this.processSaveActivity(dialogElementsConstructor.getNewActivityNameTextField(),
                         dialogElementsConstructor.getNewActivityDescriptionTextField(), true, event));
@@ -373,7 +376,7 @@ public class Controller {
         if (selectedActivity == null) {
             return;
         }
-        ColorDialog colorDialog = new ColorDialog(selectedActivity);
+        ColorDialog colorDialog = new ColorDialog(selectedActivity, this.messages);
         colorDialog.getCancelButton().setOnMouseClicked(event -> Controller.this.bottomDialog.close());
         colorDialog.getConfirmButton().setOnMouseClicked(
                 event -> {

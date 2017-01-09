@@ -72,7 +72,6 @@ public class DataRepresentation {
         for (int i = 0; i < hoursDelta; i++) {
             Hour hour = new Hour(currentHour);
             this.hours.add(hour);
-            System.out.println("hour.toString() = " + hour.toString());
             currentHour = currentHour.plusHours(1L);
         }
     }
