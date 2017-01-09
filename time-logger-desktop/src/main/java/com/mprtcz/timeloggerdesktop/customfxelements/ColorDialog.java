@@ -45,7 +45,6 @@ public class ColorDialog extends DialogElementsConstructor {
         HBox.setMargin(getTitleLabel(), insets);
         HBox.setMargin(getConfirmButton(), insets);
         HBox.setMargin(getCancelButton(), insets);
-
         return new VBox(labelHBox, buttonHBox);
     }
 

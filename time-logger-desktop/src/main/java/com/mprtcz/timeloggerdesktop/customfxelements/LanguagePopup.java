@@ -19,9 +19,6 @@ import static com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstr
  */
 public class LanguagePopup extends JFXPopup {
 
-    List<JFXButton> buttons = new ArrayList<>();
-    Locale chosenLocale;
-
     public static final Map<String, Locale> availableLocales = new HashMap<>();
     static {
         availableLocales.put("POLISH", new Locale("pl", "PL"));

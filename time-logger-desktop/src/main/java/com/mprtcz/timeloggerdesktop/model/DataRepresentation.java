@@ -20,7 +20,7 @@ import java.util.List;
 @Getter
 public class DataRepresentation {
 
-    private static final boolean DRAW_HEADERS = false;
+    private static final boolean DRAW_HEADERS = true;
     private static final String FONT = "Roboto";
     private static final String FONT_COLOR = "darkgray";
     private static final int BASIC_CELL_HEIGHT = 10;
@@ -30,6 +30,8 @@ public class DataRepresentation {
     private List<Record> allRecords;
     private LocalDateTime earliest;
     private LocalDateTime latest;
+    private int basicCellHeight = 10;
+    private int headerHeight = 10;
 
     private List<Hour> hours = new ArrayList<>();
 
@@ -121,42 +123,54 @@ public class DataRepresentation {
         return -1;
     }
 
-    public void drawOnCanvas(Canvas canvas) {
+    public void calculatePositionsAndDraw(Canvas canvas) {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         double width = canvas.getWidth();
-        int unit = (int) width / 25;
-        System.out.println("this.toString() = " + this.toString());
+        this.basicCellHeight = (int) (canvas.getHeight() - headerHeight) / VISIBLE_DAYS;
+        int unitWidth = (int) width / 26;
         if (DRAW_HEADERS) {
-            drawHeader(graphicsContext, unit);
+            drawHeader(graphicsContext, unitWidth);
         }
         for (int i = (calculateDrawingStartingPoint()); i < this.hours.size(); i++) {
             Hour hourObject = this.hours.get(i);
-            String color;
-            if (hourObject.getActivitiesDuringThisHour().size() > 0) {
-                color = hourObject.getActivitiesDuringThisHour().get(0).getColor();
-            } else {
-                color = "#ffffff";
-            }
-            LocalDateTime earliestModulus = this.hours.get(calculateDrawingStartingPoint()).getDatetime();
-            earliestModulus = earliestModulus.minusHours(earliestModulus.getHour());
-            long dayDelta = earliestModulus.until(hourObject.getDatetime(), ChronoUnit.DAYS);
-            long hour = hourObject.getDatetime().getHour();
-            graphicsContext.setFill(Paint.valueOf(color));
-            graphicsContext.fillRect(unit * (hour + 1), BASIC_CELL_HEIGHT * (dayDelta + 1), unit, BASIC_CELL_HEIGHT);
-            String day = hourObject.getDatetime().getDayOfMonth() + "." + hourObject.getDatetime().getMonthValue();
-            graphicsContext.setFill(Paint.valueOf(FONT_COLOR));
-            if (DRAW_HEADERS) {
-                graphicsContext.setFont(Font.font(FONT));
-                graphicsContext.fillText(day, 0, (dayDelta + 2) * BASIC_CELL_HEIGHT);
-            }
+            drawOnCanvas(graphicsContext, hourObject, unitWidth);
+        }
+    }
+
+    private void drawOnCanvas(GraphicsContext graphicsContext, Hour hourObject, int cellWidth) {
+        String color = determineCellColor(hourObject);
+        long hour = hourObject.getDatetime().getHour();
+        long dayDelta = getDayDelta(hourObject);
+        graphicsContext.setFill(Paint.valueOf(color));
+        graphicsContext.fillRect(cellWidth * (hour + 2), basicCellHeight * (dayDelta + 1) + headerHeight, cellWidth, basicCellHeight);
+        String day = hourObject.getDatetime().getDayOfMonth() + "." + hourObject.getDatetime().getMonthValue();
+        graphicsContext.setFill(Paint.valueOf(FONT_COLOR));
+        if (DRAW_HEADERS) {
+            graphicsContext.setFont(Font.font(FONT));
+            graphicsContext.fillText(day, 0, (dayDelta + 2) * basicCellHeight + headerHeight);
+        }
+    }
+
+    private long getDayDelta(Hour hourObject) {
+        LocalDateTime earliestModulus = this.hours.get(calculateDrawingStartingPoint()).getDatetime();
+        earliestModulus = earliestModulus.minusHours(earliestModulus.getHour());
+        return earliestModulus.until(hourObject.getDatetime(), ChronoUnit.DAYS);
+    }
+
+    private String determineCellColor(Hour hour) {
+        if (hour.getActivitiesDuringThisHour().size() > 0) {
+            return hour.getActivitiesDuringThisHour().get(0).getColor();
+        } else {
+            return "#ffffff";
         }
     }
 
     private void drawHeader(GraphicsContext graphicsContext, int unit) {
         graphicsContext.setFill(Paint.valueOf(FONT_COLOR));
-        for (int i = 1; i < 25; i++) {
-            graphicsContext.setFont(Font.font(FONT));
-            graphicsContext.fillText(String.valueOf(i - 1), unit * i, BASIC_CELL_HEIGHT, (unit - 2));
+        graphicsContext.setFont(Font.font(FONT));
+        int leftOffset = 2;
+        for (int i = leftOffset; i < 26; i++) {
+            graphicsContext.fillText(String.valueOf(i - leftOffset), unit * i, headerHeight, (unit - 2));
         }
     }
 
@@ -183,8 +197,5 @@ public class DataRepresentation {
 
         long hours = now.until(past, ChronoUnit.HOURS);
         System.out.println(hours);
-
-
     }
-
 }

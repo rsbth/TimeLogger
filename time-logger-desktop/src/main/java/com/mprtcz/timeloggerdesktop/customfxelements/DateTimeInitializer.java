@@ -15,10 +15,10 @@ import java.util.Locale;
  * Created by mprtcz on 2017-01-06.
  */
 @Getter
-public class DateTimeInitializer {
+class DateTimeInitializer {
     List<JFXDatePicker> itemsList = new ArrayList<>();
 
-    public void initializeElements(EventHandler eventHandler, LocalDateTime latestRecord) {
+    void initializeElements(EventHandler eventHandler, LocalDateTime latestRecord) {
         for (JFXDatePicker datepicker : itemsList) {
             datepicker.setOnAction(eventHandler);
             datepicker.setOnMouseClicked(eventHandler);

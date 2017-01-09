@@ -36,13 +36,13 @@ public class DialogElementsConstructor {
         this.newActivityDescriptionTextField = new JFXTextField();
     }
 
-    public Region generateContent() {
+    public Region getContent() {
         setPopupContentsStyles();
         return createLayout();
     }
 
     public Region createLayout() {
-        VBox buttonsVBox = new VBox( cancelButton, confirmButton);
+        VBox buttonsVBox = new VBox(cancelButton, confirmButton);
         VBox textFieldVBox = new VBox(newActivityNameTextField, newActivityDescriptionTextField);
         textFieldVBox.setMinWidth(200);
         VBox.setMargin(confirmButton, new Insets(5));
@@ -69,8 +69,8 @@ public class DialogElementsConstructor {
         cancelButton.setPadding(new Insets(10));
         confirmButton.setRipplerFill(Paint.valueOf("darkgreen"));
         cancelButton.setRipplerFill(Paint.valueOf("red"));
-        cancelButton.setStyle(getBackgroundStyle(  StyleSetter.GRAY_COLOR));
-        confirmButton.setStyle(getBackgroundStyle( StyleSetter.ACCENT_COLOR));
+        cancelButton.setStyle(getBackgroundStyle(StyleSetter.GRAY_COLOR));
+        confirmButton.setStyle(getBackgroundStyle(StyleSetter.ACCENT_COLOR));
     }
 
     public static String getBackgroundStyle(String color) {
@@ -99,7 +99,7 @@ public class DialogElementsConstructor {
     public static Region getTextLayout(String value, boolean isAlert) {
         Label label = new Label(StringConverter.insertLineSeparator(value, 45));
         label.setBackground(getBackgroundOfColor("white"));
-        if(isAlert) {
+        if (isAlert) {
             label.setTextFill(Paint.valueOf("red"));
         }
         label.setPadding(new Insets(10));

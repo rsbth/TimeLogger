@@ -55,9 +55,7 @@ public class ConfirmationPopup extends JFXPopup {
     public static void setUpPopupProperties(JFXPopup popup, Pane pane, Region source) {
         popup.setContent(pane);
         popup.setSource(source);
-        popup.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
-            popup.close();
-        });
+        popup.addEventHandler(MouseEvent.MOUSE_EXITED, e -> popup.close());
     }
 
     private void addCloseHandler() {

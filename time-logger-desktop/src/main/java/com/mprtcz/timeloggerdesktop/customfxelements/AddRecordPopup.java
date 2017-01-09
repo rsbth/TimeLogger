@@ -6,14 +6,12 @@ import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.effects.JFXDepthManager;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
@@ -110,20 +108,12 @@ public class AddRecordPopup extends JFXPopup {
     }
 
     private void addListeners() {
-        this.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if (event.getCode() == KeyCode.ESCAPE) {
-                    AddRecordPopup.this.close();
-                }
-            }
-        });
-        this.closeButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+        this.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
                 AddRecordPopup.this.close();
             }
         });
+        this.closeButton.setOnAction(event -> AddRecordPopup.this.close());
     }
 
     private void initializeTimeElements(LocalDateTime latestRecord) {
@@ -137,12 +127,7 @@ public class AddRecordPopup extends JFXPopup {
     }
 
     private <T extends Event> EventHandler<T> getSummaryEventHandler() {
-        return new EventHandler<T>() {
-            @Override
-            public void handle(T event) {
-                AddRecordPopup.this.updateSummary();
-            }
-        };
+        return event -> AddRecordPopup.this.updateSummary();
     }
 
     private void updateSummary() {

@@ -13,9 +13,6 @@ import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
 import com.mprtcz.timeloggerdesktop.validators.ValidationResult;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -119,19 +116,16 @@ public class Controller {
     }
 
     private EventHandler getLanguageChangeEvent() {
-        return new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                JFXButton button = (JFXButton) event.getSource();
-                Locale newLocale = LanguagePopup.availableLocales.get(button.getText());
-                Scene scene = borderPane.getScene();
-                Locale.setDefault(newLocale);
-                try {
-                    scene.setRoot(FXMLLoader.load(Controller.this.getClass().getResource("/fxmls/mainMenu.fxml")));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Controller.this.displayException(e);
-                }
+        return event -> {
+            JFXButton button = (JFXButton) event.getSource();
+            Locale newLocale = LanguagePopup.availableLocales.get(button.getText());
+            Scene scene = borderPane.getScene();
+            Locale.setDefault(newLocale);
+            try {
+                scene.setRoot(FXMLLoader.load(Controller.this.getClass().getResource("/fxmls/mainMenu.fxml")));
+            } catch (IOException e) {
+                e.printStackTrace();
+                Controller.this.displayException(e);
             }
         };
     }
@@ -173,57 +167,46 @@ public class Controller {
         this.addActivityHbox.maxWidthProperty().bind(this.activityNamesList.widthProperty());
     }
 
+    private void saveRecord(RecordValidator.ValidationObject validationObject) {
+        try {
+            Task<ValidationResult> task = new Task<ValidationResult>() {
+                @Override
+                protected ValidationResult call() throws Exception {
+                    return Controller.this.service.addNewRecord(validationObject);
+                }
+            };
+            task.setOnSucceeded(event -> {
+                Controller.this.displayValidationResult(task.getValue());
+                Controller.this.getTableData();
+            });
+            task.setOnFailed(event -> Controller.this.displayException(task.getException()));
+            this.addTaskExceptionListener(task);
+            new Thread(task).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.showAlertPopup(e.getMessage());
+        }
+    }
+
     private void updateChangedActivityAndUI(Activity activity) {
         if (activity == null) {
             return;
         }
-        new Thread(() -> {
-            try {
-                Controller.this.service.updateActivity(activity);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        Task t = new Task() {
+        Task task = new Task() {
             @Override
             protected Object call() throws Exception {
                 Controller.this.service.updateActivity(activity);
                 return null;
             }
         };
-        t.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                Controller.this.populateListView();
-            }
+        task.setOnSucceeded(event -> {
+            Controller.this.populateListView();
+            Controller.this.getTableData();
         });
-        t.setOnFailed(new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                Controller.this.showAlertPopup(t.getValue().toString());
-            }
-        });
-        new Thread(t).start();
-        populateListView();
-        getTableData();
-    }
+        this.addTaskExceptionListener(task);
+        task.setOnFailed(event -> Controller.this.showAlertPopup(task.getValue().toString()));
 
-    private void populateListView() {
-        try {
-            Task<List<Activity>> task = new Task<List<Activity>>() {
-                @Override
-                protected List<Activity> call() throws Exception {
-                    return Controller.this.service.getActivities();
-                }
-            };
-            task.setOnSucceeded(event -> Controller.this.setActivityListItems(task.getValue()));
-            task.setOnFailed(event -> System.out.println(task.exceptionProperty().toString()));
-            this.addTaskExceptionListener(task);
-            new Thread(task).start();
-        } catch (Exception e) {
-            e.printStackTrace();
-            displayException(e);
-        }
+        new Thread(task).start();
     }
 
     private void addNewActivity(String name, String description) {
@@ -266,14 +249,6 @@ public class Controller {
         this.bottomDialog.close();
     }
 
-    private void initEmptyDescriptionConfirmationPopup() {
-        this.confirmationPopup = new ConfirmationPopup(messages.getString("empty_description_confirm_label"), this.bottomDialog, this.messages);
-        this.confirmationPopup.getConfirmButton().setOnAction(e -> {
-            this.addNewActivity(this.newActivityName, this.newActivityDescription);
-            this.confirmationPopup.close();
-        });
-    }
-
     private void initActivityRemoveConfirmationPopup() {
         this.confirmationPopup = new ConfirmationPopup(messages.getString("remove_activitypopup_label"), this.bottomStackPane, this.messages);
         this.confirmationPopup.getConfirmButton().setOnAction(e -> {
@@ -284,77 +259,16 @@ public class Controller {
         this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 10, -10);
     }
 
-    private void setUpListViewListener() {
-        this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                closeAddRecordPopupIfExists();
-                this.styleSetter.setVisibility(true);
-                Controller.this.onListViewItemClicked(newValue);
-            } else {
-//                this.styleSetter.setVisibility(false);
-                this.styleSetter.setVisibility(false);
-            }
-        });
+    private void setActivityListItems(List<Activity> activities) {
+        this.activityNamesList.setItems(FXCollections.observableList(activities));
+        this.activityNamesList.setExpanded(true);
+        this.activityNamesList.depthProperty().set(1);
+        this.activityNamesList.setPrefHeight
+                ((activities.size() * (LIST_VIEW_ROW_HEIGHT + LIST_VIEW_ROW_PADDING)) + LIST_VIEW_OFFSET);
     }
 
     private void onListViewItemClicked(Activity item) {
         this.showInfoPopup(item.getDescription());
-    }
-
-    private void showAddRecordPopup() {
-        this.addRecordPopup = new AddRecordPopup(this.activityNamesList.getSelectionModel().getSelectedItem(), this.latestRecord, this.messages);
-        this.addRecordPopup.getOkButton().setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Controller.this.addRecordPopup.close();
-                saveRecord(Controller.this.addRecordPopup.getObjectToValidate());
-            }
-        });
-        this.addRecordPopup.setSource(this.activityNamesList);
-        this.addRecordPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 50, 10);
-    }
-
-    private void closeAddRecordPopupIfExists() {
-        if (this.addRecordPopup != null) {
-            this.addRecordPopup.close();
-        }
-    }
-
-    private void saveRecord(RecordValidator.ValidationObject validationObject) {
-        try {
-            Task<ValidationResult> task = new Task<ValidationResult>() {
-                @Override
-                protected ValidationResult call() throws Exception {
-                    return Controller.this.service.addNewRecord(validationObject);
-                }
-            };
-            task.setOnSucceeded(event -> {
-                Controller.this.displayValidationResult(task.getValue());
-                Controller.this.getTableData();
-            });
-            this.addTaskExceptionListener(task);
-            new Thread(task).start();
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.showAlertPopup(e.getMessage());
-        }
-    }
-
-    private void showInfoPopup(String value) {
-        this.showPopup(value, false);
-    }
-
-    private void showPopup(String value, boolean isAlert) {
-        if (value == null || Objects.equals(value, "")) {
-            return;
-        }
-        this.closeDialogIfExists();
-        this.bottomDialog = new JFXDialog(bottomStackPane, DialogElementsConstructor.getTextLayout(value, isAlert), JFXDialog.DialogTransition.BOTTOM);
-        this.bottomDialog.show();
-    }
-
-    private void showAlertPopup(String value) {
-        this.showPopup(value, true);
     }
 
     private void setListViewFactory() {
@@ -374,17 +288,82 @@ public class Controller {
         });
     }
 
-    private void displayException(Exception e) {
+    private void setUpListViewListener() {
+        this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                closeAddRecordPopupIfExists();
+                this.styleSetter.setVisibility(true);
+                Controller.this.onListViewItemClicked(newValue);
+            } else {
+                this.styleSetter.setVisibility(false);
+            }
+        });
+    }
+
+    private void populateListView() {
+        try {
+            Task<List<Activity>> task = new Task<List<Activity>>() {
+                @Override
+                protected List<Activity> call() throws Exception {
+                    return Controller.this.service.getActivities();
+                }
+            };
+            task.setOnSucceeded(event -> Controller.this.setActivityListItems(task.getValue()));
+            task.setOnFailed(event -> System.out.println(task.exceptionProperty().toString()));
+            this.addTaskExceptionListener(task);
+            new Thread(task).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            displayException(e);
+        }
+    }
+
+    private void initEmptyDescriptionConfirmationPopup() {
+        this.confirmationPopup = new ConfirmationPopup(messages.getString("empty_description_confirm_label"),
+                this.bottomDialog, this.messages);
+        this.confirmationPopup.getConfirmButton().setOnAction(e -> {
+            this.addNewActivity(this.newActivityName, this.newActivityDescription);
+            this.confirmationPopup.close();
+        });
+    }
+
+    private void displayException(Throwable e) {
         this.showAlertPopup(e.getMessage());
     }
 
-    private void setActivityListItems(List<Activity> activities) {
-        this.activityNamesList.setItems(FXCollections.observableList(activities));
-        System.out.println("this.activityNamesList.getItems().toString() = " + this.activityNamesList.getItems().toString());
-        this.activityNamesList.setExpanded(true);
-        this.activityNamesList.depthProperty().set(1);
-        this.activityNamesList.setPrefHeight
-                ((activities.size() * (LIST_VIEW_ROW_HEIGHT + LIST_VIEW_ROW_PADDING)) + LIST_VIEW_OFFSET);
+    private void showAlertPopup(String value) {
+        this.showPopup(value, true);
+    }
+
+    private void showInfoPopup(String value) {
+        this.showPopup(value, false);
+    }
+
+    private void showPopup(String value, boolean isAlert) {
+        if (value == null || Objects.equals(value, "")) {
+            return;
+        }
+        this.closeDialogIfExists();
+        this.bottomDialog = new JFXDialog(bottomStackPane, DialogElementsConstructor.getTextLayout(value, isAlert),
+                JFXDialog.DialogTransition.BOTTOM);
+        this.bottomDialog.show();
+    }
+
+    private void showAddRecordPopup() {
+        this.addRecordPopup = new AddRecordPopup(this.activityNamesList.getSelectionModel().getSelectedItem(),
+                this.latestRecord, this.messages);
+        this.addRecordPopup.getOkButton().setOnAction(event -> {
+            Controller.this.addRecordPopup.close();
+            saveRecord(Controller.this.addRecordPopup.getObjectToValidate());
+        });
+        this.addRecordPopup.setSource(this.activityNamesList);
+        this.addRecordPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 50, 10);
+    }
+
+    private void closeAddRecordPopupIfExists() {
+        if (this.addRecordPopup != null) {
+            this.addRecordPopup.close();
+        }
     }
 
     private void displayValidationResult(ValidationResult validationResult) {
@@ -400,9 +379,8 @@ public class Controller {
         dialogElementsConstructor.getCancelButton().setOnMouseClicked(event ->
                 Controller.this.processSaveActivity(dialogElementsConstructor.getNewActivityNameTextField(),
                         dialogElementsConstructor.getNewActivityDescriptionTextField(), false, event));
-        VBox overlayVBox = (VBox) dialogElementsConstructor.generateContent();
+        VBox overlayVBox = (VBox) dialogElementsConstructor.getContent();
         this.bottomDialog = new JFXDialog(bottomStackPane, overlayVBox, JFXDialog.DialogTransition.BOTTOM);
-
         this.bottomDialog.show();
     }
 
@@ -420,8 +398,13 @@ public class Controller {
                     Controller.this.bottomDialog.close();
                 });
         this.bottomDialog = new JFXDialog(bottomStackPane, colorDialog.createLayout(), JFXDialog.DialogTransition.BOTTOM);
-
         this.bottomDialog.show();
+    }
+
+    private void closeDialogIfExists() {
+        if (this.bottomDialog != null) {
+            this.bottomDialog.close();
+        }
     }
 
     private void addTaskExceptionListener(Task<?> task) {
@@ -430,12 +413,6 @@ public class Controller {
             exception.printStackTrace();
             Controller.this.showAlertPopup(exception.getMessage());
         });
-    }
-
-    private void closeDialogIfExists() {
-        if (this.bottomDialog != null) {
-            this.bottomDialog.close();
-        }
     }
 
     private void getTableData() {
@@ -451,10 +428,9 @@ public class Controller {
     }
 
     private void drawDataOnCanvas(DataRepresentation dataRepresentation) {
-        System.out.println("Controller.drawDataOnCanvas");
         if (dataRepresentation.getHours().size() > 0) {
             this.latestRecord = dataRepresentation.getLatest();
-            dataRepresentation.drawOnCanvas(this.canvas);
+            dataRepresentation.calculatePositionsAndDraw(this.canvas);
         }
     }
 }
