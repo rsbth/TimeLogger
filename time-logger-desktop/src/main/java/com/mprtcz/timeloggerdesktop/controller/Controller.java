@@ -115,7 +115,7 @@ public class Controller {
     @FXML
     public void onLanguageButtonClicked() {
         LanguagePopup languagePopup = new LanguagePopup(this.lanugageButton, getLanguageChangeEvent());
-        languagePopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT);
+        languagePopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.RIGHT);
     }
 
     private EventHandler getLanguageChangeEvent() {

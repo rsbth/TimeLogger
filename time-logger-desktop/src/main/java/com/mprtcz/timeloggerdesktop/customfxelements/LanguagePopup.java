@@ -35,8 +35,10 @@ public class LanguagePopup extends JFXPopup {
 
     private Pane initLayout(EventHandler handler) {
         VBox vBox = new VBox();
+        vBox.setPrefWidth(100);
         for(Map.Entry entry : availableLocales.entrySet()) {
             JFXButton button = getStylizedButton(entry.getKey(), handler);
+            button.prefWidthProperty().bind(vBox.widthProperty());
             vBox.getChildren().add(button);
         }
         return vBox;

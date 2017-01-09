@@ -20,7 +20,7 @@ import java.util.List;
 @Getter
 public class DataRepresentation {
 
-    private static final boolean DRAW_HEADERS = true;
+    private static final boolean DRAW_HEADERS = false;
     private static final String FONT = "Roboto";
     private static final String FONT_COLOR = "darkgray";
     private static final int BASIC_CELL_HEIGHT = 10;
