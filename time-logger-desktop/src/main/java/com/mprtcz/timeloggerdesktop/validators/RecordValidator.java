@@ -14,12 +14,6 @@ import java.time.LocalTime;
 public class RecordValidator {
     private ValidationResult validationResult;
 
-    public ValidationResult validateNewRecordData(
-            LocalTime startTime, LocalTime endTime, LocalDate startDate, LocalDate endDate, Activity activity) {
-        ValidationObject v = new ValidationObject(startTime, endTime, startDate, endDate, activity);
-        return this.validateNewRecordData(v);
-    }
-
     public ValidationResult validateNewRecordData(ValidationObject validationObject) {
         this.validationResult = new ValidationResult();
         nullCheck(validationObject);

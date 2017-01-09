@@ -32,6 +32,7 @@ public class StyleSetter {
     public static final String REMOVE_ICON = "/icons/ic_clear_white_18pt.png";
     public static final String COLOR_ICON = "/icons/ic_color_lens_white_18pt.png";
     public static final String LANG_ICON = "/icons/ic_language_white_18pt.png";
+    public static final String SETTINGS_ICON = "/icons/ic_settings_white_18pt.png";
 
     private List<Region> listViewControlsDependants = new ArrayList<>();
     private List<Button> buttonsList = new ArrayList<>();
@@ -65,8 +66,8 @@ public class StyleSetter {
             if(entry.getKey().equals("changeColor")) {
                 setButtonContent(entry.getValue(), COLOR_ICON, messages.getString("color_record_button"));
             }
-            if(entry.getKey().equals("language")) {
-                setButtonContent(entry.getValue(), LANG_ICON, messages.getString("language_button"));
+            if(entry.getKey().equals("settings")) {
+                setButtonContent(entry.getValue(), SETTINGS_ICON, messages.getString("settings_button"));
             }
         }
 

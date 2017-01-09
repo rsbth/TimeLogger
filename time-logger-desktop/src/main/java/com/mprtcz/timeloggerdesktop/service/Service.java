@@ -8,8 +8,6 @@ import com.mprtcz.timeloggerdesktop.validators.ActivityValidator;
 import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
 import com.mprtcz.timeloggerdesktop.validators.ValidationResult;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -41,8 +39,6 @@ public class Service {
     }
 
     public ValidationResult addActivity(String name, String description) throws Exception {
-        System.out.println("name = " + name);
-        System.out.println("description = " + description);
         Activity activity = new Activity(name, description);
         return validateNewActivityAndSave(activity);
     }
@@ -60,19 +56,6 @@ public class Service {
         } else {
             return validationResult;
         }
-    }
-
-    public ValidationResult addNewRecord(LocalTime startTime, LocalTime endTime,
-                                         LocalDate startDate, LocalDate endDate, Activity activity) throws Exception {
-        ValidationResult validationResult = this.recordValidator.validateNewRecordData(
-                startTime, endTime, startDate, endDate, activity);
-        if (validationResult.isErrorFree()) {
-            Record newRecord = new Record(startTime, endTime, startDate, endDate, activity);
-            Activity rootActivity = customDao.findActivityById(activity.getId());
-            rootActivity.addRecord(newRecord);
-            customDao.update(rootActivity);
-        }
-        return validationResult;
     }
 
     public ValidationResult addNewRecord(RecordValidator.ValidationObject object) throws Exception {

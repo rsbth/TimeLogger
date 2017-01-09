@@ -13,6 +13,7 @@ import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
 import com.mprtcz.timeloggerdesktop.validators.ValidationResult;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -113,6 +114,18 @@ public class Controller {
     public void onLanguageButtonClicked() {
         LanguagePopup languagePopup = new LanguagePopup(this.lanugageButton, getLanguageChangeEvent());
         languagePopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.RIGHT);
+        SettingsPopup settingsPopup = new SettingsPopup(this.activityNamesList, this.messages);
+        settingsPopup.getConfirmButton().setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Controller.this.applyNewSettings(settingsPopup.getSettingsObject());
+            }
+        });
+        settingsPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT);
+    }
+
+    private void applyNewSettings(SettingsPopup.Settings settings) {
+        System.out.println("After click settings = " + settings);
     }
 
     private EventHandler getLanguageChangeEvent() {
@@ -150,7 +163,7 @@ public class Controller {
         this.bottomButtons.put("addRecord", this.addRecordButton);
         this.bottomButtons.put("removeActivity", this.removeActivityButton);
         this.bottomButtons.put("changeColor", this.changeColorButton);
-        this.bottomButtons.put("language", this.lanugageButton);
+        this.bottomButtons.put("settings", this.lanugageButton);
         this.styleSetter = new StyleSetter();
         styleSetter.getListViewControlsDependants().add(this.addRecordButton);
         styleSetter.getListViewControlsDependants().add(this.removeActivityButton);
