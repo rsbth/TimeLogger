@@ -9,12 +9,12 @@ import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.DataRepresentation;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
 import com.mprtcz.timeloggerdesktop.service.Service;
-import com.mprtcz.timeloggerdesktop.utilities.StringConverter;
 import com.mprtcz.timeloggerdesktop.validators.ActivityValidator;
 import com.mprtcz.timeloggerdesktop.validators.RecordValidator;
 import com.mprtcz.timeloggerdesktop.validators.ValidationResult;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -69,8 +69,9 @@ public class Controller {
     private AddRecordPopup addRecordPopup;
     private Map<String, JFXButton> bottomButtons;
 
-    private static final int LIST_VIEW_ROW_HEIGHT = 26;
+    private static final int LIST_VIEW_ROW_HEIGHT = 24; // inint 26/20/7
     private static final int LIST_VIEW_ROW_PADDING = 20;
+    private static final int LIST_VIEW_OFFSET = 9;
 
 
     @FXML
@@ -142,7 +143,27 @@ public class Controller {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }).start();
+        });
+        Task t = new Task() {
+            @Override
+            protected Object call() throws Exception {
+                Controller.this.service.updateActivity(activity);
+                return null;
+            }
+        };
+        t.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                Controller.this.populateListView();
+            }
+        });
+        t.setOnFailed(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                Controller.this.showAlertPopup(t.getValue().toString());
+            }
+        });
+        new Thread(t).start();
         populateListView();
         getTableData();
     }
@@ -285,17 +306,9 @@ public class Controller {
 
     private void showPopup(String value, boolean isAlert) {
         if(value == null || Objects.equals(value, "")) {return;}
-        if(this.detailsPopup != null) {
-            this.detailsPopup.close();
-        }
-        this.detailsPopup = ConfirmationPopup.getTextPopup(StringConverter.insertLineSeparator(value, 50), this.bottomHBox, isAlert);
-        this.detailsPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.RIGHT);
-        this.detailsPopup.setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                Controller.this.detailsPopup.close();
-            }
-        });
+        this.closeDialogIfExists();
+        this.bottomDialog = new JFXDialog(bottomStackPane, DialogElementsConstructor.getTextLayout(value, isAlert), JFXDialog.DialogTransition.BOTTOM);
+        this.bottomDialog.show();
     }
 
     private void showAlertPopup(String value) {
@@ -325,10 +338,11 @@ public class Controller {
 
     private void setActivityListItems(List<Activity> activities) {
         this.activityNamesList.setItems(FXCollections.observableList(activities));
+        System.out.println("this.activityNamesList.getItems().toString() = " + this.activityNamesList.getItems().toString());
         this.activityNamesList.setExpanded(true);
         this.activityNamesList.depthProperty().set(1);
         this.activityNamesList.setPrefHeight
-                (activities.size() * LIST_VIEW_ROW_HEIGHT + 2 + activities.size() * LIST_VIEW_ROW_PADDING);
+                ((activities.size() * LIST_VIEW_ROW_HEIGHT) + LIST_VIEW_OFFSET + (activities.size() * LIST_VIEW_ROW_PADDING));
     }
 
     private void displayValidationResult(ValidationResult validationResult) {
