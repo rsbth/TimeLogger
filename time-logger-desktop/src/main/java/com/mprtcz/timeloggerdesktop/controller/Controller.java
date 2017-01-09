@@ -15,8 +15,11 @@ import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -28,6 +31,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -55,6 +59,8 @@ public class Controller {
     @FXML
     private JFXButton addActivityButton;
     @FXML
+    private JFXButton lanugageButton;
+    @FXML
     private HBox addActivityHbox;
 
     private ConfirmationPopup confirmationPopup;
@@ -66,6 +72,7 @@ public class Controller {
     private Map<String, JFXButton> bottomButtons;
     private LocalDateTime latestRecord;
     private ResourceBundle messages;
+    private StyleSetter styleSetter;
 
     private static final int LIST_VIEW_ROW_HEIGHT = 24; // inint 26/20/7
     private static final int LIST_VIEW_ROW_PADDING = 20;
@@ -105,8 +112,32 @@ public class Controller {
         this.loadAddDialog();
     }
 
+    @FXML
+    public void onLanguageButtonClicked() {
+        LanguagePopup languagePopup = new LanguagePopup(this.lanugageButton, getLanguageChangeEvent());
+        languagePopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT);
+    }
+
+    private EventHandler getLanguageChangeEvent() {
+        return new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                JFXButton button = (JFXButton) event.getSource();
+                Locale newLocale = LanguagePopup.availableLocales.get(button.getText());
+                Scene scene = borderPane.getScene();
+                Locale.setDefault(newLocale);
+                try {
+                    scene.setRoot(FXMLLoader.load(Controller.this.getClass().getResource("/fxmls/mainMenu.fxml")));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Controller.this.displayException(e);
+                }
+            }
+        };
+    }
+
     private void initializeLanguage() {
-        Locale locale = new Locale("pl PL");
+        Locale locale = Locale.getDefault();
         this.messages = ResourceBundle.getBundle("MessagesBundle", locale);
     }
 
@@ -125,13 +156,18 @@ public class Controller {
         this.bottomButtons.put("addRecord", this.addRecordButton);
         this.bottomButtons.put("removeActivity", this.removeActivityButton);
         this.bottomButtons.put("changeColor", this.changeColorButton);
+        this.bottomButtons.put("language", this.lanugageButton);
+        this.styleSetter = new StyleSetter();
+        styleSetter.getListViewControlsDependants().add(this.addRecordButton);
+        styleSetter.getListViewControlsDependants().add(this.removeActivityButton);
+        styleSetter.getListViewControlsDependants().add(this.changeColorButton);
     }
 
     private void setAdditionalStyles() {
         JFXDepthManager.setDepth(this.canvas, 1);
         StyleSetter.setBottomPanelStyle(this.bottomHBox);
         JFXDepthManager.setDepth(this.bottomHBox, 5);
-        this.bottomHBox.setVisible(false);
+        this.styleSetter.setVisibility(false);
         StyleSetter.setBottomButtonContent(this.bottomButtons, this.messages);
         StyleSetter.stylizeButton(this.addActivityButton, new ImageView(StyleSetter.ADD_ICON));
         this.addActivityHbox.maxWidthProperty().bind(this.activityNamesList.widthProperty());
@@ -252,11 +288,11 @@ public class Controller {
         this.activityNamesList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 closeAddRecordPopupIfExists();
-                this.bottomHBox.setVisible(true);
+                this.styleSetter.setVisibility(true);
                 Controller.this.onListViewItemClicked(newValue);
             } else {
 //                this.styleSetter.setVisibility(false);
-                this.bottomHBox.setVisible(false);
+                this.styleSetter.setVisibility(false);
             }
         });
     }

@@ -9,7 +9,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Paint;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -53,7 +52,7 @@ public class ConfirmationPopup extends JFXPopup {
         return vBox;
     }
 
-    private static void setUpPopupProperties(JFXPopup popup, Pane pane, Region source) {
+    public static void setUpPopupProperties(JFXPopup popup, Pane pane, Region source) {
         popup.setContent(pane);
         popup.setSource(source);
         popup.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
@@ -70,21 +69,4 @@ public class ConfirmationPopup extends JFXPopup {
         this.label = new Label(labelString);
         this.cancelButton = new JFXButton(messages.getString("confirmation_popup_no"));
     }
-
-    public static JFXPopup getTextPopup(String text, Region source, boolean isAlert) {
-        JFXPopup popup = new JFXPopup();
-        Label label = new Label(text);
-        label.setBackground(getBackgroundOfColor("white"));
-        if(isAlert) {
-            label.setTextFill(Paint.valueOf("red"));
-        }
-        label.setPadding(new Insets(10));
-        HBox hBox = new HBox(label);
-        HBox.setMargin(label, new Insets(10));
-        popup.setContent(label);
-        setUpPopupProperties(popup, hBox, source);
-        return popup;
-    }
-
-
 }
