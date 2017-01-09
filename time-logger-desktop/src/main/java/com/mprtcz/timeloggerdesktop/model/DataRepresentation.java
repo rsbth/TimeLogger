@@ -21,6 +21,10 @@ import java.util.List;
 public class DataRepresentation {
 
     private static final boolean DRAW_HEADERS = true;
+    private static final String FONT = "Roboto";
+    private static final String FONT_COLOR = "darkgray";
+    private static final int BASIC_CELL_HEIGHT = 10;
+    private static final int VISIBLE_DAYS = 7;
 
     private List<Activity> allActivities;
     private List<Record> allRecords;
@@ -89,11 +93,11 @@ public class DataRepresentation {
 
     @Getter
     @EqualsAndHashCode
-    public class Hour {
+    public static class Hour {
         List<Activity> activitiesDuringThisHour;
         LocalDateTime datetime;
 
-        Hour(LocalDateTime datetime) {
+        public Hour(LocalDateTime datetime) {
             this.datetime = datetime;
             this.activitiesDuringThisHour = new ArrayList<>();
         }
@@ -126,42 +130,47 @@ public class DataRepresentation {
         if (DRAW_HEADERS) {
             drawHeader(graphicsContext, unit);
         }
-        for (int i = 0; i < this.hours.size(); i++) {
+        for (int i = (calculateDrawingStartingPoint()); i < this.hours.size(); i++) {
             Hour hourObject = this.hours.get(i);
             String color;
-            System.out.println("this.hours.get(i).datetime.toString() = " + this.hours.get(i).datetime.toString());
             if (hourObject.getActivitiesDuringThisHour().size() > 0) {
                 color = hourObject.getActivitiesDuringThisHour().get(0).getColor();
             } else {
                 color = "#ffffff";
             }
-            System.out.println("hourObject.getDatetime() = " + hourObject.getDatetime());
-            System.out.println("this.earliest = " + this.earliest);
-            LocalDateTime earliestModulus = earliest;
-            System.out.println("earliestModulus = " + earliestModulus);
+            LocalDateTime earliestModulus = this.hours.get(calculateDrawingStartingPoint()).getDatetime();
             earliestModulus = earliestModulus.minusHours(earliestModulus.getHour());
-            System.out.println("earliestModulus minus hours = " + earliestModulus);
             long dayDelta = earliestModulus.until(hourObject.getDatetime(), ChronoUnit.DAYS);
-            System.out.println("dayDelta = " + dayDelta);
             long hour = hourObject.getDatetime().getHour();
             graphicsContext.setFill(Paint.valueOf(color));
-            System.out.println("unit*(hour+1) = " + unit * (hour + 1));
-            System.out.println("10 * (dayDelta + 1) = " + 10 * (dayDelta + 1));
-            graphicsContext.fillRect(unit * (hour + 1), 10 * (dayDelta + 1), unit, 10);
+            graphicsContext.fillRect(unit * (hour + 1), BASIC_CELL_HEIGHT * (dayDelta + 1), unit, BASIC_CELL_HEIGHT);
             String day = hourObject.getDatetime().getDayOfMonth() + "." + hourObject.getDatetime().getMonthValue();
-            graphicsContext.setFill(Paint.valueOf("darkgray"));
+            graphicsContext.setFill(Paint.valueOf(FONT_COLOR));
             if (DRAW_HEADERS) {
-                graphicsContext.setFont(Font.font("Roboto"));
-                graphicsContext.fillText(day, 0, (dayDelta + 2) * 10);
+                graphicsContext.setFont(Font.font(FONT));
+                graphicsContext.fillText(day, 0, (dayDelta + 2) * BASIC_CELL_HEIGHT);
             }
         }
     }
 
     private void drawHeader(GraphicsContext graphicsContext, int unit) {
-        graphicsContext.setFill(Paint.valueOf("darkgray"));
+        graphicsContext.setFill(Paint.valueOf(FONT_COLOR));
         for (int i = 1; i < 25; i++) {
-            graphicsContext.setFont(Font.font("Roboto"));
-            graphicsContext.fillText(String.valueOf(i - 1), unit * i, 10, 10);
+            graphicsContext.setFont(Font.font(FONT));
+            graphicsContext.fillText(String.valueOf(i - 1), unit * i, BASIC_CELL_HEIGHT, (unit - 2));
+        }
+    }
+
+    public int calculateDrawingStartingPoint() {
+        if(this.hours.size() < (VISIBLE_DAYS * 24)) {
+            return 0;
+        } else {
+            int surplusHours = this.hours.size() % 24;
+            if(surplusHours == 0) {
+                return this.hours.size() - (VISIBLE_DAYS * 24) - 2;
+            } else {
+                return this.hours.size() - surplusHours - ((VISIBLE_DAYS - 1) * 24) - 2;
+            }
         }
     }
 
@@ -175,6 +184,8 @@ public class DataRepresentation {
 
         long hours = now.until(past, ChronoUnit.HOURS);
         System.out.println(hours);
+
+
     }
 
 }
