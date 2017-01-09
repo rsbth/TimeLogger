@@ -3,6 +3,7 @@ package com.mprtcz.timeloggerdesktop.model;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -56,6 +57,7 @@ public class DataRepresentation {
 
         this.earliest = LocalDateTime.ofInstant(earliestRecord.toInstant(), ZoneId.systemDefault());
         this.latest = LocalDateTime.ofInstant(latestRecord.toInstant(), ZoneId.systemDefault());
+
     }
 
     private void createHoursList() {
@@ -64,7 +66,7 @@ public class DataRepresentation {
         LocalDateTime currentHour = earliest;
         this.hours = new ArrayList<>();
         for (int i = 0; i < hoursDelta; i++) {
-            Hour hour  = new Hour(currentHour);
+            Hour hour = new Hour(currentHour);
             this.hours.add(hour);
             System.out.println("hour.toString() = " + hour.toString());
             currentHour = currentHour.plusHours(1L);
@@ -109,7 +111,7 @@ public class DataRepresentation {
     private int getListPositionOfSpecificHour(LocalDateTime hourToFind) {
         for (Hour hour :
                 this.hours) {
-            if(hourToFind.equals(hour.getDatetime())) {
+            if (hourToFind.equals(hour.getDatetime())) {
                 return this.hours.indexOf(hour);
             }
         }
@@ -119,16 +121,16 @@ public class DataRepresentation {
     public void drawOnCanvas(Canvas canvas) {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         double width = canvas.getWidth();
-        int unit = (int) width/25;
+        int unit = (int) width / 25;
         System.out.println("this.toString() = " + this.toString());
-        if(DRAW_HEADERS) {
+        if (DRAW_HEADERS) {
             drawHeader(graphicsContext, unit);
         }
         for (int i = 0; i < this.hours.size(); i++) {
             Hour hourObject = this.hours.get(i);
             String color;
             System.out.println("this.hours.get(i).datetime.toString() = " + this.hours.get(i).datetime.toString());
-            if(hourObject.getActivitiesDuringThisHour().size() > 0) {
+            if (hourObject.getActivitiesDuringThisHour().size() > 0) {
                 color = hourObject.getActivitiesDuringThisHour().get(0).getColor();
             } else {
                 color = "#ffffff";
@@ -145,18 +147,20 @@ public class DataRepresentation {
             graphicsContext.setFill(Paint.valueOf(color));
             System.out.println("unit*(hour+1) = " + unit * (hour + 1));
             System.out.println("10 * (dayDelta + 1) = " + 10 * (dayDelta + 1));
-            graphicsContext.fillRect( unit*(hour + 1), 10*(dayDelta + 1), unit, 10);
-            String day = hourObject.getDatetime().getDayOfMonth() +"." + hourObject.getDatetime().getMonthValue();
-            graphicsContext.setFill(Paint.valueOf("black"));
-            if(DRAW_HEADERS) {
+            graphicsContext.fillRect(unit * (hour + 1), 10 * (dayDelta + 1), unit, 10);
+            String day = hourObject.getDatetime().getDayOfMonth() + "." + hourObject.getDatetime().getMonthValue();
+            graphicsContext.setFill(Paint.valueOf("darkgray"));
+            if (DRAW_HEADERS) {
+                graphicsContext.setFont(Font.font("Roboto"));
                 graphicsContext.fillText(day, 0, (dayDelta + 2) * 10);
             }
         }
     }
 
     private void drawHeader(GraphicsContext graphicsContext, int unit) {
-        graphicsContext.setFill(Paint.valueOf("black"));
+        graphicsContext.setFill(Paint.valueOf("darkgray"));
         for (int i = 1; i < 25; i++) {
+            graphicsContext.setFont(Font.font("Roboto"));
             graphicsContext.fillText(String.valueOf(i - 1), unit * i, 10, 10);
         }
     }

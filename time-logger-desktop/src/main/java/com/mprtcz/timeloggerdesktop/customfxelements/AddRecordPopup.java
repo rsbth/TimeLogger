@@ -19,6 +19,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 import static com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor.getBackgroundOfColor;
 
 /**
@@ -38,11 +40,11 @@ public class AddRecordPopup extends JFXPopup {
     private Label summaryLabel;
     private Activity activity;
 
-    public AddRecordPopup(Activity activity) {
+    public AddRecordPopup(Activity activity, LocalDateTime latestRecord) {
         this.activity = activity;
         this.initializeElements();
         this.addListeners();
-        initializeTimeElements();
+        initializeTimeElements(latestRecord);
         this.setContent(this.createLayout());
     }
 
@@ -121,14 +123,14 @@ public class AddRecordPopup extends JFXPopup {
         });
     }
 
-    private void initializeTimeElements() {
+    private void initializeTimeElements(LocalDateTime latestRecord) {
         DateTimeInitializer dateTimeInitializer = new DateTimeInitializer();
         dateTimeInitializer.getItemsList().add(startDatePicker);
         dateTimeInitializer.getItemsList().add(endDatePicker);
         dateTimeInitializer.getItemsList().add(startTimePicker);
         dateTimeInitializer.getItemsList().add(endTimePicker);
 
-        dateTimeInitializer.initializeElements(getSummaryEventHandler());
+        dateTimeInitializer.initializeElements(getSummaryEventHandler(), latestRecord);
     }
 
     private <T extends Event> EventHandler<T> getSummaryEventHandler() {

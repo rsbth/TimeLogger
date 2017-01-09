@@ -4,7 +4,7 @@ import com.jfoenix.controls.*;
 import com.jfoenix.effects.JFXDepthManager;
 import com.mprtcz.timeloggerdesktop.customfxelements.*;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
-import com.mprtcz.timeloggerdesktop.dao.InMemoryCustomDao;
+import com.mprtcz.timeloggerdesktop.dao.DatabaseCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.DataRepresentation;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
@@ -29,6 +29,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,13 +62,13 @@ public class Controller {
     private HBox addActivityHbox;
 
     private ConfirmationPopup confirmationPopup;
-    private JFXPopup detailsPopup;
     private JFXDialog bottomDialog;
     private Service service;
     private String newActivityName;
     private String newActivityDescription;
     private AddRecordPopup addRecordPopup;
     private Map<String, JFXButton> bottomButtons;
+    private LocalDateTime latestRecord;
 
     private static final int LIST_VIEW_ROW_HEIGHT = 24; // inint 26/20/7
     private static final int LIST_VIEW_ROW_PADDING = 20;
@@ -108,7 +109,7 @@ public class Controller {
 
     private void initializeService() {
         try {
-            CustomDao daoProvider = new InMemoryCustomDao();
+            CustomDao daoProvider = new DatabaseCustomDao();
             this.service = new Service(new ActivityValidator(), new RecordValidator(), daoProvider);
         } catch (Exception e) {
             e.printStackTrace();
@@ -262,7 +263,7 @@ public class Controller {
     }
 
     private void showAddRecordPopup() {
-        this.addRecordPopup = new AddRecordPopup(this.activityNamesList.getSelectionModel().getSelectedItem());
+        this.addRecordPopup = new AddRecordPopup(this.activityNamesList.getSelectionModel().getSelectedItem(), this.latestRecord);
         this.addRecordPopup.getOkButton().setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -305,7 +306,9 @@ public class Controller {
     }
 
     private void showPopup(String value, boolean isAlert) {
-        if(value == null || Objects.equals(value, "")) {return;}
+        if (value == null || Objects.equals(value, "")) {
+            return;
+        }
         this.closeDialogIfExists();
         this.bottomDialog = new JFXDialog(bottomStackPane, DialogElementsConstructor.getTextLayout(value, isAlert), JFXDialog.DialogTransition.BOTTOM);
         this.bottomDialog.show();
@@ -342,7 +345,7 @@ public class Controller {
         this.activityNamesList.setExpanded(true);
         this.activityNamesList.depthProperty().set(1);
         this.activityNamesList.setPrefHeight
-                ((activities.size() * LIST_VIEW_ROW_HEIGHT) + LIST_VIEW_OFFSET + (activities.size() * LIST_VIEW_ROW_PADDING));
+                ((activities.size() * (LIST_VIEW_ROW_HEIGHT + LIST_VIEW_ROW_PADDING)) + LIST_VIEW_OFFSET);
     }
 
     private void displayValidationResult(ValidationResult validationResult) {
@@ -410,6 +413,9 @@ public class Controller {
 
     private void drawDataOnCanvas(DataRepresentation dataRepresentation) {
         System.out.println("Controller.drawDataOnCanvas");
-        dataRepresentation.drawOnCanvas(this.canvas);
+        if (dataRepresentation.getHours().size() > 0) {
+            this.latestRecord = dataRepresentation.getLatest();
+            dataRepresentation.drawOnCanvas(this.canvas);
+        }
     }
 }
