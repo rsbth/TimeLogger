@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 public class DataRepresentation {
 
-    private static final boolean DRAW_HEADERS = false;
+    private static final boolean DRAW_HEADERS = true;
 
     private List<Activity> allActivities;
     private List<Record> allRecords;

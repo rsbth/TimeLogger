@@ -4,7 +4,7 @@ import com.jfoenix.controls.*;
 import com.jfoenix.effects.JFXDepthManager;
 import com.mprtcz.timeloggerdesktop.customfxelements.*;
 import com.mprtcz.timeloggerdesktop.dao.CustomDao;
-import com.mprtcz.timeloggerdesktop.dao.DatabaseCustomDao;
+import com.mprtcz.timeloggerdesktop.dao.InMemoryCustomDao;
 import com.mprtcz.timeloggerdesktop.model.Activity;
 import com.mprtcz.timeloggerdesktop.model.DataRepresentation;
 import com.mprtcz.timeloggerdesktop.model.LabelsModel;
@@ -16,7 +16,6 @@ import com.mprtcz.timeloggerdesktop.validators.ValidationResult;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -43,8 +42,6 @@ public class Controller {
     @FXML
     private JFXListView<Activity> activityNamesList;
     @FXML
-    private JFXSnackbar activityDetailSnackbar;
-    @FXML
     private BorderPane borderPane;
     @FXML
     private StackPane bottomStackPane;
@@ -64,15 +61,14 @@ public class Controller {
     private HBox addActivityHbox;
 
     private ConfirmationPopup confirmationPopup;
+    private JFXPopup detailsPopup;
     private JFXDialog bottomDialog;
-    private StyleSetter styleSetter;
     private Service service;
     private String newActivityName;
     private String newActivityDescription;
     private AddRecordPopup addRecordPopup;
     private Map<String, JFXButton> bottomButtons;
 
-    private static final int SNACKBAR_DURATION = 5000; //[ms]
     private static final int LIST_VIEW_ROW_HEIGHT = 26;
     private static final int LIST_VIEW_ROW_PADDING = 20;
 
@@ -84,7 +80,6 @@ public class Controller {
         this.populateListView();
         this.setUpListViewListener();
         this.setListViewFactory();
-        this.collectItemsDependantOnListView();
         this.collectBottomButtons();
         this.getTableData();
         this.setAdditionalStyles();
@@ -110,15 +105,9 @@ public class Controller {
         this.loadAddDialog();
     }
 
-
-    private void collectItemsDependantOnListView() {
-        this.styleSetter = new StyleSetter();
-        this.styleSetter.setVisibility(false);
-    }
-
     private void initializeService() {
         try {
-            CustomDao daoProvider = new DatabaseCustomDao();
+            CustomDao daoProvider = new InMemoryCustomDao();
             this.service = new Service(new ActivityValidator(), new RecordValidator(), daoProvider);
         } catch (Exception e) {
             e.printStackTrace();
@@ -248,8 +237,7 @@ public class Controller {
     }
 
     private void onListViewItemClicked(Activity item) {
-        this.showSnackbar(item.getDescription());
-        this.styleSetter.setVisibility(true);
+        this.showInfoPopup(item.getDescription());
     }
 
     private void showAddRecordPopup() {
@@ -287,21 +275,31 @@ public class Controller {
             new Thread(task).start();
         } catch (Exception e) {
             e.printStackTrace();
-            showSnackbar(e.getMessage());
+            this.showAlertPopup(e.getMessage());
         }
     }
 
-    private void showSnackbar(String value) {
-        if (value == null || Objects.equals(value, "")) {
-            return;
+    private void showInfoPopup(String value) {
+        this.showPopup(value, false);
+    }
+
+    private void showPopup(String value, boolean isAlert) {
+        if(value == null || Objects.equals(value, "")) {return;}
+        if(this.detailsPopup != null) {
+            this.detailsPopup.close();
         }
-        closeSnackBarIfExists();
-        closeDialogIfExists();
-        this.activityDetailSnackbar = new JFXSnackbar(borderPane);
-        EventHandler<Event> eventHandler = event ->
-                Controller.this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
-        this.activityDetailSnackbar.show(StringConverter.insertLineSeparator(value, 50),
-                "X", SNACKBAR_DURATION, eventHandler);
+        this.detailsPopup = ConfirmationPopup.getTextPopup(StringConverter.insertLineSeparator(value, 50), this.bottomHBox, isAlert);
+        this.detailsPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.RIGHT);
+        this.detailsPopup.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Controller.this.detailsPopup.close();
+            }
+        });
+    }
+
+    private void showAlertPopup(String value) {
+        this.showPopup(value, true);
     }
 
     private void setListViewFactory() {
@@ -322,7 +320,7 @@ public class Controller {
     }
 
     private void displayException(Exception e) {
-        showSnackbar(e.getMessage());
+        this.showAlertPopup(e.getMessage());
     }
 
     private void setActivityListItems(List<Activity> activities) {
@@ -334,11 +332,10 @@ public class Controller {
     }
 
     private void displayValidationResult(ValidationResult validationResult) {
-        showSnackbar(validationResult.getAllMessages());
+        this.showAlertPopup(validationResult.getAllMessages());
     }
 
     private void loadAddDialog() {
-        closeSnackBarIfExists();
         closeDialogIfExists();
         DialogElementsConstructor dialogElementsConstructor = new DialogElementsConstructor();
         dialogElementsConstructor.getConfirmButton().setOnMouseClicked(event ->
@@ -355,7 +352,6 @@ public class Controller {
 
     private void loadColorDialog() {
         closeDialogIfExists();
-        closeSnackBarIfExists();
         Activity selectedActivity = this.activityNamesList.getSelectionModel().getSelectedItem();
         if (selectedActivity == null) {
             return;
@@ -376,14 +372,8 @@ public class Controller {
         task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
             Exception exception = (Exception) newValue;
             exception.printStackTrace();
-            showSnackbar(exception.getMessage());
+            Controller.this.showAlertPopup(exception.getMessage());
         });
-    }
-
-    private void closeSnackBarIfExists() {
-        if (this.activityDetailSnackbar.getPopupContainer() != null) {
-            this.activityDetailSnackbar.unregisterSnackbarContainer(borderPane);
-        }
     }
 
     private void closeDialogIfExists() {

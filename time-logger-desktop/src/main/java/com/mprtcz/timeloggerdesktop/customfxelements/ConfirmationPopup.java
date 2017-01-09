@@ -10,8 +10,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import lombok.Getter;
 import lombok.Setter;
+
+import static com.mprtcz.timeloggerdesktop.customfxelements.DialogElementsConstructor.getBackgroundOfColor;
+import static com.mprtcz.timeloggerdesktop.customfxelements.StyleSetter.BACKGROUND_COLOR;
 
 /**
  * Created by mprtcz on 2017-01-05.
@@ -28,7 +32,7 @@ public class ConfirmationPopup extends JFXPopup {
         DialogElementsConstructor.setStyleOfConfirmCancelButtons(this.confirmButton, this.cancelButton);
         this.label.setPadding(new Insets(10));
         this.addCloseHandler();
-        this.setUpPopupProperties(this, createLayout(), source);
+        setUpPopupProperties(this, createLayout(), source);
     }
 
     private HBox createButtonHBox() {
@@ -42,11 +46,11 @@ public class ConfirmationPopup extends JFXPopup {
     private VBox createLayout() {
         VBox vBox = new VBox(this.label, createButtonHBox());
         vBox.setStyle(" -fx-alignment: center");
-        vBox.setBackground(DialogElementsConstructor.getBackgroundOfColor(StyleSetter.BACKGROUND_COLOR));
+        vBox.setBackground(getBackgroundOfColor(BACKGROUND_COLOR));
         return vBox;
     }
 
-    private void setUpPopupProperties(JFXPopup popup, Pane pane, Region source) {
+    private static void setUpPopupProperties(JFXPopup popup, Pane pane, Region source) {
         popup.setContent(pane);
         popup.setSource(source);
         popup.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
@@ -62,6 +66,21 @@ public class ConfirmationPopup extends JFXPopup {
         this.confirmButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_YES);
         this.label = new Label(labelString);
         this.cancelButton = new JFXButton(LabelsModel.CONFIRMATION_POPUP_NO);
+    }
+
+    public static JFXPopup getTextPopup(String text, Region source, boolean isAlert) {
+        JFXPopup popup = new JFXPopup();
+        Label label = new Label(text);
+        label.setBackground(getBackgroundOfColor("white"));
+        if(isAlert) {
+            label.setTextFill(Paint.valueOf("red"));
+        }
+        label.setPadding(new Insets(10));
+        HBox hBox = new HBox(label);
+        HBox.setMargin(label, new Insets(10));
+        popup.setContent(label);
+        setUpPopupProperties(popup, hBox, source);
+        return popup;
     }
 
 
