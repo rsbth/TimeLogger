@@ -280,19 +280,19 @@ public class Controller {
     }
 
     private void showAlertPopup(String value) {
-        this.showPopup(value, true);
+        this.showPopup(value, MessageType.ALERT);
     }
 
     private void showInfoPopup(String value) {
-        this.showPopup(value, false);
+        this.showPopup(value, MessageType.INFO);
     }
 
-    private void showPopup(String value, boolean isAlert) {
+    private void showPopup(String value, MessageType type) {
         if (value == null || Objects.equals(value, "")) {
             return;
         }
         this.closeDialogIfExists();
-        this.bottomDialog = new JFXDialog(bottomStackPane, DialogElementsConstructor.getTextLayout(value, isAlert),
+        this.bottomDialog = new JFXDialog(bottomStackPane, DialogElementsConstructor.getTextLayout(value, type),
                 JFXDialog.DialogTransition.BOTTOM);
         this.bottomDialog.show();
     }
@@ -371,5 +371,10 @@ public class Controller {
             exception.printStackTrace();
             Controller.this.showAlertPopup(exception.getMessage());
         };
+    }
+
+    public enum MessageType {
+        ALERT,
+        INFO;
     }
 }

@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.utilities.StringConverter;
+import com.mprtcz.timeloggerdesktop.frontend.controller.Controller;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
@@ -96,10 +97,10 @@ public class DialogElementsConstructor {
         return container;
     }
 
-    public static Region getTextLayout(String value, boolean isAlert) {
+    public static Region getTextLayout(String value, Controller.MessageType type) {
         Label label = new Label(StringConverter.insertLineSeparator(value, 45));
         label.setBackground(getBackgroundOfColor("white"));
-        if (isAlert) {
+        if (type == Controller.MessageType.ALERT) {
             label.setTextFill(Paint.valueOf("red"));
         }
         label.setPadding(new Insets(10));
