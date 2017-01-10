@@ -1,8 +1,11 @@
 package com.mprtcz.timeloggerdesktop.frontend.controller;
 
 import com.mprtcz.timeloggerdesktop.backend.activity.model.HoursData;
+import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import org.slf4j.Logger;
@@ -32,6 +35,7 @@ public class CanvasController {
     private List<HoursData.Hour> hours = new ArrayList<>();
 
     void calculatePositionsAndDraw(List<HoursData.Hour> hours, Canvas canvas) {
+        this.setCanvasTooltip(canvas);
         this.hours = hours;
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -109,5 +113,16 @@ public class CanvasController {
 
     public void setVisibleDays(int visibleDays) {
         this.visibleDays = visibleDays;
+    }
+
+    void setCanvasTooltip(Canvas canvas){
+        Tooltip tooltip = new Tooltip("Something");
+        canvas.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                tooltip.setText(String.valueOf(event.getY()) + ", " + String.valueOf(event.getX()));
+            }
+        });
+        Tooltip.install(canvas, tooltip); //TODO tooltip
     }
 }
