@@ -65,6 +65,7 @@ public class Controller {
     private ActivityController activityController;
     private RecordController recordController;
     private SettingsController settingsController;
+    private CanvasController canvasController;
 
     private JFXDialog bottomDialog;
     private ActivityService activityService;
@@ -86,6 +87,7 @@ public class Controller {
         this.initializeActivityController();
         this.initializeRecordController();
         this.initializeSettingsController();
+        this.initializeCanvasController();
         this.collectBottomButtons();
         this.getTableData();
         this.setAdditionalStyles();
@@ -113,9 +115,12 @@ public class Controller {
         this.settingsController = new SettingsController(this.messages);
     }
 
+    private void initializeCanvasController() {
+        this.canvasController = new CanvasController();
+    }
+
     @FXML
     public void onAddRecordButtonClicked() {
-//        this.showAddRecordPopup();
         try {
             this.recordController.showAddRecordPopup(this.activityNamesList, this.latestRecord, this.messages);
         } catch (Exception e) {
@@ -126,19 +131,16 @@ public class Controller {
 
     @FXML
     public void onRemoveActivityButtonClicked() {
-//        this.initActivityRemoveConfirmationPopup();
         this.activityController.initActivityRemoveConfirmationPopup(this.bottomStackPane);
     }
 
     @FXML
     public void onChangeColorButtonClicked() {
         this.activityController.showColorDialog(this.activityNamesList, this.bottomStackPane);
-//        this.showColorDialog();
     }
 
     @FXML
     public void onAddActivityButtonClicked() {
-//        this.loadAddDialog();
         this.activityController.loadAddDialog(this.bottomStackPane);
     }
 
@@ -308,8 +310,7 @@ public class Controller {
 
     private void drawDataOnCanvas(HoursData hoursData) {
         if (hoursData.getHours().size() > 0) {
-            CanvasController canvasController = new CanvasController(hoursData.getHours());
-            canvasController.calculatePositionsAndDraw(this.canvas);
+            canvasController.calculatePositionsAndDraw(hoursData.getHours(), this.canvas);
             this.latestRecord = hoursData.getLatest();
         }
     }

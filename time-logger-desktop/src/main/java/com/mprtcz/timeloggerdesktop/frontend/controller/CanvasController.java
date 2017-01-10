@@ -28,11 +28,11 @@ public class CanvasController {
 
     private List<HoursData.Hour> hours = new ArrayList<>();
 
-    CanvasController(List<HoursData.Hour> hours) {
-        this.hours = hours;
+    CanvasController() {
     }
 
-    void calculatePositionsAndDraw(Canvas canvas) {
+    void calculatePositionsAndDraw(List<HoursData.Hour> hours, Canvas canvas) {
+        this.hours = hours;
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         double width = canvas.getWidth();
         this.basicCellHeight = (int) (canvas.getHeight() - headerHeight) / VISIBLE_DAYS;
