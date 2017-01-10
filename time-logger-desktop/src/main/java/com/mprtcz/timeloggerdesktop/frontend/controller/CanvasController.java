@@ -24,8 +24,8 @@ public class CanvasController {
     private static final String FONT = "Roboto";
     private static final String FONT_COLOR = "darkgray";
     private static final int BASIC_CELL_HEIGHT = 10;
-    private static final int VISIBLE_DAYS = 5;
 
+    private int visibleDays = 5;
     private int basicCellHeight = 10;
     private int headerHeight = 10;
 
@@ -37,7 +37,7 @@ public class CanvasController {
         graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         double width = canvas.getWidth();
         logger.debug("width = {}", width);
-        this.basicCellHeight = (int) (canvas.getHeight() - headerHeight) / VISIBLE_DAYS;
+        this.basicCellHeight = (int) (canvas.getHeight() - headerHeight) / visibleDays;
         logger.info("basic cell height = {}", basicCellHeight);
         int unitWidth = (int) width / 26;
         logger.info("unitwidth = {} ", unitWidth);
@@ -95,15 +95,19 @@ public class CanvasController {
     }
 
     private int calculateDrawingStartingPoint() {
-        if(this.hours.size() < (VISIBLE_DAYS * 24)) {
+        if(this.hours.size() < (visibleDays * 24)) {
             return 0;
         } else {
             int surplusHours = this.hours.size() % 24;
             if(surplusHours == 0) {
-                return this.hours.size() - (VISIBLE_DAYS * 24) - 2;
+                return this.hours.size() - (visibleDays * 24) - 2;
             } else {
-                return this.hours.size() - surplusHours - ((VISIBLE_DAYS - 1) * 24) - 2;
+                return this.hours.size() - surplusHours - ((visibleDays - 1) * 24) - 2;
             }
         }
+    }
+
+    public void setVisibleDays(int visibleDays) {
+        this.visibleDays = visibleDays;
     }
 }

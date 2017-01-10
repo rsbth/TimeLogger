@@ -43,8 +43,8 @@ import java.util.*;
 /**
  * Created by mprtcz on 2017-01-02.
  */
-public class Controller {
-    private Logger logger = LoggerFactory.getLogger(Controller.class);
+public class AppController {
+    private Logger logger = LoggerFactory.getLogger(AppController.class);
 
     @FXML
     private JFXListView<Activity> activityNamesList;
@@ -171,19 +171,18 @@ public class Controller {
         return new EventHandler() {
             @Override
             public void handle(Event event) {
-                Controller.this.getSettingsAndApply(false);
+                AppController.this.getSettingsAndApply(false);
             }
         };
     }
 
-    //will get new settings from backend and apply them to ui
     private void getSettingsAndApply(boolean isInitial) {
         System.out.println("applying settings....");
         logger.debug("applyingSettings ");
         Task<AppSettings> task = new Task<AppSettings>() {
             @Override
             protected AppSettings call() throws Exception {
-                return Controller.this.settingsService.getSettings();
+                return AppController.this.settingsService.getSettings();
             }
         };
         task.setOnSucceeded(event -> this.applySettings(task.getValue(), isInitial));
@@ -207,13 +206,16 @@ public class Controller {
                 return; //breaking the language initialization loop
             }
             try {
-                scene.setRoot(FXMLLoader.load(Controller.this.getClass().getResource("/fxmls/mainMenu.fxml")));
+                scene.setRoot(FXMLLoader.load(AppController.this.getClass().getResource("/fxmls/mainMenu.fxml")));
             } catch (IOException e) {
                 e.printStackTrace();
-                Controller.this.displayException(e);
+                AppController.this.displayException(e);
             }
             this.languageEnum = settings.getLanguageEnum();
         }
+        this.canvas.setVisible(settings.isGraphicVisible());
+        this.canvasController.setVisibleDays(settings.getNumberOfVisibleDays());
+        this.getTableData();
     }
 
     private void initializeLanguage() {
@@ -257,8 +259,8 @@ public class Controller {
 
     private EventHandler getOnTaskSucceedEventHandler() {
         return event -> {
-            Controller.this.activityListController.populateListView();
-            Controller.this.getTableData();
+            AppController.this.activityListController.populateListView();
+            AppController.this.getTableData();
         };
     }
 
@@ -274,7 +276,7 @@ public class Controller {
         return new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent event) {
-                Controller.this.displayException(event.toString());
+                AppController.this.displayException(event.toString());
             }
         };
     }
@@ -326,7 +328,7 @@ public class Controller {
         task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
             Exception exception = (Exception) newValue;
             exception.printStackTrace();
-            Controller.this.showAlertPopup(exception.getMessage());
+            AppController.this.showAlertPopup(exception.getMessage());
         });
     }
 
@@ -334,10 +336,10 @@ public class Controller {
         Task<HoursData> task = new Task<HoursData>() {
             @Override
             protected HoursData call() throws Exception {
-                return Controller.this.activityService.getHoursData();
+                return AppController.this.activityService.getHoursData();
             }
         };
-        task.setOnSucceeded(event -> Controller.this.drawDataOnCanvas(task.getValue()));
+        task.setOnSucceeded(event -> AppController.this.drawDataOnCanvas(task.getValue()));
         this.addTaskExceptionListener(task);
         new Thread(task).start();
     }
@@ -353,10 +355,10 @@ public class Controller {
         return (ChangeListener<Activity>) (observable, oldValue, newValue) -> {
             if (newValue != null) {
                 closeAddRecordPopupIfExists();
-                Controller.this.styleSetter.setVisibility(true);
-                Controller.this.onListViewItemClicked(newValue);
+                AppController.this.styleSetter.setVisibility(true);
+                AppController.this.onListViewItemClicked(newValue);
             } else {
-                Controller.this.styleSetter.setVisibility(false);
+                AppController.this.styleSetter.setVisibility(false);
             }
         };
     }
@@ -369,12 +371,12 @@ public class Controller {
         return (observable, oldValue, newValue) -> {
             Exception exception = (Exception) newValue;
             exception.printStackTrace();
-            Controller.this.showAlertPopup(exception.getMessage());
+            AppController.this.showAlertPopup(exception.getMessage());
         };
     }
 
     public enum MessageType {
         ALERT,
-        INFO;
+        INFO
     }
 }
