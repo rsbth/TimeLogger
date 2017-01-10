@@ -5,6 +5,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -15,46 +17,55 @@ import java.util.List;
  * Created by mprtcz on 2017-01-10.
  */
 public class CanvasController {
+    private Logger logger = LoggerFactory.getLogger(CanvasController.class);
+
 
     private static final boolean DRAW_HEADERS = true;
     private static final String FONT = "Roboto";
     private static final String FONT_COLOR = "darkgray";
     private static final int BASIC_CELL_HEIGHT = 10;
-    private static final int VISIBLE_DAYS = 7;
+    private static final int VISIBLE_DAYS = 5;
 
     private int basicCellHeight = 10;
     private int headerHeight = 10;
 
-
     private List<HoursData.Hour> hours = new ArrayList<>();
-
-    CanvasController() {
-    }
 
     void calculatePositionsAndDraw(List<HoursData.Hour> hours, Canvas canvas) {
         this.hours = hours;
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         double width = canvas.getWidth();
+        logger.debug("width = {}", width);
         this.basicCellHeight = (int) (canvas.getHeight() - headerHeight) / VISIBLE_DAYS;
+        logger.info("basic cell height = {}", basicCellHeight);
         int unitWidth = (int) width / 26;
+        logger.info("unitwidth = {} ", unitWidth);
         if (DRAW_HEADERS) {
+            logger.info("DRAW_HEADERS = {}", DRAW_HEADERS);
             drawHeader(graphicsContext, unitWidth);
         }
         for (int i = (calculateDrawingStartingPoint()); i < this.hours.size(); i++) {
             HoursData.Hour hourObject = this.hours.get(i);
+            logger.info("hourObject = {}", hourObject.toString());
             drawOnCanvas(graphicsContext, hourObject, unitWidth);
         }
     }
 
     private void drawOnCanvas(GraphicsContext graphicsContext, HoursData.Hour hourObject, int cellWidth) {
+        logger.info("hourObject = {}", hourObject);
+        logger.info("cellWidth = {}", cellWidth);
         String color = determineCellColor(hourObject);
         long hour = hourObject.getDatetime().getHour();
+        logger.info("hour = {}", hour);
         long dayDelta = getDayDelta(hourObject);
         graphicsContext.setFill(Paint.valueOf(color));
         graphicsContext.fillRect(cellWidth * (hour + 2), basicCellHeight * (dayDelta + 1) + headerHeight, cellWidth, basicCellHeight);
+        logger.info("cellWidth * (hour + 2) = {}, basicCellHeight * (dayDelta + 1) + headerHeight = {}, cellWidth = {}, basicCellHeight = {}",
+                cellWidth * (hour + 2), basicCellHeight * (dayDelta + 1) + headerHeight, cellWidth, basicCellHeight);
         String day = hourObject.getDatetime().getDayOfMonth() + "." + hourObject.getDatetime().getMonthValue();
         graphicsContext.setFill(Paint.valueOf(FONT_COLOR));
-        if (DRAW_HEADERS) {
+        if (DRAW_HEADERS && (dayDelta % 2 == 0)) {
             graphicsContext.setFont(Font.font(FONT));
             graphicsContext.fillText(day, 0, (dayDelta + 2) * basicCellHeight + headerHeight);
         }
@@ -78,7 +89,7 @@ public class CanvasController {
         graphicsContext.setFill(Paint.valueOf(FONT_COLOR));
         graphicsContext.setFont(Font.font(FONT));
         int leftOffset = 2;
-        for (int i = leftOffset; i < 26; i++) {
+        for (int i = leftOffset; i < 26; i=i+2) {
             graphicsContext.fillText(String.valueOf(i - leftOffset), unit * i, headerHeight, (unit - 2));
         }
     }

@@ -2,6 +2,8 @@ package com.mprtcz.timeloggerdesktop.frontend.customfxelements;
 
 import com.jfoenix.controls.*;
 import com.jfoenix.effects.JFXDepthManager;
+import com.mprtcz.timeloggerdesktop.backend.settings.model.AppSettings;
+import com.mprtcz.timeloggerdesktop.backend.settings.model.LanguageEnum;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -9,12 +11,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
-import lombok.ToString;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
+import static com.mprtcz.timeloggerdesktop.backend.settings.model.AppSettings.MAX_VISIBLE_DAYS;
+import static com.mprtcz.timeloggerdesktop.backend.settings.model.AppSettings.MIN_VISIBLE_DAYS;
 import static com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor.getBackgroundOfColor;
 
 /**
@@ -23,12 +24,12 @@ import static com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogEleme
 @Getter
 public class SettingsPopup extends JFXPopup {
 
-    private Settings settings;
+    private AppSettings settings;
 
     private ResourceBundle messages;
 
-    public SettingsPopup(Region source, ResourceBundle messages) {
-        this.settings = new Settings();
+    public SettingsPopup(Region source, ResourceBundle messages, AppSettings settings) {
+        this.settings = settings;
         this.messages = messages;
         this.setContent(generateContent());
         this.setSource(source);
@@ -66,8 +67,10 @@ public class SettingsPopup extends JFXPopup {
         Label label = new Label(this.messages.getString("days_visible_label"));
         this.checkBox = new JFXCheckBox();
         checkBox.setText(this.messages.getString("is_canvas_visible_checkbox"));
-        slider.setMax(15);
-        slider.setMin(5);
+        checkBox.setSelected(this.settings.isGraphicVisible());
+        slider.setMax(MAX_VISIBLE_DAYS);
+        slider.setMin(MIN_VISIBLE_DAYS);
+        slider.setValue(this.settings.getNumberOfVisibleDays());
         checkBox.setOnAction(event -> slider.setDisable(!checkBox.isSelected()));
         VBox languageVBox = new VBox(label, checkBox, slider);
         languageVBox.setBackground(getBackgroundOfColor("white"));
@@ -97,24 +100,18 @@ public class SettingsPopup extends JFXPopup {
     }
 
     private void setLanguagesInChoiceBox() {
-        Map<String, Locale> languageVersions = LanguagePopup.availableLocales;
-        for(Map.Entry entry : languageVersions.entrySet()) {
-            this.comboBox.getItems().add((String) entry.getKey());
+        List<LanguageEnum> list = Arrays.asList(LanguageEnum.values());
+        for (LanguageEnum language :
+                list) {
+            this.comboBox.getItems().add(language.getName());
         }
+        this.comboBox.setValue(this.settings.getLanguageEnum().getName());
     }
 
-    public Settings getSettingsObject() {
-        this.settings.language = this.comboBox.getValue();
-        this.settings.howManyDaysVisible = (int) this.slider.getValue();
-        this.settings.isCanvasVisible = this.checkBox.isSelected();
+    public AppSettings getSettingsObject() {
+        this.settings.setLanguageEnum(LanguageEnum.of(this.comboBox.getValue()));
+        this.settings.setNumberOfVisibleDays((int) this.slider.getValue());
+        this.settings.setGraphicVisible(this.checkBox.isSelected());
         return this.settings;
-    }
-
-    @Getter
-    @ToString
-    public class Settings {
-        String language;
-        boolean isCanvasVisible;
-        int howManyDaysVisible;
     }
 }

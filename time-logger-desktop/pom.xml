@@ -48,6 +48,19 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.22</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.22</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -76,7 +89,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.mprtcz.timeloggerdesktop.App</mainClass>
+                            <mainClass>com.mprtcz.timeloggerdesktop.frontend.App</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

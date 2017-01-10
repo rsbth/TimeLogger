@@ -1,4 +1,4 @@
-package com.mprtcz.timeloggerdesktop;
+package com.mprtcz.timeloggerdesktop.frontend;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 public class App extends Application {
 
     public void start(Stage window) throws Exception {
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxmls/mainMenu.fxml"));
         System.out.println(getClass().getResource("/"));
         Parent root = loader.load();
