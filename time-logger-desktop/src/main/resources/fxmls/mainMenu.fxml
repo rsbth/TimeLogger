@@ -19,7 +19,7 @@
                   <JFXButton fx:id="addRecordButton" onAction="#onAddRecordButtonClicked" />
                   <JFXButton fx:id="changeColorButton" onAction="#onChangeColorButtonClicked" />
                   <JFXButton fx:id="removeActivityButton" onAction="#onRemoveActivityButtonClicked" />
-                  <JFXButton fx:id="lanugageButton" onAction="#onLanguageButtonClicked" />
+                  <JFXButton fx:id="settingsButton" onAction="#onSettingsButtonClicked" />
                </children>
             </HBox>
          </children>
