@@ -4,6 +4,7 @@ import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,40 +17,42 @@ public class RecordValidator {
     private ValidationResult validationResult;
 
     public ValidationResult validateNewRecordData(ValidationObject validationObject) {
-        this.validationResult = new ValidationResult();
+        this.validationResult = new ValidationResult(ValidationResult.CustomErrorEnum.RECORD_SAVED);
         nullCheck(validationObject);
         hourConsecutivenessCheck(validationObject);
+        System.out.println("this.validationResult = " + this.validationResult);
         return this.validationResult;
     }
 
     private void nullCheck(ValidationObject v) {
         if(v.startTime == null) {
-            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.START_TIME_NULL);
+            this.validationResult.getNewErrorEnum(ValidationResult.CustomErrorEnum.START_TIME_NULL);
         }
         if(v.endTime == null) {
-            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.END_TIME_NULL);
+            this.validationResult.getNewErrorEnum(ValidationResult.CustomErrorEnum.END_TIME_NULL);
         }
         if(v.startDate == null) {
-            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.START_DATE_NULL);
+            this.validationResult.getNewErrorEnum(ValidationResult.CustomErrorEnum.START_DATE_NULL);
         }
         if(v.endDate == null) {
-            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.END_DATE_NULL);
+            this.validationResult.getNewErrorEnum(ValidationResult.CustomErrorEnum.END_DATE_NULL);
         }
         if(v.activity == null) {
-            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.ACTIVITY_NULL);
+            this.validationResult.getNewErrorEnum(ValidationResult.CustomErrorEnum.ACTIVITY_NULL);
         }
     }
 
     private void hourConsecutivenessCheck(ValidationObject v) {
         if(v.startDateTime.equals(v.endDateTime)) {
-            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.END_START_EQUAL);
+            this.validationResult.getNewErrorEnum(ValidationResult.CustomErrorEnum.END_START_EQUAL);
         }
         if(v.startDateTime.isAfter(v.endDateTime)) {
-            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.END_DATE_BEFORE);
+            this.validationResult.getNewErrorEnum(ValidationResult.CustomErrorEnum.END_DATE_BEFORE);
         }
     }
 
     @Getter
+    @ToString
     public static class ValidationObject {
         private LocalTime startTime;
         private LocalTime endTime;

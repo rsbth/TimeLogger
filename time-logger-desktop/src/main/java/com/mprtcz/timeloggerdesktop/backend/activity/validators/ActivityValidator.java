@@ -15,9 +15,9 @@ public class ActivityValidator {
     public ActivityValidator() {}
 
     public ValidationResult validateNewActivity(Activity activity, List<Activity> activities) {
-        this.validationResult = new ValidationResult();
+        this.validationResult = new ValidationResult(ValidationResult.CustomErrorEnum.ACTIVITY_SAVED);
         if(activity.getName().equals("")) {
-            this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.ACTIVITY_NAME_EMPTY);
+            this.validationResult.getNewErrorEnum(ValidationResult.CustomErrorEnum.ACTIVITY_NAME_EMPTY);
         }
         checkIfActivityNameExists(activity.getName(), activities);
         return this.validationResult;
@@ -27,7 +27,7 @@ public class ActivityValidator {
         for (Activity activity :
                 activities) {
             if (activity.getName().equals(name)) {
-                this.validationResult.addErrorEnum(ValidationResult.CustomErrorEnum.ACTIVITY_EXISTS);
+                this.validationResult.getNewErrorEnum(ValidationResult.CustomErrorEnum.ACTIVITY_EXISTS);
                 break;
             }
         }

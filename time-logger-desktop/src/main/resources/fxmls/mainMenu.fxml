@@ -5,6 +5,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -28,38 +29,42 @@
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <Canvas fx:id="canvas" height="100.0" width="300.0">
-               <VBox.margin>
-                  <Insets right="12.0" top="30.0" />
-               </VBox.margin>
-            </Canvas>
+            <FlowPane alignment="CENTER" columnHalignment="CENTER" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <VBox alignment="TOP_CENTER">
+                     <children>
+                        <JFXListView fx:id="activityNamesList" depthProperty="1" maxWidth="300.0" minWidth="300.0" prefHeight="168.0" prefWidth="300.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </JFXListView>
+                        <HBox fx:id="addActivityHbox" alignment="TOP_RIGHT">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                           <children>
+                              <JFXButton fx:id="addActivityButton" onAction="#onAddActivityButtonClicked">
+                                 <HBox.margin>
+                                    <Insets bottom="10.0" right="7.0" />
+                                 </HBox.margin>
+                              </JFXButton>
+                           </children>
+                        </HBox>
+                     </children>
+                     <FlowPane.margin>
+                        <Insets left="20.0" right="20.0" />
+                     </FlowPane.margin>
+                  </VBox>
+                  <Canvas fx:id="canvas" height="100.0" width="300.0" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </FlowPane>
          </children>
       </VBox>
    </center>
-   <top>
-      <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER_RIGHT">
-         <children>
-            <JFXListView fx:id="activityNamesList" depthProperty="1" maxWidth="300.0" minWidth="300.0" prefHeight="168.0" prefWidth="300.0">
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
-               <VBox.margin>
-                  <Insets top="10.0" />
-               </VBox.margin>
-            </JFXListView>
-            <HBox fx:id="addActivityHbox" alignment="TOP_RIGHT">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-               <children>
-                  <JFXButton fx:id="addActivityButton" onAction="#onAddActivityButtonClicked">
-                     <HBox.margin>
-                        <Insets bottom="10.0" right="7.0" />
-                     </HBox.margin>
-                  </JFXButton>
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-   </top>
 </BorderPane>

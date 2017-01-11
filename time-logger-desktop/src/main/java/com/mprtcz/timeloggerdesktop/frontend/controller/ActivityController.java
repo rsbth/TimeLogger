@@ -7,12 +7,11 @@ import com.jfoenix.controls.JFXTextField;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.activity.service.ActivityService;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
-import com.mprtcz.timeloggerdesktop.frontend.customfxelements.AddRecordPopup;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.ColorDialog;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.ConfirmationPopup;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor;
+import com.mprtcz.timeloggerdesktop.frontend.utils.MyEventHandler;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
@@ -30,18 +29,17 @@ public class ActivityController {
     private ActivityService activityService;
     private ChangeListener<Throwable> exceptionListener;
     private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
-    private EventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler;
-    private AddRecordPopup addRecordPopup;
-    private ConfirmationPopup confirmationPopup;
+    private MyEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler;
     private ResourceBundle messages;
+    private ConfirmationPopup confirmationPopup;
     private JFXDialog bottomDialog;
 
     private String newActivityName;
     private String newActivityDescription;
 
-    public ActivityController(ActivityService activityService, ChangeListener<Throwable> exceptionListener,
+    private ActivityController(ActivityService activityService, ChangeListener<Throwable> exceptionListener,
                               EventHandler<WorkerStateEvent> onFailedTaskEventHandler,
-                              EventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler,
+                              MyEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler,
                               ResourceBundle messages) {
         this.activityService = activityService;
         this.exceptionListener = exceptionListener;
@@ -146,25 +144,65 @@ public class ActivityController {
         });
     }
 
+
+    private Task<ValidationResult> addActivityTask;
     public void addNewActivity(String name, String description) {
         try {
-            Task<ValidationResult> task = new Task<ValidationResult>() {
+            this.addActivityTask = new Task<ValidationResult>() {
                 @Override
                 protected ValidationResult call() throws Exception {
                     return ActivityController.this.activityService.addActivity(name, description);
                 }
             };
-            task.setOnSucceeded(this.onSucceededActivityAddEventHandler);
-            task.onSucceededProperty().addListener(new ChangeListener<EventHandler<WorkerStateEvent>>() {
-                @Override
-                public void changed(ObservableValue<? extends EventHandler<WorkerStateEvent>> observable, EventHandler<WorkerStateEvent> oldValue, EventHandler<WorkerStateEvent> newValue) {
-
-                }
-            });
-            task.exceptionProperty().addListener(this.exceptionListener);
-            new Thread(task).start();
+            addActivityTask.setOnSucceeded(this.addActivitySucceeded());
+            addActivityTask.exceptionProperty().addListener(this.exceptionListener);
+            new Thread(addActivityTask).start();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private EventHandler<WorkerStateEvent> addActivitySucceeded() {
+        return (WorkerStateEvent event) -> {
+            ActivityController.this.onSucceededActivityAddEventHandler.setResult(this.addActivityTask.getValue());
+            ActivityController.this.onSucceededActivityAddEventHandler.handle(event);
+        };
+    }
+
+
+    public static class ActivityControllerBuilder {
+        private ActivityService activityService;
+        private ChangeListener<Throwable> exceptionListener;
+        private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
+        private MyEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler;
+        private ResourceBundle messages;
+
+        public ActivityControllerBuilder(ActivityService activityService, ResourceBundle messages) {
+            this.activityService = activityService;
+            this.messages = messages;
+        }
+
+        public ActivityControllerBuilder exceptionListener(ChangeListener<Throwable> exceptionListener) {
+            this.exceptionListener = exceptionListener;
+            return this;
+        }
+        public ActivityControllerBuilder onFailedTaskEventHandler(EventHandler<WorkerStateEvent> onFailedTaskEventHandler) {
+            this.onFailedTaskEventHandler = onFailedTaskEventHandler;
+            return this;
+        }
+        public ActivityControllerBuilder onSucceededActivityAddEventHandler(MyEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler) {
+            this.onSucceededActivityAddEventHandler = onSucceededActivityAddEventHandler;
+            return this;
+        }
+
+        public ActivityController getInstance() {
+            return new ActivityController(
+                    this.activityService,
+                    this.exceptionListener,
+                    this.onFailedTaskEventHandler,
+                    this.onSucceededActivityAddEventHandler,
+                    this.messages
+            );
         }
     }
 

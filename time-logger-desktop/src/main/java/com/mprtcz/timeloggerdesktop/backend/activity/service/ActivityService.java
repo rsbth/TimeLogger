@@ -51,7 +51,7 @@ public class ActivityService {
         ValidationResult validationResult = activityValidator.validateNewActivity(activity, getActivities());
         if (validationResult.isErrorFree()) {
             chooseColorAndSave(activity);
-            return new ValidationResult(ValidationResult.CustomErrorEnum.SAVED);
+            return new ValidationResult(ValidationResult.CustomErrorEnum.RECORD_SAVED);
         } else {
             return validationResult;
         }

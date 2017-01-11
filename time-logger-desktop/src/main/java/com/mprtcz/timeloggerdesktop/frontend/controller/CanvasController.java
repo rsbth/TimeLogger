@@ -112,6 +112,7 @@ public class CanvasController {
     }
 
     public void setVisibleDays(int visibleDays) {
+        logger.info("visibleDays = {}", visibleDays);
         this.visibleDays = visibleDays;
     }
 

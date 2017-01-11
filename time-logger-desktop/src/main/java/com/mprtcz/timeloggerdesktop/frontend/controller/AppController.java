@@ -20,6 +20,8 @@ import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.AddRecordPopup;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.StyleSetter;
+import com.mprtcz.timeloggerdesktop.frontend.utils.MessageType;
+import com.mprtcz.timeloggerdesktop.frontend.utils.MyEventHandler;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -115,8 +117,12 @@ public class AppController {
     }
 
     private void initializeActivityController() {
-        this.activityController = new ActivityController(this.activityService, getTaskExceptionListener(),
-                getOnFailedTaskEventHandler(), getOnTaskSucceedEventHandler(), this.messages);
+        ActivityController.ActivityControllerBuilder activityControllerBuilder =
+                new ActivityController.ActivityControllerBuilder(this.activityService, this.messages);
+        activityControllerBuilder.exceptionListener(getTaskExceptionListener())
+                .onFailedTaskEventHandler(getOnFailedTaskEventHandler())
+                .onSucceededActivityAddEventHandler(getOnTaskSucceedEventHandler());
+        this.activityController = activityControllerBuilder.getInstance();
     }
 
     private void initializeSettingsService() {
@@ -124,8 +130,12 @@ public class AppController {
     }
 
     private void initializeRecordController() {
-        this.recordController = new RecordController(this.recordService, this.addRecordPopup, getTaskExceptionListener(),
-                getOnFailedTaskEventHandler(), getOnTaskSucceedEventHandler());
+        RecordController.RecordControllerBuilder recordControllerBuilder =
+                new RecordController.RecordControllerBuilder(this.recordService, this.addRecordPopup);
+        recordControllerBuilder.exceptionListener(getTaskExceptionListener())
+                .onFailedTaskEventHandler(getOnFailedTaskEventHandler())
+                .onSucceededRecordAddEventHandler(getOnTaskSucceedEventHandler());
+        this.recordController = recordControllerBuilder.getInstance();
     }
 
     private void initializeSettingsController() {
@@ -148,30 +158,34 @@ public class AppController {
 
     @FXML
     public void onRemoveActivityButtonClicked() {
+        this.closeDialogIfExists();
         this.activityController.initActivityRemoveConfirmationPopup(this.bottomStackPane);
     }
 
     @FXML
     public void onChangeColorButtonClicked() {
+        this.closeDialogIfExists();
         this.activityController.showColorDialog(this.activityNamesList, this.bottomStackPane);
     }
 
     @FXML
     public void onAddActivityButtonClicked() {
+        this.closeDialogIfExists();
         this.activityController.loadAddDialog(this.bottomStackPane);
     }
 
-
     @FXML
     public void onSettingsButtonClicked() {
+        this.closeDialogIfExists();
         this.settingsController.initializeSettingsMenu(this.activityNamesList, getApplySettingsEventHandler());
     }
 
-    private EventHandler getApplySettingsEventHandler() {
-        return new EventHandler() {
+    private EventHandler<WorkerStateEvent> getApplySettingsEventHandler() {
+        return new EventHandler<WorkerStateEvent>() {
             @Override
-            public void handle(Event event) {
+            public void handle(WorkerStateEvent event) {
                 AppController.this.getSettingsAndApply(false);
+
             }
         };
     }
@@ -193,29 +207,38 @@ public class AppController {
 
     private void applySettings(AppSettings settings, boolean isInitializing) {
         logger.info("(settings.getLanguageEnum() != this.languageEnum) = {}", (settings.getLanguageEnum() != this.languageEnum));
+        logger.info("isInitializing = {}", isInitializing);
+        logger.info("this.isFirstRun = {}", isFirstRun);
 
-        isFirstRun = false;
+        this.canvas.setVisible(settings.isGraphicVisible());
+        this.canvasController.setVisibleDays(settings.getNumberOfVisibleDays());
+        this.getTableData();
+
+
         if (settings.getLanguageEnum() != this.languageEnum) {
             logger.info("settings.getLanguageEnum().getName() = {}", settings.getLanguageEnum().getName());
             logger.info("this.languageEnum = {}", this.languageEnum);
             this.languageEnum = settings.getLanguageEnum();
+            logger.info("this.languageEnum = {}", this.languageEnum);
             Scene scene = borderPane.getScene();
             Locale.setDefault(this.languageEnum.getLocale());
-            if(isInitializing && !isFirstRun) {
+            ValidationResult.messages = ResourceBundle.getBundle("MessagesBundle", Locale.getDefault());
+            if (isInitializing && !isFirstRun) {
+                logger.info("(isInitializing && !isFirstRun) = {}", (isInitializing && !isFirstRun));
                 logger.info("breaking the loop");
                 return; //breaking the language initialization loop
             }
             try {
+                logger.info("setting the new Root ");
                 scene.setRoot(FXMLLoader.load(AppController.this.getClass().getResource("/fxmls/mainMenu.fxml")));
             } catch (IOException e) {
                 e.printStackTrace();
                 AppController.this.displayException(e);
             }
             this.languageEnum = settings.getLanguageEnum();
+            isFirstRun = false;
         }
-        this.canvas.setVisible(settings.isGraphicVisible());
-        this.canvasController.setVisibleDays(settings.getNumberOfVisibleDays());
-        this.getTableData();
+
     }
 
     private void initializeLanguage() {
@@ -257,11 +280,38 @@ public class AppController {
     }
 
 
-    private EventHandler getOnTaskSucceedEventHandler() {
-        return event -> {
-            AppController.this.activityListController.populateListView();
-            AppController.this.getTableData();
+    private MyEventHandler getOnTaskSucceedEventHandler() {
+        return new MyEventHandler() {
+            ValidationResult result;
+
+            @Override
+            public void setResult(ValidationResult result) {
+                this.result = result;
+            }
+
+            @Override
+            public ValidationResult getResult() {
+                return this.result;
+            }
+
+            @Override
+            public void handle(Event event) {
+                AppController.this.displayValidationResult(result);
+                AppController.this.activityListController.populateListView();
+                AppController.this.getTableData();
+            }
         };
+    }
+
+    private void displayValidationResult(ValidationResult result) {
+        if (result != null) {
+            if (result.isErrorFree()) {
+                System.out.println("result.getCustomErrorEnumList() = " + result.getCustomMessage());
+                this.showInfoPopup(this.messages.getString("saved_info"));
+            } else {
+                this.showAlertPopup(result.getEnumMessage());
+            }
+        }
     }
 
     private void displayException(Throwable e) {
@@ -270,15 +320,6 @@ public class AppController {
 
     private void displayException(String e) {
         this.showAlertPopup(e);
-    }
-
-    private EventHandler getExceptionEventHandler() {
-        return new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                AppController.this.displayException(event.toString());
-            }
-        };
     }
 
     private void showAlertPopup(String value) {
@@ -294,7 +335,7 @@ public class AppController {
             return;
         }
         this.closeDialogIfExists();
-        this.bottomDialog = new JFXDialog(bottomStackPane, DialogElementsConstructor.getTextLayout(value, type),
+        this.bottomDialog = new JFXDialog(this.bottomStackPane, DialogElementsConstructor.getTextLayout(value, type),
                 JFXDialog.DialogTransition.BOTTOM);
         this.bottomDialog.show();
     }
@@ -305,17 +346,8 @@ public class AppController {
         }
     }
 
-    private void displayValidationResult(ValidationResult validationResult) {
-        this.showAlertPopup(validationResult.getAllMessages());
-    }
-
     private EventHandler getOnFailedTaskEventHandler() {
-        return new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                System.out.println("Failed"); //TODO
-            }
-        };
+        return event -> AppController.this.showAlertPopup(event.toString());
     }
 
     private void closeDialogIfExists() {
@@ -375,8 +407,4 @@ public class AppController {
         };
     }
 
-    public enum MessageType {
-        ALERT,
-        INFO
-    }
 }

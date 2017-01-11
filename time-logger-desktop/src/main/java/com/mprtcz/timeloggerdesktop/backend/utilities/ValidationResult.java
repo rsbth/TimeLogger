@@ -3,8 +3,11 @@ package com.mprtcz.timeloggerdesktop.backend.utilities;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import static com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult.CustomErrorEnum.ACTIVITY_SAVED;
+import static com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult.CustomErrorEnum.RECORD_SAVED;
 
 /**
  * Created by mprtcz on 2017-01-03.
@@ -12,72 +15,50 @@ import java.util.List;
 @Getter
 @ToString
 public class ValidationResult {
+    public static ResourceBundle messages = ResourceBundle.getBundle("MessagesBundle", Locale.getDefault());
 
     @Getter
     @ToString
     public enum CustomErrorEnum {
-        OK("Validation successful"),
-        SAVED("Activity saved"),
-        ACTIVITY_NAME_EMPTY("Activity cannot have empty name"),
-        ACTIVITY_EXISTS("Activity with that name already exists"),
-        START_TIME_NULL("Start time cannot be null"),
-        END_TIME_NULL("End time cannot be null"),
-        START_DATE_NULL("Start date cannot be null"),
-        END_DATE_NULL("End Date cannot be null"),
-        END_DATE_BEFORE("End date is before start date"),
-        END_START_EQUAL("The activity cannot take 0 hours"),
-        ACTIVITY_NULL("Activity cannot be null"),
-        ;
+        OK(messages.getString("ok")),
+        ACTIVITY_SAVED(messages.getString("activity_saved")),
+        RECORD_SAVED(messages.getString("record_saved")),
+        ACTIVITY_NAME_EMPTY(messages.getString("activity_name_empty")),
+        ACTIVITY_EXISTS(messages.getString("activity_exists")),
+        START_TIME_NULL(messages.getString("start_time_null")),
+        END_TIME_NULL(messages.getString("end_time_null")),
+        START_DATE_NULL(messages.getString("start_date_null")),
+        END_DATE_NULL(messages.getString("end_date_null")),
+        END_DATE_BEFORE(messages.getString("end_date_before")),
+        END_START_EQUAL(messages.getString("end_start_equal")),
+        ACTIVITY_NULL(messages.getString("activity_null"));
 
         private String value;
 
         CustomErrorEnum(String value) {
+            System.out.println("CONSTRUCTING ENUM = " + value);
             this.value = value;
         }
     }
 
-    private List<CustomErrorEnum> customErrorEnumList = new ArrayList<>();
+    private CustomErrorEnum customErrorEnum;
     private String customMessage;
 
     public ValidationResult(CustomErrorEnum customErrorEnum) {
-        this.customErrorEnumList = new ArrayList<>();
-        this.customErrorEnumList.add(customErrorEnum);
+        this.customErrorEnum = customErrorEnum;
     }
 
-    public ValidationResult() {}
 
-    public void addErrorEnum(CustomErrorEnum customErrorEnum) {
-        this.customErrorEnumList = new ArrayList<>();
-        this.customErrorEnumList.add(customErrorEnum);
+    public void getNewErrorEnum(CustomErrorEnum customErrorEnum) {
+        this.customErrorEnum = customErrorEnum;
     }
 
-    public String getAllMessages() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (CustomErrorEnum c :
-                this.customErrorEnumList) {
-            stringBuilder.append(c.getValue());
-            stringBuilder.append("\n");
-        }
-        return stringBuilder.toString();
+    public String getEnumMessage() {
+        return this.customErrorEnum.getValue();
     }
 
     public boolean isErrorFree() {
-        if(this.customErrorEnumList.size() == 0) {
-            return true;
-        }
-        if(this.customErrorEnumList.size() == 1) {
-            if(this.customErrorEnumList.get(0) == CustomErrorEnum.OK) {
-                return true;
-            }
-        }
-        return false;
+        return this.customErrorEnum == CustomErrorEnum.OK || this.customErrorEnum == ACTIVITY_SAVED || this.customErrorEnum == RECORD_SAVED;
     }
 
-    String getCustomMessage() {
-        if(this.customMessage==null) {
-            return "";
-        } else {
-            return this.customMessage;
-        }
-    }
 }
