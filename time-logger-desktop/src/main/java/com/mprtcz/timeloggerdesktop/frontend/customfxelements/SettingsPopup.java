@@ -63,22 +63,27 @@ public class SettingsPopup extends JFXPopup {
     }
 
     JFXSlider slider;
-    JFXCheckBox checkBox;
+    JFXCheckBox graphicCheckBox;
+    JFXCheckBox headersCheckBox;
     private Region getSliderContent() {
         this.slider = new JFXSlider();
         Label label = new Label(this.messages.getString("days_visible_label"));
-        this.checkBox = new JFXCheckBox();
-        checkBox.setText(this.messages.getString("is_canvas_visible_checkbox"));
-        checkBox.setSelected(this.settings.isGraphicVisible());
+        this.graphicCheckBox = new JFXCheckBox();
+        this.headersCheckBox = new JFXCheckBox();
+        graphicCheckBox.setText(this.messages.getString("is_canvas_visible_checkbox"));
+        headersCheckBox.setText(this.messages.getString("are_headers_visible"));
+        graphicCheckBox.setSelected(this.settings.isGraphicVisible());
+        headersCheckBox.setSelected(this.settings.isHeadersVisible());
         slider.setMax(MAX_VISIBLE_DAYS);
         slider.setMin(MIN_VISIBLE_DAYS);
         slider.setValue(this.settings.getNumberOfVisibleDays());
-        checkBox.setOnAction(event -> slider.setDisable(!checkBox.isSelected()));
-        VBox languageVBox = new VBox(label, checkBox, slider);
+        graphicCheckBox.setOnAction(event -> slider.setDisable(!graphicCheckBox.isSelected()));
+        VBox languageVBox = new VBox(label, graphicCheckBox, slider, headersCheckBox);
         languageVBox.setBackground(getBackgroundOfColor("white"));
-        VBox.setMargin(slider, new Insets(5, 10, 10, 10));
-        VBox.setMargin(checkBox, new Insets(5, 10, 5, 10));
-        VBox.setMargin(label, new Insets(10, 10, 5, 10));
+        VBox.setMargin(label, new Insets(20, 10, 5, 10));
+        VBox.setMargin(graphicCheckBox, new Insets(5, 10, 5, 10));
+        VBox.setMargin(slider, new Insets(5, 10, 5, 10));
+        VBox.setMargin(headersCheckBox, new Insets(5, 10, 20, 10));
         languageVBox.setAlignment(Pos.CENTER);
         JFXDepthManager.setDepth(languageVBox, 1);
         return languageVBox;
@@ -113,7 +118,8 @@ public class SettingsPopup extends JFXPopup {
     public AppSettings getSettingsObject() {
         this.settings.setLanguageEnum(LanguageEnum.of(this.comboBox.getValue()));
         this.settings.setNumberOfVisibleDays((int) Math.round(this.slider.getValue()));
-        this.settings.setGraphicVisible(this.checkBox.isSelected());
+        this.settings.setGraphicVisible(this.graphicCheckBox.isSelected());
+        this.settings.setHeadersVisible(this.headersCheckBox.isSelected());
         return this.settings;
     }
 }

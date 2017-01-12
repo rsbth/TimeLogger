@@ -26,10 +26,12 @@ public class FileReadingDao implements SettingsDao {
 
     @Override
     public void save(AppSettings settings) throws IOException {
+        logger.info("saving settings = {}", settings);
         OutputStream outputStream = new FileOutputStream(SETTINGS_PATH);
         this.properties.setProperty("language_enum", settings.getLanguageEnum().getName());
         this.properties.setProperty("num_of_vis_days", String.valueOf(settings.getNumberOfVisibleDays()));
         this.properties.setProperty("is_graphic_visible", String.valueOf(settings.isGraphicVisible()));
+        this.properties.setProperty("headers_visible", String.valueOf(settings.isHeadersVisible()));
         this.properties.store(outputStream, null);
     }
 
@@ -45,6 +47,7 @@ public class FileReadingDao implements SettingsDao {
         LanguageEnum language = LanguageEnum.of(this.properties.getProperty("language_enum"));
         int numberOfVisibleDays = Integer.parseInt(this.properties.getProperty("num_of_vis_days"));
         boolean isGraphicVisible = Boolean.parseBoolean(this.properties.getProperty("is_graphic_visible"));
-        return new AppSettings(language, numberOfVisibleDays, isGraphicVisible);
+        boolean areHeadersVisible = Boolean.parseBoolean(this.properties.getProperty("headers_visible"));
+        return new AppSettings(language, numberOfVisibleDays, isGraphicVisible, areHeadersVisible);
     }
 }

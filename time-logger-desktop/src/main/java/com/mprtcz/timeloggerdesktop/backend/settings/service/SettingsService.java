@@ -35,6 +35,7 @@ public class SettingsService {
             currentSettings.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
         }
         currentSettings.setGraphicVisible(settings.isGraphicVisible());
+        currentSettings.setHeadersVisible(settings.isHeadersVisible());
         logger.info("currentSettings = {}", currentSettings);
         this.settingsDao.update(currentSettings);
     }

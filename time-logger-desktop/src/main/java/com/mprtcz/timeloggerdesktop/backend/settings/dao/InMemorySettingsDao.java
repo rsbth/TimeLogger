@@ -14,10 +14,11 @@ public class InMemorySettingsDao implements SettingsDao{
     private static final LanguageEnum BASIC_LOCALE = LanguageEnum.ENGLISH;
     private static final int DAYS_VISIBLE = 10;
     private static final boolean IS_GRAPHIC_VISIBLE = true;
+    private static final boolean ARE_HEADERS_VISIBLE = true;
 
     public InMemorySettingsDao() {
         logger.info("creating DAO ");
-        this.settings = new AppSettings(BASIC_LOCALE, DAYS_VISIBLE, IS_GRAPHIC_VISIBLE);
+        this.settings = new AppSettings(BASIC_LOCALE, DAYS_VISIBLE, IS_GRAPHIC_VISIBLE, ARE_HEADERS_VISIBLE);
     }
 
     @Override

@@ -19,4 +19,5 @@ public class AppSettings {
     LanguageEnum languageEnum;
     int numberOfVisibleDays;
     boolean isGraphicVisible;
+    boolean headersVisible;
 }

@@ -185,7 +185,6 @@ public class AppController {
             @Override
             public void handle(WorkerStateEvent event) {
                 AppController.this.getSettingsAndApply(false);
-
             }
         };
     }
@@ -206,12 +205,13 @@ public class AppController {
     }
 
     private void applySettings(AppSettings settings, boolean isInitializing) {
-        logger.info("(settings.getLanguageEnum() != this.languageEnum) = {}", (settings.getLanguageEnum() != this.languageEnum));
+        logger.info("applying settings = {}", settings.toString());
         logger.info("isInitializing = {}", isInitializing);
         logger.info("this.isFirstRun = {}", isFirstRun);
 
         this.canvas.setVisible(settings.isGraphicVisible());
         this.canvasController.setVisibleDays(settings.getNumberOfVisibleDays());
+        this.canvasController.setHeadersVisibility(settings.isHeadersVisible());
         this.getTableData();
 
 
@@ -377,8 +377,7 @@ public class AppController {
 
     private void drawDataOnCanvas(HoursData hoursData) {
         if (hoursData.getHours().size() > 0) {
-            canvasController.convertHoursDataToHoursArray(hoursData, this.canvas);
-//            canvasController.calculatePositionsAndDraw(hoursData.getHours(), this.canvas);
+            canvasController.drawArrayOnCanvas(hoursData.getHoursArray(), this.canvas);
             this.latestRecord = hoursData.getLatest();
         }
     }

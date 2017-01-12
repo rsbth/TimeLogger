@@ -3,6 +3,8 @@ package com.mprtcz.timeloggerdesktop.backend.activity.model;
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -11,11 +13,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 /**
  * Created by mprtcz on 2017-01-05.
  */
 @Getter
 public class HoursData {
+    private Logger logger = LoggerFactory.getLogger(HoursData.class);
 
     private List<Activity> allActivities;
     private List<Record> allRecords;
@@ -53,6 +58,44 @@ public class HoursData {
         this.earliest = LocalDateTime.ofInstant(earliestRecord.toInstant(), ZoneId.systemDefault());
         this.latest = LocalDateTime.ofInstant(latestRecord.toInstant(), ZoneId.systemDefault());
 
+    }
+
+    public HoursData.Hour[][] getHoursArray() {
+        //this.setCanvasTooltip(canvas);
+//        HoursData hoursData = getHoursData();
+//        LocalDateTime earliest = hoursData.getEarliest();
+//        LocalDateTime latest = hoursData.getLatest();
+        long dayDelta = calculateDayDelta(earliest, latest);
+        int dayDeltaInt = Math.toIntExact(dayDelta);
+
+        logger.info("dayDeltaInt = {}", dayDeltaInt);
+
+        HoursData.Hour[][] hoursArray = new HoursData.Hour[dayDeltaInt + 1][24];
+
+        for (HoursData.Hour hourObject : this.getHours()) {
+            int hour = hourObject.getDatetime().getHour();
+            int objectsDayDelta = Math.toIntExact(calculateDayDelta(earliest, hourObject.getDatetime()));
+            logger.info("objectsDayDelta = {}", objectsDayDelta);
+
+            hoursArray[objectsDayDelta][hour] = hourObject;
+        }
+
+        for (int i = 0; i < hoursArray.length; i++) {
+            for (int j = 0; j < hoursArray[i].length; j++) {
+                if (hoursArray[i][j] == null) {
+                    logger.info("void");
+                } else {
+                    logger.info(hoursArray[i][j].getDatetime().toString());
+                }
+            }
+        }
+        return hoursArray;
+    }
+
+    private long calculateDayDelta(LocalDateTime earliest, LocalDateTime current) {
+        LocalDateTime earliestModulus = earliest;
+        earliestModulus = earliestModulus.minusHours(earliestModulus.getHour());
+        return earliestModulus.until(current, DAYS);
     }
 
     private void createHoursList() {

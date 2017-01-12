@@ -5,6 +5,8 @@ import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.HoursData;
 import com.mprtcz.timeloggerdesktop.backend.activity.validators.ActivityValidator;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
  * Created by mprtcz on 2017-01-02.
  */
 public class ActivityService {
+    private Logger logger = LoggerFactory.getLogger(ActivityService.class);
 
     private ActivityValidator activityValidator;
     private CustomDao customDao;
@@ -73,4 +76,6 @@ public class ActivityService {
     public HoursData getHoursData() throws Exception {
         return new HoursData(getActivities());
     }
+
+
 }
