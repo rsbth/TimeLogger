@@ -3,7 +3,9 @@ package com.mprtcz.timeloggerdesktop.frontend.controller;
 import com.jfoenix.controls.JFXPopup;
 import com.mprtcz.timeloggerdesktop.backend.settings.model.AppSettings;
 import com.mprtcz.timeloggerdesktop.backend.settings.service.SettingsService;
+import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.SettingsPopup;
+import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -25,7 +27,7 @@ public class SettingsController {
     private ResourceBundle messages;
     private SettingsService settingsService;
     private ChangeListener<Throwable> exceptionListener;
-    private EventHandler<WorkerStateEvent> confirmButtonHandler;
+    private ResultEventHandler<WorkerStateEvent> confirmButtonHandler;
 
     public SettingsController(ResourceBundle messages,
                               SettingsService settingsService,
@@ -35,33 +37,40 @@ public class SettingsController {
         this.exceptionListener = exceptionListener;
     }
 
-    public void initializeSettingsMenu(Region popupSource, EventHandler<WorkerStateEvent> confirmButtonHandler) {
+    public void initializeSettingsMenu(Region popupSource, ResultEventHandler<WorkerStateEvent> confirmButtonHandler) {
         this.confirmButtonHandler = confirmButtonHandler;
         this.getSettings(popupSource);
     }
 
+    Task<ValidationResult> appSettingsTask;
     private  EventHandler getApplySettingsEventHandler() {
         return new EventHandler() {
             @Override
             public void handle(Event event) {
                 try {
-                    Task<AppSettings> task = new Task<AppSettings>() {
+                    appSettingsTask = new Task<ValidationResult>() {
                         @Override
-                        protected AppSettings call() throws Exception {
-                            SettingsController.this.settingsService.updateSettings(
+                        protected ValidationResult call() throws Exception {
+                            return SettingsController.this.settingsService.updateSettings(
                                     SettingsController.this.settingsPopup.getSettingsObject());
-                            return null;
                         }
                     };
-                    task.setOnSucceeded(SettingsController.this.confirmButtonHandler);
-                    task.setOnFailed(event1 -> System.out.println(task.exceptionProperty().toString()));
-                    task.exceptionProperty().addListener(SettingsController.this.exceptionListener);
-                    new Thread(task).start();
+                    appSettingsTask.setOnSucceeded(settingsValidationResult());
+                    appSettingsTask.setOnFailed(event1 -> System.out.println(appSettingsTask.exceptionProperty().toString()));
+                    appSettingsTask.exceptionProperty().addListener(SettingsController.this.exceptionListener);
+                    new Thread(appSettingsTask).start();
                     SettingsController.this.settingsService.updateSettings(SettingsController.this.settingsPopup.getSettingsObject());
                 } catch (Exception e) {
                     logger.info("exception while applying settings = {}", e.toString());
                 }
             }
+        };
+    }
+
+    private EventHandler<WorkerStateEvent> settingsValidationResult() {
+        return (WorkerStateEvent event) -> {
+            SettingsController.this.confirmButtonHandler.setResult(this.appSettingsTask.getValue());
+            SettingsController.this.confirmButtonHandler.handle(event);
         };
     }
 

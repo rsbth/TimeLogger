@@ -7,7 +7,7 @@ import javafx.event.EventHandler;
 /**
  * Created by mprtcz on 2017-01-11.
  */
-public interface MyEventHandler<T extends Event> extends EventHandler{
+public interface ResultEventHandler<T extends Event> extends EventHandler{
     void setResult(ValidationResult result);
     ValidationResult getResult();
 }

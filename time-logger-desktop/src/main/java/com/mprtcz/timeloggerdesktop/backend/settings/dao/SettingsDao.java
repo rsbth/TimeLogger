@@ -8,7 +8,5 @@ import com.mprtcz.timeloggerdesktop.backend.settings.model.AppSettings;
 public interface SettingsDao {
     void save(AppSettings settings) throws Exception;
 
-    void update(AppSettings settings) throws Exception;
-
     AppSettings getSettings() throws Exception;
 }

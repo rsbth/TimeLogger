@@ -14,14 +14,14 @@ import com.mprtcz.timeloggerdesktop.backend.record.service.RecordService;
 import com.mprtcz.timeloggerdesktop.backend.record.validators.RecordValidator;
 import com.mprtcz.timeloggerdesktop.backend.settings.dao.FileReadingDao;
 import com.mprtcz.timeloggerdesktop.backend.settings.model.AppSettings;
-import com.mprtcz.timeloggerdesktop.backend.settings.model.LanguageEnum;
+import com.mprtcz.timeloggerdesktop.backend.settings.model.Language;
 import com.mprtcz.timeloggerdesktop.backend.settings.service.SettingsService;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.AddRecordPopup;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.StyleSetter;
 import com.mprtcz.timeloggerdesktop.frontend.utils.MessageType;
-import com.mprtcz.timeloggerdesktop.frontend.utils.MyEventHandler;
+import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -89,7 +89,7 @@ public class AppController {
     private ResourceBundle messages;
     private StyleSetter styleSetter;
 
-    private LanguageEnum languageEnum;
+    private Language language;
 
 
     @FXML
@@ -180,18 +180,30 @@ public class AppController {
         this.settingsController.initializeSettingsMenu(this.activityNamesList, getApplySettingsEventHandler());
     }
 
-    private EventHandler<WorkerStateEvent> getApplySettingsEventHandler() {
-        return new EventHandler<WorkerStateEvent>() {
+    private ResultEventHandler<WorkerStateEvent> getApplySettingsEventHandler() {
+        return new ResultEventHandler<WorkerStateEvent>() {
+            ValidationResult result;
+
             @Override
-            public void handle(WorkerStateEvent event) {
+            public void setResult(ValidationResult result) {
+                this.result = result;
+            }
+
+            @Override
+            public ValidationResult getResult() {
+                return result;
+            }
+
+            @Override
+            public void handle(Event event) {
+                AppController.this.displayValidationResult(result);
                 AppController.this.getSettingsAndApply(false);
             }
         };
     }
 
     private void getSettingsAndApply(boolean isInitial) {
-        System.out.println("applying settings....");
-        logger.debug("applyingSettings ");
+        logger.info("applyingSettings ");
         Task<AppSettings> task = new Task<AppSettings>() {
             @Override
             protected AppSettings call() throws Exception {
@@ -215,13 +227,13 @@ public class AppController {
         this.getTableData();
 
 
-        if (settings.getLanguageEnum() != this.languageEnum) {
-            logger.info("settings.getLanguageEnum().getName() = {}", settings.getLanguageEnum().getName());
-            logger.info("this.languageEnum = {}", this.languageEnum);
-            this.languageEnum = settings.getLanguageEnum();
-            logger.info("this.languageEnum = {}", this.languageEnum);
+        if (settings.getLanguage() != this.language) {
+            logger.info("settings.getLanguageEnum().getName() = {}", settings.getLanguage().getName());
+            logger.info("this.languageEnum = {}", this.language);
+            this.language = settings.getLanguage();
+            logger.info("this.languageEnum = {}", this.language);
             Scene scene = borderPane.getScene();
-            Locale.setDefault(this.languageEnum.getLocale());
+            Locale.setDefault(this.language.getLocale());
             ValidationResult.messages = ResourceBundle.getBundle("MessagesBundle", Locale.getDefault());
             if (isInitializing && !isFirstRun) {
                 logger.info("(isInitializing && !isFirstRun) = {}", (isInitializing && !isFirstRun));
@@ -235,7 +247,7 @@ public class AppController {
                 e.printStackTrace();
                 AppController.this.displayException(e);
             }
-            this.languageEnum = settings.getLanguageEnum();
+            this.language = settings.getLanguage();
             isFirstRun = false;
         }
     }
@@ -279,8 +291,8 @@ public class AppController {
     }
 
 
-    private MyEventHandler getOnTaskSucceedEventHandler() {
-        return new MyEventHandler() {
+    private ResultEventHandler getOnTaskSucceedEventHandler() {
+        return new ResultEventHandler() {
             ValidationResult result;
 
             @Override

@@ -3,7 +3,7 @@ package com.mprtcz.timeloggerdesktop.frontend.customfxelements;
 import com.jfoenix.controls.*;
 import com.jfoenix.effects.JFXDepthManager;
 import com.mprtcz.timeloggerdesktop.backend.settings.model.AppSettings;
-import com.mprtcz.timeloggerdesktop.backend.settings.model.LanguageEnum;
+import com.mprtcz.timeloggerdesktop.backend.settings.model.Language;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -107,16 +107,16 @@ public class SettingsPopup extends JFXPopup {
     }
 
     private void setLanguagesInChoiceBox() {
-        List<LanguageEnum> list = Arrays.asList(LanguageEnum.values());
-        for (LanguageEnum language :
+        List<Language> list = Arrays.asList(Language.values());
+        for (Language language :
                 list) {
             this.comboBox.getItems().add(language.getName());
         }
-        this.comboBox.setValue(this.settings.getLanguageEnum().getName());
+        this.comboBox.setValue(this.settings.getLanguage().getName());
     }
 
     public AppSettings getSettingsObject() {
-        this.settings.setLanguageEnum(LanguageEnum.of(this.comboBox.getValue()));
+        this.settings.setLanguage(Language.valueOf(this.comboBox.getValue().toUpperCase()));
         this.settings.setNumberOfVisibleDays((int) Math.round(this.slider.getValue()));
         this.settings.setGraphicVisible(this.graphicCheckBox.isSelected());
         this.settings.setHeadersVisible(this.headersCheckBox.isSelected());

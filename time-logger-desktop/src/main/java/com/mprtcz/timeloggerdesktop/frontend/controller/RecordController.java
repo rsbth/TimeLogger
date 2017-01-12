@@ -7,7 +7,7 @@ import com.mprtcz.timeloggerdesktop.backend.record.service.RecordService;
 import com.mprtcz.timeloggerdesktop.backend.record.validators.RecordValidator;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.AddRecordPopup;
-import com.mprtcz.timeloggerdesktop.frontend.utils.MyEventHandler;
+import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -29,12 +29,12 @@ public class RecordController {
     private AddRecordPopup addRecordPopup;
     private ChangeListener<Throwable> exceptionListener;
     private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
-    private MyEventHandler<Event> onSucceededRecordAddEventHandler;
+    private ResultEventHandler<Event> onSucceededRecordAddEventHandler;
 
     private RecordController(RecordService recordService, AddRecordPopup addRecordPopup,
                              ChangeListener<Throwable> exceptionListener,
                              EventHandler<WorkerStateEvent> onFailedTaskEventHandler,
-                             MyEventHandler<Event> onSucceededRecordAddEventHandler) {
+                             ResultEventHandler<Event> onSucceededRecordAddEventHandler) {
         this.recordService = recordService;
         this.addRecordPopup = addRecordPopup;
         this.exceptionListener = exceptionListener;
@@ -82,7 +82,7 @@ public class RecordController {
         private AddRecordPopup addRecordPopup;
         private ChangeListener<Throwable> exceptionListener;
         private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
-        private MyEventHandler<Event> onSucceededRecordAddEventHandler;
+        private ResultEventHandler<Event> onSucceededRecordAddEventHandler;
 
         public RecordControllerBuilder(RecordService recordService, AddRecordPopup addRecordPopup) {
             this.recordService = recordService;
@@ -100,7 +100,7 @@ public class RecordController {
         }
 
         public RecordControllerBuilder onSucceededRecordAddEventHandler(
-                MyEventHandler<Event> onSucceededRecordAddEventHandler) {
+                ResultEventHandler<Event> onSucceededRecordAddEventHandler) {
             this.onSucceededRecordAddEventHandler = onSucceededRecordAddEventHandler;
             return this;
         }

@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 import static com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult.CustomErrorEnum.ACTIVITY_SAVED;
 import static com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult.CustomErrorEnum.RECORD_SAVED;
+import static com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult.CustomErrorEnum.SETTINGS_SAVED;
 
 /**
  * Created by mprtcz on 2017-01-03.
@@ -22,7 +23,9 @@ public class ValidationResult {
     public enum CustomErrorEnum {
         OK(messages.getString("ok")),
         ACTIVITY_SAVED(messages.getString("activity_saved")),
+        SETTINGS_SAVED(messages.getString("settings_saved")),
         RECORD_SAVED(messages.getString("record_saved")),
+
         ACTIVITY_NAME_EMPTY(messages.getString("activity_name_empty")),
         ACTIVITY_EXISTS(messages.getString("activity_exists")),
         START_TIME_NULL(messages.getString("start_time_null")),
@@ -31,7 +34,11 @@ public class ValidationResult {
         END_DATE_NULL(messages.getString("end_date_null")),
         END_DATE_BEFORE(messages.getString("end_date_before")),
         END_START_EQUAL(messages.getString("end_start_equal")),
-        ACTIVITY_NULL(messages.getString("activity_null"));
+        ACTIVITY_NULL(messages.getString("activity_null")),
+        LANGUAGE_NULL(messages.getString("language_null")),
+        VISIBLE_DAYS_TOO_HIGH(messages.getString("visible_days_too_high")),
+        VISIBLE_DAYS_TOO_LOW(messages.getString("visible_days_too_low")),
+        ;
 
         private String value;
 
@@ -58,7 +65,8 @@ public class ValidationResult {
     }
 
     public boolean isErrorFree() {
-        return this.customErrorEnum == CustomErrorEnum.OK || this.customErrorEnum == ACTIVITY_SAVED || this.customErrorEnum == RECORD_SAVED;
+        return this.customErrorEnum == CustomErrorEnum.OK || this.customErrorEnum == ACTIVITY_SAVED
+                || this.customErrorEnum == RECORD_SAVED || this.customErrorEnum == SETTINGS_SAVED;
     }
 
 }

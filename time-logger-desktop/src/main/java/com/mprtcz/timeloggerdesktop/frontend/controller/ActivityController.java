@@ -10,7 +10,7 @@ import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.ColorDialog;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.ConfirmationPopup;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor;
-import com.mprtcz.timeloggerdesktop.frontend.utils.MyEventHandler;
+import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -29,7 +29,7 @@ public class ActivityController {
     private ActivityService activityService;
     private ChangeListener<Throwable> exceptionListener;
     private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
-    private MyEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler;
+    private ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler;
     private ResourceBundle messages;
     private ConfirmationPopup confirmationPopup;
     private JFXDialog bottomDialog;
@@ -39,7 +39,7 @@ public class ActivityController {
 
     private ActivityController(ActivityService activityService, ChangeListener<Throwable> exceptionListener,
                               EventHandler<WorkerStateEvent> onFailedTaskEventHandler,
-                              MyEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler,
+                              ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler,
                               ResourceBundle messages) {
         this.activityService = activityService;
         this.exceptionListener = exceptionListener;
@@ -174,7 +174,7 @@ public class ActivityController {
         private ActivityService activityService;
         private ChangeListener<Throwable> exceptionListener;
         private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
-        private MyEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler;
+        private ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler;
         private ResourceBundle messages;
 
         public ActivityControllerBuilder(ActivityService activityService, ResourceBundle messages) {
@@ -190,7 +190,7 @@ public class ActivityController {
             this.onFailedTaskEventHandler = onFailedTaskEventHandler;
             return this;
         }
-        public ActivityControllerBuilder onSucceededActivityAddEventHandler(MyEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler) {
+        public ActivityControllerBuilder onSucceededActivityAddEventHandler(ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler) {
             this.onSucceededActivityAddEventHandler = onSucceededActivityAddEventHandler;
             return this;
         }

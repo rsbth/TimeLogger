@@ -1,13 +1,21 @@
 package com.mprtcz.timeloggerdesktop.frontend.controller;
 
 import com.mprtcz.timeloggerdesktop.backend.activity.model.HoursData;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by mprtcz on 2017-01-10.
@@ -37,12 +45,13 @@ public class CanvasController {
 
         int xOffset = 0;
         int yOffset = 0;
-        this.cellWidth = (int) (canvas.getWidth() / 26);
+        this.cellWidth = (int) (canvas.getWidth() / 24);
 
         this.setTrimmedArray(hoursArray);
         basicCellHeight = (int) (canvas.getHeight() / this.trimmedHourArray.length);
 
         if (areHeadersEnabled) {
+            this.cellWidth = (int) (canvas.getWidth() / 26);
             xOffset = 2;
             yOffset = 1;
             leftLegendWidth = xOffset * cellWidth;
@@ -125,6 +134,8 @@ public class CanvasController {
 
     private void setCanvasTooltip(Canvas canvas) {
         Tooltip tooltip = new Tooltip("Something");
+        tooltip.setFont(Font.font(FONT));
+        hackTooltipStartTiming(tooltip);
         canvas.setOnMouseMoved(event -> {
             int x;
             int y;
@@ -150,8 +161,16 @@ public class CanvasController {
             } else {
                 activityName = trimmedHourArray[y][x].getActivitiesDuringThisHour().get(0).getName();
             }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm");
+            String result = trimmedHourArray[y][x].getDatetime().format(formatter);
             String datetime = trimmedHourArray[y][x].getDatetime().toString();
-            tooltip.setText(activityName + "\n" + datetime);
+            tooltip.setText(activityName + "\n" + result);
+        });
+        canvas.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                tooltip.hide();
+            }
         });
         Tooltip.install(canvas, tooltip); //TODO tooltip
     }
@@ -159,5 +178,22 @@ public class CanvasController {
     public void setHeadersVisibility(boolean headersVisible) {
         logger.info("setting headersVisible = {}", headersVisible);
             this.areHeadersEnabled = headersVisible;
+    }
+
+    public static void hackTooltipStartTiming(Tooltip tooltip) {
+        try {
+            Field fieldBehavior = tooltip.getClass().getDeclaredField("BEHAVIOR");
+            fieldBehavior.setAccessible(true);
+            Object objBehavior = fieldBehavior.get(tooltip);
+
+            Field fieldTimer = objBehavior.getClass().getDeclaredField("activationTimer");
+            fieldTimer.setAccessible(true);
+            Timeline objTimer = (Timeline) fieldTimer.get(objBehavior);
+
+            objTimer.getKeyFrames().clear();
+            objTimer.getKeyFrames().add(new KeyFrame(new Duration(10)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
