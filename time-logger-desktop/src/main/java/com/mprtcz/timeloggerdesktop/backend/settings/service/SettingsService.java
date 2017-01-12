@@ -31,7 +31,7 @@ public class SettingsService {
             logger.info("currentSettings.getLanguageEnum() = {}", currentSettings.getLanguageEnum());
             currentSettings.setLanguageEnum(settings.getLanguageEnum());
         }
-        if(settings.getNumberOfVisibleDays() < MAX_VISIBLE_DAYS && settings.getNumberOfVisibleDays() > MIN_VISIBLE_DAYS) {
+        if(settings.getNumberOfVisibleDays() <= MAX_VISIBLE_DAYS && settings.getNumberOfVisibleDays() >= MIN_VISIBLE_DAYS) {
             currentSettings.setNumberOfVisibleDays(settings.getNumberOfVisibleDays());
         }
         currentSettings.setGraphicVisible(settings.isGraphicVisible());

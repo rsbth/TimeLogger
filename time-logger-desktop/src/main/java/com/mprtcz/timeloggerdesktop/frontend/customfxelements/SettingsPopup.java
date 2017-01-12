@@ -12,7 +12,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ResourceBundle;
 
 import static com.mprtcz.timeloggerdesktop.backend.settings.model.AppSettings.MAX_VISIBLE_DAYS;
 import static com.mprtcz.timeloggerdesktop.backend.settings.model.AppSettings.MIN_VISIBLE_DAYS;
@@ -110,7 +112,7 @@ public class SettingsPopup extends JFXPopup {
 
     public AppSettings getSettingsObject() {
         this.settings.setLanguageEnum(LanguageEnum.of(this.comboBox.getValue()));
-        this.settings.setNumberOfVisibleDays((int) this.slider.getValue());
+        this.settings.setNumberOfVisibleDays((int) Math.round(this.slider.getValue()));
         this.settings.setGraphicVisible(this.checkBox.isSelected());
         return this.settings;
     }

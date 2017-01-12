@@ -95,8 +95,8 @@ public class AppController {
     @FXML
     private void initialize() {
         this.initializeServices();
-        this.initializeLanguage();
         this.initializeSettingsService();
+        this.initializeLanguage();
         this.getSettingsAndApply(true);
         this.initializeListViewController();
         this.initializeActivityController();
@@ -238,7 +238,6 @@ public class AppController {
             this.languageEnum = settings.getLanguageEnum();
             isFirstRun = false;
         }
-
     }
 
     private void initializeLanguage() {
@@ -307,7 +306,7 @@ public class AppController {
         if (result != null) {
             if (result.isErrorFree()) {
                 System.out.println("result.getCustomErrorEnumList() = " + result.getCustomMessage());
-                this.showInfoPopup(this.messages.getString("saved_info"));
+                this.showInfoPopup(result.getCustomErrorEnum().getValue());
             } else {
                 this.showAlertPopup(result.getEnumMessage());
             }
@@ -378,7 +377,8 @@ public class AppController {
 
     private void drawDataOnCanvas(HoursData hoursData) {
         if (hoursData.getHours().size() > 0) {
-            canvasController.calculatePositionsAndDraw(hoursData.getHours(), this.canvas);
+            canvasController.convertHoursDataToHoursArray(hoursData, this.canvas);
+//            canvasController.calculatePositionsAndDraw(hoursData.getHours(), this.canvas);
             this.latestRecord = hoursData.getLatest();
         }
     }
@@ -406,5 +406,4 @@ public class AppController {
             AppController.this.showAlertPopup(exception.getMessage());
         };
     }
-
 }

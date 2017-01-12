@@ -48,7 +48,8 @@ public class SettingsController {
                     Task<AppSettings> task = new Task<AppSettings>() {
                         @Override
                         protected AppSettings call() throws Exception {
-                            SettingsController.this.settingsService.updateSettings(SettingsController.this.settingsPopup.getSettingsObject());
+                            SettingsController.this.settingsService.updateSettings(
+                                    SettingsController.this.settingsPopup.getSettingsObject());
                             return null;
                         }
                     };
