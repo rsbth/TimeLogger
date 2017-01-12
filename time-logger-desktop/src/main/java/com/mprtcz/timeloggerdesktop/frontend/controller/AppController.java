@@ -12,7 +12,7 @@ import com.mprtcz.timeloggerdesktop.backend.activity.service.ActivityService;
 import com.mprtcz.timeloggerdesktop.backend.activity.validators.ActivityValidator;
 import com.mprtcz.timeloggerdesktop.backend.record.service.RecordService;
 import com.mprtcz.timeloggerdesktop.backend.record.validators.RecordValidator;
-import com.mprtcz.timeloggerdesktop.backend.settings.dao.FileReadingDao;
+import com.mprtcz.timeloggerdesktop.backend.settings.dao.DatabaseSettingsDao;
 import com.mprtcz.timeloggerdesktop.backend.settings.model.AppSettings;
 import com.mprtcz.timeloggerdesktop.backend.settings.model.Language;
 import com.mprtcz.timeloggerdesktop.backend.settings.service.SettingsService;
@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -126,7 +127,11 @@ public class AppController {
     }
 
     private void initializeSettingsService() {
-        this.settingsService = new SettingsService(new FileReadingDao());
+        try {
+            this.settingsService = new SettingsService(new DatabaseSettingsDao());
+        } catch (SQLException e) {
+            logger.info("database setting exception = {}", e.toString());
+        }
     }
 
     private void initializeRecordController() {
@@ -358,7 +363,10 @@ public class AppController {
     }
 
     private EventHandler getOnFailedTaskEventHandler() {
-        return event -> AppController.this.showAlertPopup(event.toString());
+        return event -> {
+            logger.info("event.toString() = {}", event.toString());
+            AppController.this.showAlertPopup(event.toString());
+        };
     }
 
     private void closeDialogIfExists() {

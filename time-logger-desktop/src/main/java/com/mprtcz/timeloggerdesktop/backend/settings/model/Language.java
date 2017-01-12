@@ -16,6 +16,8 @@ public enum Language {
     private Locale locale;
 
     Language(String name, Locale locale) {
+        System.out.println("name = " + name);
+        System.out.println("locale = " + locale);
         this.name = name;
         this.locale = locale;
     }

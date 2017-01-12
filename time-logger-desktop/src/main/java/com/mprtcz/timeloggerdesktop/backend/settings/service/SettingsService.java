@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 
 /**
  * Created by mprtcz on 2017-01-10.
@@ -22,6 +23,7 @@ public class SettingsService {
     }
 
     private void saveSettings(AppSettings settings) throws Exception {
+        logger.info("saving settings = {}", settings);
         this.settingsDao.save(settings);
     }
 
@@ -42,10 +44,11 @@ public class SettingsService {
         try {
             AppSettings settings = this.settingsDao.getSettings();
             logger.info("this.settingsDao.getSettings().toString() = {}", settings.toString());
-        } catch (FileNotFoundException fileNotFoundException) {
-            logger.info("Exception occured : " +fileNotFoundException.getStackTrace().toString());
+        } catch (FileNotFoundException | NullPointerException fileNotFoundException ) {
+            logger.info("Exception occured : " + Arrays.toString(fileNotFoundException.getStackTrace()));
             this.saveSettings(AppSettings.getDefaultInstance());
         }
+        logger.info("this.settingsDao.getSettings() = {}", this.settingsDao.getSettings().toString());
         return this.settingsDao.getSettings();
     }
 }

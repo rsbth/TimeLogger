@@ -127,7 +127,8 @@ public class ActivityController {
                 this.confirmationPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT,
                         event.getX(), event.getY());
             } else {
-                ActivityController.this.addNewActivity(newActivityNameTextField.getText(), newActivityDescriptionTextField.getText());
+                ActivityController.this.addNewActivity(newActivityNameTextField.getText(),
+                        newActivityDescriptionTextField.getText());
             }
         }
         newActivityNameTextField.setText("");
@@ -190,7 +191,8 @@ public class ActivityController {
             this.onFailedTaskEventHandler = onFailedTaskEventHandler;
             return this;
         }
-        public ActivityControllerBuilder onSucceededActivityAddEventHandler(ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler) {
+        public ActivityControllerBuilder onSucceededActivityAddEventHandler
+                (ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler) {
             this.onSucceededActivityAddEventHandler = onSucceededActivityAddEventHandler;
             return this;
         }

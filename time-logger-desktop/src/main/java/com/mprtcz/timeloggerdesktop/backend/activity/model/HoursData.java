@@ -75,7 +75,6 @@ public class HoursData {
         for (HoursData.Hour hourObject : this.getHours()) {
             int hour = hourObject.getDatetime().getHour();
             int objectsDayDelta = Math.toIntExact(calculateDayDelta(earliest, hourObject.getDatetime()));
-            logger.info("objectsDayDelta = {}", objectsDayDelta);
 
             hoursArray[objectsDayDelta][hour] = hourObject;
         }
