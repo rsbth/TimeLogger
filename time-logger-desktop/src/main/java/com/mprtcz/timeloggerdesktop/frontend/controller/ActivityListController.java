@@ -13,6 +13,7 @@ import javafx.scene.control.ListView;
 import javafx.util.Callback;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by mprtcz on 2017-01-10.
@@ -27,13 +28,16 @@ public class ActivityListController {
     private ActivityService activityService;
     private ChangeListener exceptionListener;
     private ChangeListener changeListener;
+    private ExecutorService executorService;
 
     public ActivityListController(JFXListView<Activity> activityNamesList, ActivityService activityService,
-                                  ChangeListener exceptionListener, ChangeListener changeListener) {
+                                  ChangeListener exceptionListener, ChangeListener changeListener,
+                                  ExecutorService executorService) {
         this.activityNamesList = activityNamesList;
         this.activityService = activityService;
         this.exceptionListener = exceptionListener;
         this.changeListener = changeListener;
+        this.executorService = executorService;
 
         this.populateListView();
         this.setUpListViewListener();
@@ -75,7 +79,7 @@ public class ActivityListController {
         task.setOnSucceeded(event -> this.setActivityListItems(task.getValue()));
         task.setOnFailed(event -> System.out.println(task.exceptionProperty().toString()));
         task.exceptionProperty().addListener(this.exceptionListener);
-        new Thread(task).start();
+        this.executorService.execute(task);
     }
 
     void setUpListViewListener() {

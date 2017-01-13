@@ -35,6 +35,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,11 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import static com.mprtcz.timeloggerdesktop.frontend.controller.AppController.BottomButton.*;
 
 /**
  * Created by mprtcz on 2017-01-02.
@@ -70,7 +76,7 @@ public class AppController {
     @FXML
     private JFXButton settingsButton;
     @FXML
-    private HBox addActivityHbox;
+    private HBox addActivityHBox;
 
     private static boolean isFirstRun = true;
 
@@ -85,16 +91,19 @@ public class AppController {
     private ActivityService activityService;
     private RecordService recordService;
     private AddRecordPopup addRecordPopup;
-    private Map<String, JFXButton> bottomButtons;
+    private Map<BottomButton, JFXButton> bottomButtons;
     private LocalDateTime latestRecord;
     private ResourceBundle messages;
     private StyleSetter styleSetter;
 
     private Language language;
+    private ExecutorService executorService;
+    private static final int MAX_THREADS = 12;
 
 
     @FXML
     private void initialize() {
+        this.initializeExecutor();
         this.initializeServices();
         this.initializeSettingsService();
         this.initializeLanguage();
@@ -109,9 +118,13 @@ public class AppController {
         this.setAdditionalStyles();
     }
 
+    private void initializeExecutor() {
+        this.executorService = Executors.newFixedThreadPool(MAX_THREADS);
+    }
+
     private void initializeListViewController() {
         this.activityListController = new ActivityListController(this.activityNamesList, this.activityService,
-                getTaskExceptionListener(), getListViewChangeListener());
+                getTaskExceptionListener(), getListViewChangeListener(), this.executorService);
         this.activityListController.populateListView();
         this.activityListController.setUpListViewListener();
         this.activityListController.setListViewFactory();
@@ -119,7 +132,10 @@ public class AppController {
 
     private void initializeActivityController() {
         ActivityController.ActivityControllerBuilder activityControllerBuilder =
-                new ActivityController.ActivityControllerBuilder(this.activityService, this.messages);
+                new ActivityController.ActivityControllerBuilder(
+                        this.activityService,
+                        this.messages,
+                        this.executorService);
         activityControllerBuilder.exceptionListener(getTaskExceptionListener())
                 .onFailedTaskEventHandler(getOnFailedTaskEventHandler())
                 .onSucceededActivityAddEventHandler(getOnTaskSucceedEventHandler());
@@ -136,7 +152,10 @@ public class AppController {
 
     private void initializeRecordController() {
         RecordController.RecordControllerBuilder recordControllerBuilder =
-                new RecordController.RecordControllerBuilder(this.recordService, this.addRecordPopup);
+                new RecordController.RecordControllerBuilder(
+                        this.recordService,
+                        this.addRecordPopup,
+                        this.executorService);
         recordControllerBuilder.exceptionListener(getTaskExceptionListener())
                 .onFailedTaskEventHandler(getOnFailedTaskEventHandler())
                 .onSucceededRecordAddEventHandler(getOnTaskSucceedEventHandler());
@@ -145,7 +164,7 @@ public class AppController {
 
     private void initializeSettingsController() {
         this.settingsController = new SettingsController(this.messages,
-                this.settingsService, getTaskExceptionListener(), this.borderPane);
+                this.settingsService, getTaskExceptionListener(), this.borderPane, this.executorService);
     }
 
     private void initializeCanvasController() {
@@ -220,7 +239,7 @@ public class AppController {
         task.setOnSucceeded(event -> this.applySettings(task.getValue(), isInitial));
         task.setOnFailed(event -> this.getOnFailedTaskEventHandler());
         addTaskExceptionListener(task);
-        new Thread(task).start();
+        this.executorService.execute(task);
     }
 
     private void applySettings(AppSettings settings, boolean isInitializing) {
@@ -245,10 +264,12 @@ public class AppController {
             if (isInitializing && !isFirstRun) {
                 logger.info("(isInitializing && !isFirstRun) = {}", (isInitializing && !isFirstRun));
                 logger.info("breaking the loop");
+                this.setOnClose();
                 return; //breaking the language initialization loop
             }
             try {
                 logger.info("setting the new Root ");
+                executorService.shutdownNow();
                 scene.setRoot(FXMLLoader.load(AppController.this.getClass().getResource("/fxmls/mainMenu.fxml")));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -257,6 +278,20 @@ public class AppController {
             this.language = settings.getLanguage();
             isFirstRun = false;
         }
+    }
+
+    private void setOnClose() {
+        Stage stage = (Stage) this.borderPane.getScene().getWindow();
+        stage.setOnCloseRequest(event -> {
+            logger.info("shutting down... ");
+            AppController.this.executorService.shutdown();
+            try {
+                AppController.this.executorService.awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                logger.info("Exception on shutdown: " +e.toString());
+                e.printStackTrace();
+            }
+        });
     }
 
     private void initializeLanguage() {
@@ -277,14 +312,21 @@ public class AppController {
 
     private void collectBottomButtons() {
         this.bottomButtons = new HashMap<>();
-        this.bottomButtons.put("addRecord", this.addRecordButton);
-        this.bottomButtons.put("removeActivity", this.removeActivityButton);
-        this.bottomButtons.put("changeColor", this.changeColorButton);
-        this.bottomButtons.put("settings", this.settingsButton);
+        this.bottomButtons.put(ADD_RECORD, this.addRecordButton);
+        this.bottomButtons.put(REMOVE_ACTIVITY, this.removeActivityButton);
+        this.bottomButtons.put(CHANGE_COLOR, this.changeColorButton);
+        this.bottomButtons.put(SETTINGS, this.settingsButton);
         this.styleSetter = new StyleSetter();
         styleSetter.getListViewControlsDependants().add(this.addRecordButton);
         styleSetter.getListViewControlsDependants().add(this.removeActivityButton);
         styleSetter.getListViewControlsDependants().add(this.changeColorButton);
+    }
+
+    public enum BottomButton {
+        ADD_RECORD,
+        REMOVE_ACTIVITY,
+        CHANGE_COLOR,
+        SETTINGS
     }
 
     private void setAdditionalStyles() {
@@ -294,7 +336,7 @@ public class AppController {
         this.styleSetter.setVisibility(false);
         StyleSetter.setBottomButtonContent(this.bottomButtons, this.messages);
         StyleSetter.stylizeButton(this.addActivityButton, new ImageView(StyleSetter.ADD_ICON));
-        this.addActivityHbox.maxWidthProperty().bind(this.activityNamesList.widthProperty());
+        this.addActivityHBox.maxWidthProperty().bind(this.activityNamesList.widthProperty());
     }
 
 
@@ -334,10 +376,6 @@ public class AppController {
 
     private void displayException(Throwable e) {
         this.showAlertDialog(e.getMessage());
-    }
-
-    private void displayException(String e) {
-        this.showAlertDialog(e);
     }
 
     private void showAlertDialog(String value) {
@@ -394,7 +432,7 @@ public class AppController {
         };
         task.setOnSucceeded(event -> AppController.this.drawDataOnCanvas(task.getValue()));
         this.addTaskExceptionListener(task);
-        new Thread(task).start();
+        this.executorService.execute(task);
     }
 
     private void drawDataOnCanvas(HoursData hoursData) {

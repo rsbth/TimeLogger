@@ -1,6 +1,7 @@
 package com.mprtcz.timeloggerdesktop.frontend.customfxelements;
 
 import com.jfoenix.controls.JFXButton;
+import com.mprtcz.timeloggerdesktop.frontend.controller.AppController;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import static com.mprtcz.timeloggerdesktop.frontend.controller.AppController.BottomButton.*;
 import static com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor.getBackgroundOfColor;
 import static com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor.getBackgroundStyle;
 
@@ -54,19 +56,19 @@ public class StyleSetter {
         }
     }
 
-    public static void setBottomButtonContent(Map<String, JFXButton> buttons, ResourceBundle messages) {
+    public static void setBottomButtonContent(Map<AppController.BottomButton, JFXButton> buttons, ResourceBundle messages) {
         for (Map.Entry entry : buttons.entrySet()) {
-            if(entry.getKey().equals("addRecord")) {
+            if(entry.getKey() == ADD_RECORD) {
                 setButtonContent(entry.getValue(), ADD_ICON, messages.getString("add_record_button"));
             }
-            if(entry.getKey().equals("removeActivity")) {
+            if(entry.getKey()== REMOVE_ACTIVITY) {
                 setButtonContent(entry.getValue(), REMOVE_ICON, messages.getString("remove_activity_button"));
 
             }
-            if(entry.getKey().equals("changeColor")) {
+            if(entry.getKey() == CHANGE_COLOR) {
                 setButtonContent(entry.getValue(), COLOR_ICON, messages.getString("color_record_button"));
             }
-            if(entry.getKey().equals("settings")) {
+            if(entry.getKey() == SETTINGS) {
                 setButtonContent(entry.getValue(), SETTINGS_ICON, messages.getString("settings_button"));
             }
         }

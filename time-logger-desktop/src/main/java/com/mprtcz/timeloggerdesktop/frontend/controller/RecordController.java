@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by mprtcz on 2017-01-10.
@@ -32,16 +33,19 @@ public class RecordController {
     private ChangeListener<Throwable> exceptionListener;
     private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
     private ResultEventHandler<Event> onSucceededRecordAddEventHandler;
+    private ExecutorService executorService;
 
     private RecordController(RecordService recordService, AddRecordPopup addRecordPopup,
                              ChangeListener<Throwable> exceptionListener,
                              EventHandler<WorkerStateEvent> onFailedTaskEventHandler,
-                             ResultEventHandler<Event> onSucceededRecordAddEventHandler) {
+                             ResultEventHandler<Event> onSucceededRecordAddEventHandler,
+                             ExecutorService executorService) {
         this.recordService = recordService;
         this.addRecordPopup = addRecordPopup;
         this.exceptionListener = exceptionListener;
         this.onFailedTaskEventHandler = onFailedTaskEventHandler;
         this.onSucceededRecordAddEventHandler = onSucceededRecordAddEventHandler;
+        this.executorService = executorService;
     }
 
     public void showAddRecordPopup(JFXListView<Activity> activityNamesList,
@@ -79,7 +83,7 @@ public class RecordController {
         saveRecordTask.setOnSucceeded(this.addRecordSucceeded());
         saveRecordTask.setOnFailed(this.onFailedTaskEventHandler);
         saveRecordTask.exceptionProperty().addListener(this.exceptionListener);
-        new Thread(saveRecordTask).start();
+        this.executorService.execute(saveRecordTask);
     }
 
     private EventHandler<WorkerStateEvent> addRecordSucceeded() {
@@ -95,10 +99,14 @@ public class RecordController {
         private ChangeListener<Throwable> exceptionListener;
         private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
         private ResultEventHandler<Event> onSucceededRecordAddEventHandler;
+        private ExecutorService executorService;
 
-        public RecordControllerBuilder(RecordService recordService, AddRecordPopup addRecordPopup) {
+        public RecordControllerBuilder(RecordService recordService,
+                                       AddRecordPopup addRecordPopup,
+                                       ExecutorService executorService) {
             this.recordService = recordService;
             this.addRecordPopup = addRecordPopup;
+            this.executorService = executorService;
         }
 
         public RecordControllerBuilder exceptionListener(ChangeListener<Throwable> exceptionListener) {
@@ -123,7 +131,8 @@ public class RecordController {
                     this.addRecordPopup,
                     this.exceptionListener,
                     this.onFailedTaskEventHandler,
-                    this.onSucceededRecordAddEventHandler
+                    this.onSucceededRecordAddEventHandler,
+                    this.executorService
             );
         }
     }

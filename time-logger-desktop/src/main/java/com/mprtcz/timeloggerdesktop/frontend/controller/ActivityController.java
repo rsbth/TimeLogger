@@ -21,6 +21,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by mprtcz on 2017-01-10.
@@ -33,6 +34,7 @@ public class ActivityController {
     private ResourceBundle messages;
     private ConfirmationPopup confirmationPopup;
     private JFXDialog bottomDialog;
+    private ExecutorService executorService;
 
     private String newActivityName;
     private String newActivityDescription;
@@ -40,12 +42,13 @@ public class ActivityController {
     private ActivityController(ActivityService activityService, ChangeListener<Throwable> exceptionListener,
                               EventHandler<WorkerStateEvent> onFailedTaskEventHandler,
                               ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler,
-                              ResourceBundle messages) {
+                              ResourceBundle messages, ExecutorService executorService) {
         this.activityService = activityService;
         this.exceptionListener = exceptionListener;
         this.onFailedTaskEventHandler = onFailedTaskEventHandler;
         this.onSucceededActivityAddEventHandler = onSucceededActivityAddEventHandler;
         this.messages = messages;
+        this.executorService = executorService;
     }
 
     public void initActivityRemoveConfirmationPopup(Region source) {
@@ -90,8 +93,7 @@ public class ActivityController {
         task.setOnSucceeded(this.onSucceededActivityAddEventHandler);
         task.exceptionProperty().addListener(this.exceptionListener);
         task.setOnFailed(this.onFailedTaskEventHandler);
-
-        new Thread(task).start();
+        this.executorService.execute(task);
     }
 
     public void closeDialogIfExists() {
@@ -145,7 +147,6 @@ public class ActivityController {
         });
     }
 
-
     private Task<ValidationResult> addActivityTask;
     public void addNewActivity(String name, String description) {
         try {
@@ -157,7 +158,7 @@ public class ActivityController {
             };
             addActivityTask.setOnSucceeded(this.addActivitySucceeded());
             addActivityTask.exceptionProperty().addListener(this.exceptionListener);
-            new Thread(addActivityTask).start();
+            this.executorService.execute(addActivityTask);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -177,10 +178,14 @@ public class ActivityController {
         private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
         private ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler;
         private ResourceBundle messages;
+        private ExecutorService executorService;
 
-        public ActivityControllerBuilder(ActivityService activityService, ResourceBundle messages) {
+        public ActivityControllerBuilder(ActivityService activityService,
+                                         ResourceBundle messages,
+                                         ExecutorService executorService) {
             this.activityService = activityService;
             this.messages = messages;
+            this.executorService = executorService;
         }
 
         public ActivityControllerBuilder exceptionListener(ChangeListener<Throwable> exceptionListener) {
@@ -203,10 +208,9 @@ public class ActivityController {
                     this.exceptionListener,
                     this.onFailedTaskEventHandler,
                     this.onSucceededActivityAddEventHandler,
-                    this.messages
+                    this.messages,
+                    this.executorService
             );
         }
     }
-
-
 }

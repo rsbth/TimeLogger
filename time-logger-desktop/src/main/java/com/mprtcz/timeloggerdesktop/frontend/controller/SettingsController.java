@@ -10,7 +10,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Transform;
@@ -18,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by mprtcz on 2017-01-10.
@@ -30,15 +30,17 @@ public class SettingsController {
     private ChangeListener<Throwable> exceptionListener;
     private ResultEventHandler<WorkerStateEvent> confirmButtonHandler;
     private Region rootPane;
+    private ExecutorService executorService;
 
     public SettingsController(ResourceBundle messages,
                               SettingsService settingsService,
                               ChangeListener<Throwable> exceptionListener,
-                              Region rootPane) {
+                              Region rootPane, ExecutorService executorService) {
         this.messages = messages;
         this.settingsService = settingsService;
         this.exceptionListener = exceptionListener;
         this.rootPane = rootPane;
+        this.executorService = executorService;
     }
 
     public void initializeSettingsMenu(Region popupSource, ResultEventHandler<WorkerStateEvent> confirmButtonHandler) {
@@ -46,28 +48,24 @@ public class SettingsController {
         this.getSettings(popupSource);
     }
 
-    Task<ValidationResult> appSettingsTask;
-
+    private Task<ValidationResult> appSettingsTask;
     private EventHandler getApplySettingsEventHandler() {
-        return new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                try {
-                    appSettingsTask = new Task<ValidationResult>() {
-                        @Override
-                        protected ValidationResult call() throws Exception {
-                            return SettingsController.this.settingsService.updateSettings(
-                                    SettingsController.this.settingsPopup.getSettingsObject());
-                        }
-                    };
-                    appSettingsTask.setOnSucceeded(settingsValidationResult());
-                    appSettingsTask.setOnFailed(event1 -> System.out.println(appSettingsTask.exceptionProperty().toString()));
-                    appSettingsTask.exceptionProperty().addListener(SettingsController.this.exceptionListener);
-                    new Thread(appSettingsTask).start();
-                    SettingsController.this.settingsService.updateSettings(SettingsController.this.settingsPopup.getSettingsObject());
-                } catch (Exception e) {
-                    logger.info("exception while applying settings = {}", e.toString());
-                }
+        return event -> {
+            try {
+                appSettingsTask = new Task<ValidationResult>() {
+                    @Override
+                    protected ValidationResult call() throws Exception {
+                        return SettingsController.this.settingsService.updateSettings(
+                                SettingsController.this.settingsPopup.getSettingsObject());
+                    }
+                };
+                appSettingsTask.setOnSucceeded(settingsValidationResult());
+                appSettingsTask.setOnFailed(event1 -> System.out.println(appSettingsTask.exceptionProperty().toString()));
+                appSettingsTask.exceptionProperty().addListener(SettingsController.this.exceptionListener);
+                executorService.execute(appSettingsTask);
+                SettingsController.this.settingsService.updateSettings(SettingsController.this.settingsPopup.getSettingsObject());
+            } catch (Exception e) {
+                logger.info("exception while applying settings = {}", e.toString());
             }
         };
     }
@@ -89,7 +87,7 @@ public class SettingsController {
         task.setOnSucceeded(event -> SettingsController.this.showSettingsPopup(task.getValue(), popupSource));
         task.setOnFailed(event -> System.out.println(task.exceptionProperty().toString()));
         task.exceptionProperty().addListener(this.exceptionListener);
-        new Thread(task).start();
+        this.executorService.execute(task);
     }
 
     private SettingsPopup settingsPopup;
@@ -112,6 +110,4 @@ public class SettingsController {
         Transform transform = popupSource.getLocalToSceneTransform();
         return (this.rootPane.getWidth() / 2) - (SettingsPopup.WIDTH/2) - (transform.getTx());
     }
-
-
 }

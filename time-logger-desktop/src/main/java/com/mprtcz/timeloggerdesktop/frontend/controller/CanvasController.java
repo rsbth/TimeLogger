@@ -3,11 +3,9 @@ package com.mprtcz.timeloggerdesktop.frontend.controller;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.HoursData;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Tooltip;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
@@ -133,7 +131,7 @@ public class CanvasController {
     }
 
     private void setCanvasTooltip(Canvas canvas) {
-        Tooltip tooltip = new Tooltip("Something");
+        Tooltip tooltip = new Tooltip("Activity info");
         tooltip.setFont(Font.font(FONT));
         hackTooltipStartTiming(tooltip);
         canvas.setOnMouseMoved(event -> {
@@ -163,15 +161,9 @@ public class CanvasController {
             }
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm");
             String result = trimmedHourArray[y][x].getDatetime().format(formatter);
-            String datetime = trimmedHourArray[y][x].getDatetime().toString();
             tooltip.setText(activityName + "\n" + result);
         });
-        canvas.setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                tooltip.hide();
-            }
-        });
+        canvas.setOnMouseExited(event -> tooltip.hide());
         Tooltip.install(canvas, tooltip); //TODO tooltip
     }
 

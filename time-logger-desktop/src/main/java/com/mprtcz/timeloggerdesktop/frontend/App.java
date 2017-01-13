@@ -20,7 +20,6 @@ public class App extends Application {
         Scene scene = new Scene(root, 750, 750);
 
         scene.getStylesheets().add(App.class.getResource("/css/jfoenix-fonts.css").toExternalForm());
-//        scene.getStylesheets().add(App.class.getResource("/css/jfoenix-design.css").toExternalForm());
         scene.getStylesheets().add(App.class.getResource("/css/my-styles.css").toExternalForm());
 
 
@@ -28,6 +27,7 @@ public class App extends Application {
         window.setScene(scene);
         window.show();
     }
+
     public static void main(String[] args) {
         launch(args);
     }

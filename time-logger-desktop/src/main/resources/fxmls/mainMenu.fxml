@@ -41,7 +41,7 @@
                               <Insets top="10.0" />
                            </VBox.margin>
                         </JFXListView>
-                        <HBox fx:id="addActivityHbox" alignment="TOP_RIGHT">
+                        <HBox fx:id="addActivityHBox" alignment="TOP_RIGHT">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
