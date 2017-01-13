@@ -13,6 +13,7 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.layout.Region;
+import javafx.scene.transform.Transform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,13 +29,16 @@ public class SettingsController {
     private SettingsService settingsService;
     private ChangeListener<Throwable> exceptionListener;
     private ResultEventHandler<WorkerStateEvent> confirmButtonHandler;
+    private Region rootPane;
 
     public SettingsController(ResourceBundle messages,
                               SettingsService settingsService,
-                              ChangeListener<Throwable> exceptionListener) {
+                              ChangeListener<Throwable> exceptionListener,
+                              Region rootPane) {
         this.messages = messages;
         this.settingsService = settingsService;
         this.exceptionListener = exceptionListener;
+        this.rootPane = rootPane;
     }
 
     public void initializeSettingsMenu(Region popupSource, ResultEventHandler<WorkerStateEvent> confirmButtonHandler) {
@@ -43,7 +47,8 @@ public class SettingsController {
     }
 
     Task<ValidationResult> appSettingsTask;
-    private  EventHandler getApplySettingsEventHandler() {
+
+    private EventHandler getApplySettingsEventHandler() {
         return new EventHandler() {
             @Override
             public void handle(Event event) {
@@ -88,10 +93,24 @@ public class SettingsController {
     }
 
     private SettingsPopup settingsPopup;
+
     private void showSettingsPopup(AppSettings currentSettings, Region popupSource) {
+        this.closePopupIfExists();
+        double xOffset = this.getXCoordinate(popupSource);
         this.settingsPopup = new SettingsPopup(popupSource, this.messages, currentSettings);
         this.settingsPopup.getConfirmButton().addEventHandler(ActionEvent.ACTION, getApplySettingsEventHandler());
-        this.settingsPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT);
+        this.settingsPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, xOffset, 0);
+    }
+
+    private void closePopupIfExists() {
+        if (this.settingsPopup != null) {
+            this.settingsPopup.close();
+        }
+    }
+
+    private double getXCoordinate(Region popupSource) {
+        Transform transform = popupSource.getLocalToSceneTransform();
+        return (this.rootPane.getWidth() / 2) - (SettingsPopup.WIDTH/2) - (transform.getTx());
     }
 
 

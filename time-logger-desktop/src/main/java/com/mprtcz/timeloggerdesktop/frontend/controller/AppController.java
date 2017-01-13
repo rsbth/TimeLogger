@@ -144,7 +144,8 @@ public class AppController {
     }
 
     private void initializeSettingsController() {
-        this.settingsController = new SettingsController(this.messages, this.settingsService, getTaskExceptionListener());
+        this.settingsController = new SettingsController(this.messages,
+                this.settingsService, getTaskExceptionListener(), this.borderPane);
     }
 
     private void initializeCanvasController() {
@@ -154,7 +155,8 @@ public class AppController {
     @FXML
     public void onAddRecordButtonClicked() {
         try {
-            this.recordController.showAddRecordPopup(this.activityNamesList, this.latestRecord, this.messages);
+            this.recordController.showAddRecordPopup(
+                    this.activityNamesList, this.latestRecord, this.messages, this.borderPane);
         } catch (Exception e) {
             e.printStackTrace();
             this.displayException(e);
@@ -323,30 +325,30 @@ public class AppController {
         if (result != null) {
             if (result.isErrorFree()) {
                 System.out.println("result.getCustomErrorEnumList() = " + result.getCustomMessage());
-                this.showInfoPopup(result.getCustomErrorEnum().getValue());
+                this.showInfoDialog(result.getCustomErrorEnum().getValue());
             } else {
-                this.showAlertPopup(result.getEnumMessage());
+                this.showAlertDialog(result.getEnumMessage());
             }
         }
     }
 
     private void displayException(Throwable e) {
-        this.showAlertPopup(e.getMessage());
+        this.showAlertDialog(e.getMessage());
     }
 
     private void displayException(String e) {
-        this.showAlertPopup(e);
+        this.showAlertDialog(e);
     }
 
-    private void showAlertPopup(String value) {
-        this.showPopup(value, MessageType.ALERT);
+    private void showAlertDialog(String value) {
+        this.showDialog(value, MessageType.ALERT);
     }
 
-    private void showInfoPopup(String value) {
-        this.showPopup(value, MessageType.INFO);
+    private void showInfoDialog(String value) {
+        this.showDialog(value, MessageType.INFO);
     }
 
-    private void showPopup(String value, MessageType type) {
+    private void showDialog(String value, MessageType type) {
         if (value == null || Objects.equals(value, "")) {
             return;
         }
@@ -365,7 +367,7 @@ public class AppController {
     private EventHandler getOnFailedTaskEventHandler() {
         return event -> {
             logger.info("event.toString() = {}", event.toString());
-            AppController.this.showAlertPopup(event.toString());
+            AppController.this.showAlertDialog(event.toString());
         };
     }
 
@@ -379,7 +381,7 @@ public class AppController {
         task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
             Exception exception = (Exception) newValue;
             exception.printStackTrace();
-            AppController.this.showAlertPopup(exception.getMessage());
+            AppController.this.showAlertDialog(exception.getMessage());
         });
     }
 
@@ -415,14 +417,14 @@ public class AppController {
     }
 
     private void onListViewItemClicked(Activity item) {
-        this.showInfoPopup(item.getDescription());
+        this.showInfoDialog(item.getDescription());
     }
 
     private ChangeListener<Throwable> getTaskExceptionListener() {
         return (observable, oldValue, newValue) -> {
             Exception exception = (Exception) newValue;
             exception.printStackTrace();
-            AppController.this.showAlertPopup(exception.getMessage());
+            AppController.this.showAlertDialog(exception.getMessage());
         };
     }
 }

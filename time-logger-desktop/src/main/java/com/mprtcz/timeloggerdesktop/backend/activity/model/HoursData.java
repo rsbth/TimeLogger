@@ -61,10 +61,6 @@ public class HoursData {
     }
 
     public HoursData.Hour[][] getHoursArray() {
-        //this.setCanvasTooltip(canvas);
-//        HoursData hoursData = getHoursData();
-//        LocalDateTime earliest = hoursData.getEarliest();
-//        LocalDateTime latest = hoursData.getLatest();
         long dayDelta = calculateDayDelta(earliest, latest);
         int dayDeltaInt = Math.toIntExact(dayDelta);
 
@@ -82,9 +78,9 @@ public class HoursData {
         for (int i = 0; i < hoursArray.length; i++) {
             for (int j = 0; j < hoursArray[i].length; j++) {
                 if (hoursArray[i][j] == null) {
-                    logger.info("void");
+                    logger.debug("void");
                 } else {
-                    logger.info(hoursArray[i][j].getDatetime().toString());
+                    logger.debug(hoursArray[i][j].getDatetime().toString());
                 }
             }
         }

@@ -27,8 +27,8 @@ import static com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogEleme
 public class SettingsPopup extends JFXPopup {
 
     private AppSettings settings;
-
     private ResourceBundle messages;
+    public static final double WIDTH = 300;
 
     public SettingsPopup(Region source, ResourceBundle messages, AppSettings settings) {
         this.settings = settings;
@@ -46,6 +46,7 @@ public class SettingsPopup extends JFXPopup {
         VBox.setMargin(languageContent, new Insets(20, 30, 5, 30));
         VBox.setMargin(sliderContent, new Insets(5, 30, 5, 30));
         VBox.setMargin(buttonsContent, new Insets(5, 30, 20, 30));
+        layoutVBox.setPrefWidth(WIDTH);
         return layoutVBox;
     }
 

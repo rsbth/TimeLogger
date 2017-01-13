@@ -13,6 +13,8 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.layout.Region;
+import javafx.scene.transform.Transform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +45,9 @@ public class RecordController {
     }
 
     public void showAddRecordPopup(JFXListView<Activity> activityNamesList,
-                                   LocalDateTime latestRecord, ResourceBundle messages) throws Exception {
+                                   LocalDateTime latestRecord, ResourceBundle messages, Region rootPane) throws Exception {
         logger.info("showAddRecordPopup()");
+        this.closePopupIfExists();
         this.addRecordPopup = new AddRecordPopup(activityNamesList.getSelectionModel().getSelectedItem(),
                 latestRecord, messages);
         this.addRecordPopup.getOkButton().setOnAction(event -> {
@@ -52,10 +55,19 @@ public class RecordController {
             saveRecord(RecordController.this.addRecordPopup.getObjectToValidate());
         });
         this.addRecordPopup.setSource(activityNamesList);
-        this.addRecordPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 50, 10);
+        Transform transform = activityNamesList.getLocalToSceneTransform();
+        double xOffset = (rootPane.getWidth() / 2) - (AddRecordPopup.WIDTH / 2) - (transform.getTx());
+        this.addRecordPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, xOffset, 10);
+    }
+
+    private void closePopupIfExists() {
+        if(this.addRecordPopup != null) {
+            this.addRecordPopup.close();
+        }
     }
 
     private Task<ValidationResult> saveRecordTask;
+
     private void saveRecord(RecordValidator.ValidationObject recordToValidate) {
         logger.info("recordToValidate = {}", recordToValidate);
         this.saveRecordTask = new Task<ValidationResult>() {

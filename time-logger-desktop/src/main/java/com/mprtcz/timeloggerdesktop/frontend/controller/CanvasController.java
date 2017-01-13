@@ -69,8 +69,8 @@ public class CanvasController {
     }
 
     private int getDrawStartingDay(int arrayLength) {
-        logger.info("arrayLength = {}", arrayLength);
-        logger.info("visibleDays = {}", visibleDays);
+        logger.debug("arrayLength = {}", arrayLength);
+        logger.debug("visibleDays = {}", visibleDays);
         if (visibleDays > arrayLength) {
             return 0;
         } else {

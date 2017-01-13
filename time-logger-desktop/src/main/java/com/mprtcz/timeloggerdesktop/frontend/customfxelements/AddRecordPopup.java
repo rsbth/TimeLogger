@@ -15,9 +15,13 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.TextAlignment;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 import static com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor.getBackgroundOfColor;
@@ -39,6 +43,8 @@ public class AddRecordPopup extends JFXPopup {
     private Label summaryLabel;
     private Activity activity;
     private ResourceBundle messages;
+
+    public static final int WIDTH = 300;
 
     public AddRecordPopup(Activity activity, LocalDateTime latestRecord, ResourceBundle messages) {
         this.messages = messages;
@@ -69,6 +75,8 @@ public class AddRecordPopup extends JFXPopup {
         VBox.setMargin(summaryLabel, defaultInsets);
         vBox.setBackground(getBackgroundOfColor(StyleSetter.BACKGROUND_COLOR));
         JFXDepthManager.setDepth(this, 1);
+        vBox.setPrefWidth(WIDTH);
+        vBox.setAlignment(Pos.CENTER);
         return vBox;
     }
 
@@ -133,13 +141,22 @@ public class AddRecordPopup extends JFXPopup {
     private void updateSummary() {
         this.summaryLabel.setVisible(true);
         this.summaryLabel.setBackground(getBackgroundOfColor("white"));
+        this.summaryLabel.setTextAlignment(TextAlignment.RIGHT);
         JFXDepthManager.setDepth(this.summaryLabel, 1);
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.activity.getName()).append("\n");
-        stringBuilder.append(this.startDatePicker.getValue()).append(" ").append(this.startTimePicker.getTime()).append("\n");
-        stringBuilder.append("- \n");
-        stringBuilder.append(this.endDatePicker.getValue()).append(" ").append(this.endTimePicker.getTime()).append("\n");
+        stringBuilder.append("Start: ");
+        stringBuilder.append(this.getFormattedDatetime(this.startDatePicker.getValue(), this.startTimePicker.getTime()));
+        stringBuilder.append("\nEnd: ");
+        stringBuilder.append(this.getFormattedDatetime(this.endDatePicker.getValue(), this.endTimePicker.getTime()));
         this.summaryLabel.setText(stringBuilder.toString());
+    }
+
+    private String getFormattedDatetime(LocalDate date, LocalTime time) {
+        LocalDateTime datetime = LocalDateTime.of(date, time);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm");
+        String formattedDateTime = datetime.format(formatter);
+        return formattedDateTime;
     }
 
     public RecordValidator.ValidationObject getObjectToValidate() {

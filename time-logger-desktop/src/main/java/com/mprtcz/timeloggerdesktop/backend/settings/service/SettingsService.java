@@ -44,8 +44,8 @@ public class SettingsService {
         try {
             AppSettings settings = this.settingsDao.getSettings();
             logger.info("this.settingsDao.getSettings().toString() = {}", settings.toString());
-        } catch (FileNotFoundException | NullPointerException fileNotFoundException ) {
-            logger.info("Exception occured : " + Arrays.toString(fileNotFoundException.getStackTrace()));
+        } catch (FileNotFoundException | NullPointerException | IndexOutOfBoundsException exception ) {
+            logger.info("Exception occured : " + Arrays.toString(exception.getStackTrace()));
             this.saveSettings(AppSettings.getDefaultInstance());
         }
         logger.info("this.settingsDao.getSettings() = {}", this.settingsDao.getSettings().toString());
