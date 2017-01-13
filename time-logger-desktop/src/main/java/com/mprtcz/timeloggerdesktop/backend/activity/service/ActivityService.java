@@ -36,8 +36,8 @@ public class ActivityService {
         return activities;
     }
 
-    public ValidationResult addActivity(String name, String description) throws Exception {
-        Activity activity = new Activity(name, description);
+    public ValidationResult addActivity(Activity activity) throws Exception {
+        logger.info("new activity.toString() = {}", activity.toString());
         return validateNewActivityAndSave(activity);
     }
 
@@ -46,7 +46,6 @@ public class ActivityService {
     }
 
     private void chooseColorAndSave(Activity activity) throws Exception {
-        chooseActivityColor(activity);
         customDao.save(activity);
     }
 
@@ -60,16 +59,14 @@ public class ActivityService {
         }
     }
 
-    public void updateActivity(Activity activity) throws Exception {
-        this.customDao.update(activity);
-    }
-
-    private void chooseActivityColor(Activity activity) throws Exception {
-        List<Activity> activities = getActivities();
-        if (Activity.colorCodes.size() >= activities.size()) {
-            activity.setColor(Activity.colorCodes.get(activities.size()));
+    public ValidationResult updateActivity(Activity activity) throws Exception {
+        logger.info("updateActivity activity = {}", activity);
+        ValidationResult validationResult = activityValidator.validateUpdatedActivity(activity);
+        if (validationResult.isErrorFree()) {
+            this.customDao.update(activity);
+            return new ValidationResult(ValidationResult.CustomErrorEnum.ACTIVITY_UPDATED);
         } else {
-            activity.setColor(Activity.colorCodes.get(0));
+            return validationResult;
         }
     }
 

@@ -70,7 +70,7 @@ public class AppController {
     @FXML
     private JFXButton removeActivityButton;
     @FXML
-    private JFXButton changeColorButton;
+    private JFXButton editActivityButton;
     @FXML
     private JFXButton addActivityButton;
     @FXML
@@ -191,7 +191,7 @@ public class AppController {
     @FXML
     public void onChangeColorButtonClicked() {
         this.closeDialogIfExists();
-        this.activityController.showColorDialog(this.activityNamesList, this.bottomStackPane);
+        this.activityController.showEditActivityDialog(this.activityNamesList, this.bottomStackPane);
     }
 
     @FXML
@@ -288,7 +288,7 @@ public class AppController {
             try {
                 AppController.this.executorService.awaitTermination(5, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                logger.info("Exception on shutdown: " +e.toString());
+                logger.info("Exception on shutdown: " + e.toString());
                 e.printStackTrace();
             }
         });
@@ -314,18 +314,18 @@ public class AppController {
         this.bottomButtons = new HashMap<>();
         this.bottomButtons.put(ADD_RECORD, this.addRecordButton);
         this.bottomButtons.put(REMOVE_ACTIVITY, this.removeActivityButton);
-        this.bottomButtons.put(CHANGE_COLOR, this.changeColorButton);
+        this.bottomButtons.put(EDIT_ACTIVITY, this.editActivityButton);
         this.bottomButtons.put(SETTINGS, this.settingsButton);
         this.styleSetter = new StyleSetter();
         styleSetter.getListViewControlsDependants().add(this.addRecordButton);
         styleSetter.getListViewControlsDependants().add(this.removeActivityButton);
-        styleSetter.getListViewControlsDependants().add(this.changeColorButton);
+        styleSetter.getListViewControlsDependants().add(this.editActivityButton);
     }
 
     public enum BottomButton {
         ADD_RECORD,
         REMOVE_ACTIVITY,
-        CHANGE_COLOR,
+        EDIT_ACTIVITY,
         SETTINGS
     }
 

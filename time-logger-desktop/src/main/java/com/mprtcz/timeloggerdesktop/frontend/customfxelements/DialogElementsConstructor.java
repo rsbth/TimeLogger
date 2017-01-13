@@ -1,9 +1,11 @@
 package com.mprtcz.timeloggerdesktop.frontend.customfxelements;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXTextField;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.utilities.StringConverter;
+import com.mprtcz.timeloggerdesktop.frontend.utils.CustomColor;
 import com.mprtcz.timeloggerdesktop.frontend.utils.MessageType;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -11,6 +13,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ResourceBundle;
 
@@ -19,6 +23,7 @@ import java.util.ResourceBundle;
  */
 @Getter
 public class DialogElementsConstructor {
+    private Logger logger = LoggerFactory.getLogger(DialogElementsConstructor.class);
 
     private JFXButton confirmButton;
     private JFXButton cancelButton;
@@ -26,15 +31,54 @@ public class DialogElementsConstructor {
     private JFXTextField newActivityDescriptionTextField;
     private Label titleLabel;
     private ResourceBundle messages;
+    private Label colorLabel;
+    private JFXColorPicker colorPicker;
+    private Activity updatedActivity;
 
     public DialogElementsConstructor(ResourceBundle messages) {
         this.messages = messages;
         this.cancelButton = new JFXButton(messages.getString("cancel_button"));
         this.confirmButton = new JFXButton(messages.getString("add_activity_confirm_button"));
+        this.colorLabel = new Label(messages.getString("choose_color"));
+        this.colorPicker = new JFXColorPicker();
+        this.colorPicker.setValue(Color.web(CustomColor.getRandomColor().getColorCode()));
         this.confirmButton.prefWidthProperty().bind(this.cancelButton.widthProperty());
         this.titleLabel = new Label(messages.getString("enter_activity_label"));
         this.newActivityNameTextField = new JFXTextField();
         this.newActivityDescriptionTextField = new JFXTextField();
+    }
+
+    public DialogElementsConstructor(ResourceBundle messages, Activity activity) {
+        this(messages);
+        this.titleLabel.setText(messages.getString("edit_activity_label"));
+        logger.info("activity to update = {}", activity.toString());
+        this.updatedActivity = activity;
+        this.newActivityNameTextField.setText(activity.getName());
+        this.newActivityDescriptionTextField.setText(activity.getDescription());
+        this.colorPicker.setValue(Color.web(activity.getColor()));
+    }
+
+    public Activity getNewActivity() {
+        Activity activity = new Activity();
+        activity.setName(newActivityNameTextField.getText());
+        activity.setDescription(newActivityDescriptionTextField.getText());
+        activity.setColor(convertColorToString(colorPicker.getValue()));
+        logger.info("activity after update = {}", activity);
+        return activity;
+    }
+
+    public Activity getUpdatedActivity() {
+        this.updatedActivity.setName(newActivityNameTextField.getText());
+        this.updatedActivity.setDescription(newActivityDescriptionTextField.getText());
+        this.updatedActivity.setColor(convertColorToString(colorPicker.getValue()));
+        return this.updatedActivity;
+    }
+
+    private static String convertColorToString(Color c) {
+        int red = (int) (c.getRed() * 255);
+        int green = (int) (c.getGreen() * 255);
+        int blue = (int) (c.getBlue() * 255);
+        return String.format("#%02x%02x%02x", red, green, blue);
     }
 
     public Region getContent() {
@@ -43,18 +87,28 @@ public class DialogElementsConstructor {
     }
 
     public Region createLayout() {
+        Insets insets = new Insets(5);
         VBox buttonsVBox = new VBox(cancelButton, confirmButton);
+        VBox colorVBox = new VBox(this.colorLabel, this.colorPicker);
         VBox textFieldVBox = new VBox(newActivityNameTextField, newActivityDescriptionTextField);
         textFieldVBox.setMinWidth(200);
-        VBox.setMargin(confirmButton, new Insets(5));
-        VBox.setMargin(cancelButton, new Insets(5));
-        VBox.setMargin(newActivityNameTextField, new Insets(5));
-        VBox.setMargin(newActivityDescriptionTextField, new Insets(5));
-        HBox hBox = new HBox(textFieldVBox, buttonsVBox);
+        VBox.setMargin(confirmButton, insets);
+        VBox.setMargin(cancelButton, insets);
+        VBox.setMargin(colorLabel, insets);
+        VBox.setMargin(colorPicker, insets);
+        VBox.setMargin(newActivityNameTextField, insets);
+        VBox.setMargin(newActivityDescriptionTextField, insets);
+        HBox hBox = new HBox(textFieldVBox, colorVBox, buttonsVBox);
         VBox overlayVBox = new VBox(titleLabel, hBox);
         overlayVBox.setStyle(" -fx-alignment: center");
-        VBox.setMargin(titleLabel, new Insets(5));
+        VBox.setMargin(titleLabel, new Insets(10));
+        this.setHeightBindings();
         return overlayVBox;
+    }
+
+    private void setHeightBindings() {
+        this.colorLabel.prefHeightProperty().bind(this.cancelButton.heightProperty());
+        this.colorPicker.prefHeightProperty().bind(this.confirmButton.heightProperty());
     }
 
     void setPopupContentsStyles() {

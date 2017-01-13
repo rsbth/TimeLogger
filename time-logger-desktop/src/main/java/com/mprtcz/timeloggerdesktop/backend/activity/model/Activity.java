@@ -9,7 +9,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by mprtcz on 2017-01-03.
@@ -36,9 +35,10 @@ public class Activity {
 
     public Activity() {}
 
-    public Activity(String name, String description) {
+    public Activity(String name, String description, String color) {
         this.name = name;
         this.description = description;
+        this.color = color;
         this.activityRecords = new ArrayList<>();
     }
 
@@ -54,29 +54,6 @@ public class Activity {
             this.activityRecords = new ArrayList<>();
         }
         this.activityRecords.add(record);
-    }
-
-    public static List<String> colorCodes = new ArrayList<>();
-    static {
-        colorCodes.add("#f44336");
-        colorCodes.add("#9c27b0");
-        colorCodes.add("#3f51b5");
-        colorCodes.add("#03a9f4");
-        colorCodes.add("#009688");
-        colorCodes.add("#8bc34a");
-        colorCodes.add("#ffeb3b");
-        colorCodes.add("#ff9800");
-        colorCodes.add("#795548");
-        colorCodes.add("#607d8b");
-        colorCodes.add("#e91e63");
-        colorCodes.add("#673ab7");
-        colorCodes.add("#2196f3");
-        colorCodes.add("#00bcd4");
-        colorCodes.add("#4caf50");
-        colorCodes.add("#cddc39");
-        colorCodes.add("#ffc107");
-        colorCodes.add("#ff5722");
-        colorCodes.add("#9e9e9e");
     }
 
     @Override

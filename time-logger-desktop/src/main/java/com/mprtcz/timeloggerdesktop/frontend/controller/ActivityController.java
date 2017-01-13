@@ -3,11 +3,9 @@ package com.mprtcz.timeloggerdesktop.frontend.controller;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXPopup;
-import com.jfoenix.controls.JFXTextField;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.activity.service.ActivityService;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
-import com.mprtcz.timeloggerdesktop.frontend.customfxelements.ColorDialog;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.ConfirmationPopup;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor;
 import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
@@ -19,6 +17,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -27,6 +27,8 @@ import java.util.concurrent.ExecutorService;
  * Created by mprtcz on 2017-01-10.
  */
 public class ActivityController {
+    private Logger logger = LoggerFactory.getLogger(ActivityController.class);
+
     private ActivityService activityService;
     private ChangeListener<Throwable> exceptionListener;
     private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
@@ -36,13 +38,11 @@ public class ActivityController {
     private JFXDialog bottomDialog;
     private ExecutorService executorService;
 
-    private String newActivityName;
-    private String newActivityDescription;
 
     private ActivityController(ActivityService activityService, ChangeListener<Throwable> exceptionListener,
-                              EventHandler<WorkerStateEvent> onFailedTaskEventHandler,
-                              ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler,
-                              ResourceBundle messages, ExecutorService executorService) {
+                               EventHandler<WorkerStateEvent> onFailedTaskEventHandler,
+                               ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler,
+                               ResourceBundle messages, ExecutorService executorService) {
         this.activityService = activityService;
         this.exceptionListener = exceptionListener;
         this.onFailedTaskEventHandler = onFailedTaskEventHandler;
@@ -61,40 +61,57 @@ public class ActivityController {
         this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 10, -10);
     }
 
-
-    public void showColorDialog(JFXListView<Activity> activityNamesList, StackPane source) {
+    public void showEditActivityDialog(JFXListView<Activity> activityNamesList, StackPane source) {
         closeDialogIfExists();
         Activity selectedActivity = activityNamesList.getSelectionModel().getSelectedItem();
+        logger.info("selectedActivity.toString() = {}", selectedActivity.toString());
         if (selectedActivity == null) {
             return;
         }
-        ColorDialog colorDialog = new ColorDialog(selectedActivity, this.messages);
-        colorDialog.getCancelButton().setOnMouseClicked(event -> ActivityController.this.bottomDialog.close());
-        colorDialog.getConfirmButton().setOnMouseClicked(
-                event -> {
-                    ActivityController.this.updateChangedActivityAndUI(colorDialog.getUpdatedColorActivity());
-                    this.bottomDialog.close();
-                });
-        this.bottomDialog = new JFXDialog(source, colorDialog.createLayout(), JFXDialog.DialogTransition.BOTTOM);
+        DialogElementsConstructor dialogElementsConstructor = new DialogElementsConstructor(messages, selectedActivity);
+        dialogElementsConstructor.getConfirmButton().setOnAction(event ->
+                ActivityController.this.processUpdateActivity(dialogElementsConstructor.getUpdatedActivity()));
+        dialogElementsConstructor.getCancelButton().setOnMouseClicked(event ->
+                ActivityController.this.bottomDialog.close());
+        VBox overlayVBox = (VBox) dialogElementsConstructor.getContent();
+        this.bottomDialog = new JFXDialog(source, overlayVBox, JFXDialog.DialogTransition.BOTTOM);
         this.bottomDialog.show();
     }
 
+    private Activity activityToUpdate;
+    private void processUpdateActivity(Activity activity) {
+        logger.info("processUpdateActivity(), activity = {} " , activity.toString());
+        if (activity.getName().equals("") || activity.getName() == null) {
+            return;
+        }
+        if (activity.getDescription().equals("")) {
+            this.activityToUpdate = activity;
+            this.initEmptyDescriptionConfirmationPopup(ActivityMethodType.UPDATE);
+            this.confirmationPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT);
+        } else {
+            ActivityController.this.updateChangedActivityAndUI(activity);
+        }
+        this.bottomDialog.close();
+    }
+
+    private Task updateActivityTask;
     public void updateChangedActivityAndUI(Activity activity) {
+        logger.info(" updateChangedActivityAndUI activity = {}", activity);
         if (activity == null) {
             return;
         }
-        Task task = new Task() {
+        this.updateActivityTask = new Task() {
             @Override
-            protected Object call() throws Exception {
-                ActivityController.this.activityService.updateActivity(activity);
-                return null;
+            protected ValidationResult call() throws Exception {
+                return ActivityController.this.activityService.updateActivity(activity);
             }
         };
-        task.setOnSucceeded(this.onSucceededActivityAddEventHandler);
-        task.exceptionProperty().addListener(this.exceptionListener);
-        task.setOnFailed(this.onFailedTaskEventHandler);
-        this.executorService.execute(task);
+        updateActivityTask.setOnSucceeded(this.addActivitySucceeded(this.updateActivityTask));
+        updateActivityTask.exceptionProperty().addListener(this.exceptionListener);
+        updateActivityTask.setOnFailed(this.onFailedTaskEventHandler);
+        this.executorService.execute(updateActivityTask);
     }
+
 
     public void closeDialogIfExists() {
         if (this.bottomDialog != null) {
@@ -102,61 +119,67 @@ public class ActivityController {
         }
     }
 
+    private Activity createdActivity;
     public void loadAddDialog(StackPane bottomStackPane) {
         closeDialogIfExists();
         DialogElementsConstructor dialogElementsConstructor = new DialogElementsConstructor(messages);
         dialogElementsConstructor.getConfirmButton().setOnMouseClicked(event ->
-                ActivityController.this.processSaveActivity(dialogElementsConstructor.getNewActivityNameTextField(),
-                        dialogElementsConstructor.getNewActivityDescriptionTextField(), true, event));
+                ActivityController.this.processSaveActivity(dialogElementsConstructor.getNewActivity(), event));
         dialogElementsConstructor.getCancelButton().setOnMouseClicked(event ->
-                ActivityController.this.processSaveActivity(dialogElementsConstructor.getNewActivityNameTextField(),
-                        dialogElementsConstructor.getNewActivityDescriptionTextField(), false, event));
+                ActivityController.this.bottomDialog.close());
         VBox overlayVBox = (VBox) dialogElementsConstructor.getContent();
         this.bottomDialog = new JFXDialog(bottomStackPane, overlayVBox, JFXDialog.DialogTransition.BOTTOM);
         this.bottomDialog.show();
     }
 
-    public void processSaveActivity(JFXTextField newActivityNameTextField, JFXTextField newActivityDescriptionTextField,
-                                     boolean withActivitySave, MouseEvent event) {
-        if (newActivityNameTextField.getText().equals("") && withActivitySave) {
+    public void processSaveActivity(Activity createdActivity,
+                                    MouseEvent event) {
+        if (createdActivity.getName().equals("") || createdActivity.getName() == null) {
             return;
         }
-        if (withActivitySave) {
-            if (newActivityDescriptionTextField.getText().equals("")) {
-                this.newActivityName = newActivityNameTextField.getText();
-                this.newActivityDescription = newActivityDescriptionTextField.getText();
-                this.initEmptyDescriptionConfirmationPopup();
-                this.confirmationPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT,
-                        event.getX(), event.getY());
-            } else {
-                ActivityController.this.addNewActivity(newActivityNameTextField.getText(),
-                        newActivityDescriptionTextField.getText());
-            }
+        if (createdActivity.getDescription().equals("")) {
+            this.createdActivity = createdActivity;
+            this.initEmptyDescriptionConfirmationPopup(ActivityMethodType.CREATE);
+            this.confirmationPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT,
+                    event.getX(), event.getY());
+        } else {
+            ActivityController.this.addNewActivity(createdActivity);
         }
-        newActivityNameTextField.setText("");
-        newActivityDescriptionTextField.setText("");
         this.bottomDialog.close();
     }
 
-    public void initEmptyDescriptionConfirmationPopup() {
+    public void initEmptyDescriptionConfirmationPopup(ActivityMethodType methodType) {
         this.confirmationPopup = new ConfirmationPopup(messages.getString("empty_description_confirm_label"),
                 this.bottomDialog, this.messages);
-        this.confirmationPopup.getConfirmButton().setOnAction(e -> {
-            this.addNewActivity(this.newActivityName, this.newActivityDescription);
-            this.confirmationPopup.close();
-        });
+        if(methodType == ActivityMethodType.CREATE) {
+            this.confirmationPopup.getConfirmButton().setOnAction(e -> {
+                this.addNewActivity(this.createdActivity);
+                this.confirmationPopup.close();
+            });
+        } else if(methodType == ActivityMethodType.UPDATE) {
+            this.confirmationPopup.getConfirmButton().setOnAction(e -> {
+                this.updateChangedActivityAndUI(activityToUpdate);
+                this.confirmationPopup.close();
+            });
+        }
+    }
+
+    private enum ActivityMethodType {
+        CREATE,
+        UPDATE
     }
 
     private Task<ValidationResult> addActivityTask;
-    public void addNewActivity(String name, String description) {
+
+    public void addNewActivity(Activity createdActivity) {
         try {
             this.addActivityTask = new Task<ValidationResult>() {
                 @Override
                 protected ValidationResult call() throws Exception {
-                    return ActivityController.this.activityService.addActivity(name, description);
+                    return ActivityController.this.activityService.addActivity(createdActivity);
                 }
             };
-            addActivityTask.setOnSucceeded(this.addActivitySucceeded());
+            addActivityTask.setOnSucceeded(this.addActivitySucceeded(this.addActivityTask));
             addActivityTask.exceptionProperty().addListener(this.exceptionListener);
             this.executorService.execute(addActivityTask);
         } catch (Exception e) {
@@ -164,13 +187,12 @@ public class ActivityController {
         }
     }
 
-    private EventHandler<WorkerStateEvent> addActivitySucceeded() {
+    private EventHandler<WorkerStateEvent> addActivitySucceeded(Task task) {
         return (WorkerStateEvent event) -> {
-            ActivityController.this.onSucceededActivityAddEventHandler.setResult(this.addActivityTask.getValue());
+            ActivityController.this.onSucceededActivityAddEventHandler.setResult((ValidationResult) task.getValue());
             ActivityController.this.onSucceededActivityAddEventHandler.handle(event);
         };
     }
-
 
     public static class ActivityControllerBuilder {
         private ActivityService activityService;
@@ -192,10 +214,12 @@ public class ActivityController {
             this.exceptionListener = exceptionListener;
             return this;
         }
+
         public ActivityControllerBuilder onFailedTaskEventHandler(EventHandler<WorkerStateEvent> onFailedTaskEventHandler) {
             this.onFailedTaskEventHandler = onFailedTaskEventHandler;
             return this;
         }
+
         public ActivityControllerBuilder onSucceededActivityAddEventHandler
                 (ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler) {
             this.onSucceededActivityAddEventHandler = onSucceededActivityAddEventHandler;
