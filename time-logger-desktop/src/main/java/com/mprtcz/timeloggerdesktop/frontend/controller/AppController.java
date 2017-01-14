@@ -449,7 +449,17 @@ public class AppController {
     }
 
     private void exportData() {
-
+        Task task = new Task() {
+            @Override
+            protected Object call() throws Exception {
+                AppController.this.activityService.exportDataToFile();
+                return null;
+            }
+        };
+        task.setOnSucceeded(event -> AppController.this.displayValidationResult(
+                new ValidationResult(ValidationResult.CustomErrorEnum.DATA_EXPORTED)));
+        this.addTaskExceptionListener(task);
+        this.executorService.execute(task);
     }
 
     private ChangeListener getListViewChangeListener() {

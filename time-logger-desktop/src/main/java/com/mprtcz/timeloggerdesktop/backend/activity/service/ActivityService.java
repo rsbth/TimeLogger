@@ -4,6 +4,7 @@ import com.mprtcz.timeloggerdesktop.backend.activity.dao.CustomDao;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.HoursData;
 import com.mprtcz.timeloggerdesktop.backend.activity.validators.ActivityValidator;
+import com.mprtcz.timeloggerdesktop.backend.utilities.DataExporter;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,5 +73,9 @@ public class ActivityService {
 
     public HoursData getHoursData() throws Exception {
         return new HoursData(getActivities());
+    }
+
+    public void exportDataToFile() throws Exception {
+        DataExporter.exportData(getHoursData().getHoursArray());
     }
 }
