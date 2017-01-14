@@ -28,6 +28,7 @@ public class SettingsController {
     private ResourceBundle messages;
     private SettingsService settingsService;
     private ChangeListener<Throwable> exceptionListener;
+    private EventHandler<ActionEvent> exportDataEventHandler;
     private ResultEventHandler<WorkerStateEvent> confirmButtonHandler;
     private Region rootPane;
     private ExecutorService executorService;
@@ -35,10 +36,12 @@ public class SettingsController {
     public SettingsController(ResourceBundle messages,
                               SettingsService settingsService,
                               ChangeListener<Throwable> exceptionListener,
+                              EventHandler<ActionEvent> exportDataEventHandler,
                               Region rootPane, ExecutorService executorService) {
         this.messages = messages;
         this.settingsService = settingsService;
         this.exceptionListener = exceptionListener;
+        this.exportDataEventHandler = exportDataEventHandler;
         this.rootPane = rootPane;
         this.executorService = executorService;
     }
@@ -49,7 +52,7 @@ public class SettingsController {
     }
 
     private Task<ValidationResult> appSettingsTask;
-    private EventHandler getApplySettingsEventHandler() {
+    private EventHandler<ActionEvent> getApplySettingsEventHandler() {
         return event -> {
             try {
                 appSettingsTask = new Task<ValidationResult>() {
@@ -77,6 +80,14 @@ public class SettingsController {
         };
     }
 
+    private EventHandler<WorkerStateEvent> exportDataResult() {
+        return (WorkerStateEvent event) -> {
+            SettingsController.this.confirmButtonHandler.setResult(
+                    new ValidationResult(ValidationResult.CustomErrorEnum.DATA_EXPORTED));
+            SettingsController.this.confirmButtonHandler.handle(event);
+        };
+    }
+
     public void getSettings(Region popupSource) {
         Task<AppSettings> task = new Task<AppSettings>() {
             @Override
@@ -97,6 +108,7 @@ public class SettingsController {
         double xOffset = this.getXCoordinate(popupSource);
         this.settingsPopup = new SettingsPopup(popupSource, this.messages, currentSettings);
         this.settingsPopup.getConfirmButton().addEventHandler(ActionEvent.ACTION, getApplySettingsEventHandler());
+        this.settingsPopup.getExportDataButton().addEventHandler(ActionEvent.ACTION,  this.exportDataEventHandler);
         this.settingsPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, xOffset, 0);
     }
 

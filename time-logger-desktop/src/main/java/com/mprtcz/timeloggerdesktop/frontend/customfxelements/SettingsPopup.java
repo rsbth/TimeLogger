@@ -41,16 +41,19 @@ public class SettingsPopup extends JFXPopup {
         Region languageContent = getLanguageContent();
         Region sliderContent = getSliderContent();
         Region buttonsContent = getButtonsContent();
-        VBox layoutVBox = new VBox(languageContent, sliderContent, buttonsContent);
+        Region exportDataContent = getExportDataContent();
+        VBox layoutVBox = new VBox(languageContent, sliderContent, exportDataContent, buttonsContent);
         layoutVBox.setBackground(getBackgroundOfColor(StyleSetter.BACKGROUND_COLOR));
         VBox.setMargin(languageContent, new Insets(20, 30, 5, 30));
         VBox.setMargin(sliderContent, new Insets(5, 30, 5, 30));
+        VBox.setMargin(exportDataContent, new Insets(5, 30, 5, 30));
         VBox.setMargin(buttonsContent, new Insets(5, 30, 20, 30));
         layoutVBox.setPrefWidth(WIDTH);
         return layoutVBox;
     }
 
     JFXComboBox<String> comboBox;
+
     private Region getLanguageContent() {
         this.comboBox = new JFXComboBox<>();
         setLanguagesInChoiceBox();
@@ -66,6 +69,7 @@ public class SettingsPopup extends JFXPopup {
     JFXSlider slider;
     JFXCheckBox graphicCheckBox;
     JFXCheckBox headersCheckBox;
+
     private Region getSliderContent() {
         this.slider = new JFXSlider();
         Label label = new Label(this.messages.getString("days_visible_label"));
@@ -91,6 +95,7 @@ public class SettingsPopup extends JFXPopup {
     }
 
     private JFXButton confirmButton;
+
     private Region getButtonsContent() {
         this.confirmButton = new JFXButton(this.messages.getString("save_settings_button"));
         JFXButton cancelButton = new JFXButton(this.messages.getString("cancel_settings_button"));
@@ -105,6 +110,22 @@ public class SettingsPopup extends JFXPopup {
         JFXDepthManager.setDepth(buttonsHBox, 1);
         buttonsHBox.setBackground(getBackgroundOfColor("white"));
         return buttonsHBox;
+    }
+
+    JFXButton exportDataButton;
+
+    private Region getExportDataContent() {
+        this.exportDataButton = new JFXButton(messages.getString("expot_button"));
+        Label exportDataLabel = new Label(messages.getString("export_label"));
+        HBox exportDataHBox = new HBox(exportDataButton, exportDataLabel);
+        exportDataLabel.prefHeightProperty().bind(this.getExportDataButton().heightProperty());
+        exportDataLabel.setAlignment(Pos.CENTER);
+        exportDataButton.setBackground(getBackgroundOfColor(StyleSetter.ACCENT_COLOR));
+        HBox.setMargin(exportDataButton, new Insets(10));
+        HBox.setMargin(exportDataLabel, new Insets(10));
+        JFXDepthManager.setDepth(exportDataHBox, 1);
+        exportDataHBox.setBackground(getBackgroundOfColor("white"));
+        return exportDataHBox;
     }
 
     private void setLanguagesInChoiceBox() {

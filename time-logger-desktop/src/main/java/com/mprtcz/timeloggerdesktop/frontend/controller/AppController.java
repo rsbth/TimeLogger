@@ -25,6 +25,7 @@ import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -164,7 +165,8 @@ public class AppController {
 
     private void initializeSettingsController() {
         this.settingsController = new SettingsController(this.messages,
-                this.settingsService, getTaskExceptionListener(), this.borderPane, this.executorService);
+                this.settingsService, getTaskExceptionListener(),
+                this.getExportDataHandler(), this.borderPane, this.executorService);
     }
 
     private void initializeCanvasController() {
@@ -440,6 +442,14 @@ public class AppController {
             canvasController.drawArrayOnCanvas(hoursData.getHoursArray(), this.canvas);
             this.latestRecord = hoursData.getLatest();
         }
+    }
+
+    private EventHandler<ActionEvent> getExportDataHandler() {
+        return event -> AppController.this.exportData();
+    }
+
+    private void exportData() {
+
     }
 
     private ChangeListener getListViewChangeListener() {

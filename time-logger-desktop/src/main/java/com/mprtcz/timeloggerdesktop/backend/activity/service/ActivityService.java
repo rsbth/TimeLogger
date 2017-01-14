@@ -73,6 +73,4 @@ public class ActivityService {
     public HoursData getHoursData() throws Exception {
         return new HoursData(getActivities());
     }
-
-
 }

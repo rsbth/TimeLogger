@@ -27,9 +27,11 @@ public class DialogElementsConstructor {
 
     private JFXButton confirmButton;
     private JFXButton cancelButton;
+    private JFXButton exportDataButton;
     private JFXTextField newActivityNameTextField;
     private JFXTextField newActivityDescriptionTextField;
     private Label titleLabel;
+    private Label exportDataLabel;
     private ResourceBundle messages;
     private Label colorLabel;
     private JFXColorPicker colorPicker;
