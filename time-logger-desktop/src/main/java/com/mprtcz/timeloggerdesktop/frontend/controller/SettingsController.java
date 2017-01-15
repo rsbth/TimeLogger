@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXPopup;
 import com.mprtcz.timeloggerdesktop.backend.settings.model.AppSettings;
 import com.mprtcz.timeloggerdesktop.backend.settings.service.SettingsService;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
+import com.mprtcz.timeloggerdesktop.frontend.customfxelements.ConfirmationPopup;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.SettingsPopup;
 import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
 import javafx.beans.value.ChangeListener;
@@ -112,8 +113,17 @@ public class SettingsController {
         this.settingsPopup = new SettingsPopup(popupSource, this.messages, currentSettings);
         this.settingsPopup.getConfirmButton().addEventHandler(ActionEvent.ACTION, getApplySettingsEventHandler());
         this.settingsPopup.getExportDataButton().addEventHandler(ActionEvent.ACTION,  this.exportDataEventHandler);
-        this.settingsPopup.getImportDataButton().addEventHandler(ActionEvent.ACTION,  this.openFileEventHandler);
+        this.settingsPopup.getImportDataButton().addEventHandler(ActionEvent.ACTION,  getOpenFileEventHandler(this.settingsPopup.getConfirmButton()));
         this.settingsPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, xOffset, 0);
+    }
+
+    private EventHandler<ActionEvent> getOpenFileEventHandler(Region source) {
+        return event -> {
+            ConfirmationPopup importConfPopup =
+                    new ConfirmationPopup(messages.getString("import_data_conf"), source, SettingsController.this.messages);
+            importConfPopup.getConfirmButton().setOnAction(SettingsController.this.openFileEventHandler);
+            importConfPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT);
+        };
     }
 
     private void closePopupIfExists() {
