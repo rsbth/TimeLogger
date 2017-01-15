@@ -18,4 +18,6 @@ public interface CustomDao {
     List<Record> getAllRecords() throws Exception;
 
     Activity findActivityById(Long id) throws Exception;
+
+    void replaceAllData(List<Activity> activitiesList) throws Exception;
 }

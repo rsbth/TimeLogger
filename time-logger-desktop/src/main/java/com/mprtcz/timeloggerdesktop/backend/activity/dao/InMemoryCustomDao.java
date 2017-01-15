@@ -59,6 +59,11 @@ public class InMemoryCustomDao implements CustomDao {
         return activities.get(idInt-1);
     }
 
+    @Override
+    public void replaceAllData(List<Activity> activitiesList) throws Exception {
+        activities = activitiesList;
+    }
+
     private long getBiggestId() {
         long biggest = 0;
         for (Activity a :

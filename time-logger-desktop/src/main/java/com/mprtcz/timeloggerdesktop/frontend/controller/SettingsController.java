@@ -29,6 +29,7 @@ public class SettingsController {
     private SettingsService settingsService;
     private ChangeListener<Throwable> exceptionListener;
     private EventHandler<ActionEvent> exportDataEventHandler;
+    private EventHandler<ActionEvent> openFileEventHandler;
     private ResultEventHandler<WorkerStateEvent> confirmButtonHandler;
     private Region rootPane;
     private ExecutorService executorService;
@@ -37,6 +38,7 @@ public class SettingsController {
                               SettingsService settingsService,
                               ChangeListener<Throwable> exceptionListener,
                               EventHandler<ActionEvent> exportDataEventHandler,
+                              EventHandler<ActionEvent> openFileEventHandler,
                               Region rootPane, ExecutorService executorService) {
         this.messages = messages;
         this.settingsService = settingsService;
@@ -44,6 +46,7 @@ public class SettingsController {
         this.exportDataEventHandler = exportDataEventHandler;
         this.rootPane = rootPane;
         this.executorService = executorService;
+        this.openFileEventHandler = openFileEventHandler;
     }
 
     public void initializeSettingsMenu(Region popupSource, ResultEventHandler<WorkerStateEvent> confirmButtonHandler) {
@@ -109,6 +112,7 @@ public class SettingsController {
         this.settingsPopup = new SettingsPopup(popupSource, this.messages, currentSettings);
         this.settingsPopup.getConfirmButton().addEventHandler(ActionEvent.ACTION, getApplySettingsEventHandler());
         this.settingsPopup.getExportDataButton().addEventHandler(ActionEvent.ACTION,  this.exportDataEventHandler);
+        this.settingsPopup.getImportDataButton().addEventHandler(ActionEvent.ACTION,  this.openFileEventHandler);
         this.settingsPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, xOffset, 0);
     }
 

@@ -36,10 +36,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -166,7 +168,8 @@ public class AppController {
     private void initializeSettingsController() {
         this.settingsController = new SettingsController(this.messages,
                 this.settingsService, getTaskExceptionListener(),
-                this.getExportDataHandler(), this.borderPane, this.executorService);
+                this.getExportDataHandler(), this.getOpenFileChooserEventHandler(),
+                this.borderPane, this.executorService);
     }
 
     private void initializeCanvasController() {
@@ -483,6 +486,46 @@ public class AppController {
             Exception exception = (Exception) newValue;
             exception.printStackTrace();
             AppController.this.showAlertDialog(exception.getMessage());
+        };
+    }
+
+    public void openFileChooser() {
+        Stage stage = (Stage) this.borderPane.getScene().getWindow();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Resource File");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("xsd files", "*.xsd"));
+        fileChooser.setInitialDirectory(new File("./"));
+        File selectedFile = fileChooser.showOpenDialog(stage);
+        if (selectedFile != null) {
+            System.out.println("selected file" + selectedFile);
+            processImportedFile(selectedFile);
+        }
+    }
+
+    private void processImportedFile(File file) {
+        Task task = new Task() {
+            @Override
+            protected Object call() throws Exception {
+                AppController.this.activityService.importDataFromFile(file);
+                return null;
+            }
+        };
+        task.setOnSucceeded(event -> {
+            System.out.println("Success");
+            this.getTableData();
+        });
+        task.setOnFailed(event -> System.out.println("Failed"));
+        this.addTaskExceptionListener(task);
+        this.executorService.execute(task);
+    }
+
+    private EventHandler<ActionEvent> getOpenFileChooserEventHandler() {
+        return new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                AppController.this.openFileChooser();
+            }
         };
     }
 }

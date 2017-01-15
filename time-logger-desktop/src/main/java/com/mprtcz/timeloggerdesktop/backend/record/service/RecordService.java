@@ -30,6 +30,7 @@ public class RecordService {
             Record record = RecordValidator.ValidationObject.toRecord(object);
             Activity rootActivity = this.activityService.findActivityById(record.getActivity().getId());
             rootActivity.addRecord(record);
+            logger.info("rootActivity = {}", rootActivity.toString());
             this.activityService.updateActivity(rootActivity);
         }
         return validationResult;

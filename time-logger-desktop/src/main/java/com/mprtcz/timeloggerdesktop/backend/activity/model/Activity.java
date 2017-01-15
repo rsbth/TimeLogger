@@ -22,7 +22,6 @@ import java.util.Collection;
 public class Activity {
 
     @DatabaseField(generatedId = true)
-    @XmlTransient
     private Long id;
 
     @DatabaseField(canBeNull = false)

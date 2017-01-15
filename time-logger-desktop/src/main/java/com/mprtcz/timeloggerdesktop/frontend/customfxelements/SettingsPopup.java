@@ -113,19 +113,30 @@ public class SettingsPopup extends JFXPopup {
     }
 
     JFXButton exportDataButton;
-
+    JFXButton importDataButton;
     private Region getExportDataContent() {
-        this.exportDataButton = new JFXButton(messages.getString("expot_button"));
+        this.exportDataButton = new JFXButton(messages.getString("export_button"));
+        this.importDataButton = new JFXButton(messages.getString("import_data_button"));
         Label exportDataLabel = new Label(messages.getString("export_label"));
+        Label importDataLabel = new Label(messages.getString("import_data_label"));
         HBox exportDataHBox = new HBox(exportDataButton, exportDataLabel);
+        HBox importDataHBox = new HBox(importDataButton, importDataLabel);
         exportDataLabel.prefHeightProperty().bind(this.getExportDataButton().heightProperty());
+        importDataLabel.prefHeightProperty().bind(this.getImportDataButton().heightProperty());
         exportDataLabel.setAlignment(Pos.CENTER);
+        importDataLabel.setAlignment(Pos.CENTER);
         exportDataButton.setBackground(getBackgroundOfColor(StyleSetter.ACCENT_COLOR));
+        importDataButton.setBackground(getBackgroundOfColor(StyleSetter.ACCENT_COLOR));
         HBox.setMargin(exportDataButton, new Insets(10));
         HBox.setMargin(exportDataLabel, new Insets(10));
-        JFXDepthManager.setDepth(exportDataHBox, 1);
+        HBox.setMargin(importDataButton, new Insets(10));
+        HBox.setMargin(importDataLabel, new Insets(10));
+        VBox overlayVBox = new VBox(exportDataHBox, importDataHBox);
+        JFXDepthManager.setDepth(overlayVBox, 1);
         exportDataHBox.setBackground(getBackgroundOfColor("white"));
-        return exportDataHBox;
+        importDataHBox.setBackground(getBackgroundOfColor("white"));
+
+        return overlayVBox;
     }
 
     private void setLanguagesInChoiceBox() {

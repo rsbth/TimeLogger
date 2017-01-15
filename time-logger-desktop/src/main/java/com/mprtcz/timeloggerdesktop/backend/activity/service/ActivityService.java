@@ -4,18 +4,24 @@ import com.mprtcz.timeloggerdesktop.backend.activity.dao.CustomDao;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.HoursData;
 import com.mprtcz.timeloggerdesktop.backend.activity.validators.ActivityValidator;
+import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
+import lombok.Getter;
+import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -53,14 +59,10 @@ public class ActivityService {
         return this.customDao.findActivityById(id);
     }
 
-    private void chooseColorAndSave(Activity activity) throws Exception {
-        customDao.save(activity);
-    }
-
     private ValidationResult validateNewActivityAndSave(Activity activity) throws Exception {
         ValidationResult validationResult = activityValidator.validateNewActivity(activity, getActivities());
         if (validationResult.isErrorFree()) {
-            chooseColorAndSave(activity);
+            customDao.save(activity);
             return new ValidationResult(ValidationResult.CustomErrorEnum.RECORD_SAVED);
         } else {
             return validationResult;
@@ -86,13 +88,41 @@ public class ActivityService {
         this.marshallAndExport();
     }
 
-    private void marshallAndExport() throws Exception {
+    public void importDataFromFile(File file) throws Exception {
+        Activities activities = this.importAndUnmarshall(file);
+        this.saveImportedActivities(activities);
+
+    }
+
+    private Activities importAndUnmarshall(File file) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(Activities.class);
 
-//        Unmarshaller unmarshaller = jc.createUnmarshaller();
-//        File xml = new File("src/forum15881876/input.xml");
-//        SummaryCart sc = (SummaryCart) unmarshaller.unmarshal(xml);
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        return (Activities) unmarshaller.unmarshal(file);
+    }
 
+    private void setActivitiesInRecords(Activities activities) {
+        for (Activity a :
+                activities.getActivities()) {
+            Collection<Record> records = a.getActivityRecords();
+            if(records != null) {
+                for (Record record :
+                        records) {
+                    record.setActivity(a);
+                }
+            }
+        }
+    }
+
+    private void saveImportedActivities(Activities activities) throws Exception {
+        this.setActivitiesInRecords(activities);
+        List<Activity> activitiesList = activities.getActivities();
+        logger.info("Unmarshalled activities = {}", activities);
+        this.customDao.replaceAllData(activitiesList);
+    }
+
+    private void marshallAndExport() throws Exception {
+        JAXBContext jc = JAXBContext.newInstance(Activities.class);
         Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         Activities activities = new Activities(getActivities());
@@ -101,8 +131,9 @@ public class ActivityService {
 
     @XmlRootElement(name="Activities")
     @XmlAccessorType(XmlAccessType.FIELD)
+    @ToString
+    @Getter
     private static class Activities {
-
         @XmlElement(name = "activity")
         List<Activity> activities = new ArrayList<>();
 
