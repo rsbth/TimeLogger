@@ -4,11 +4,18 @@ import com.mprtcz.timeloggerdesktop.backend.activity.dao.CustomDao;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.HoursData;
 import com.mprtcz.timeloggerdesktop.backend.activity.validators.ActivityValidator;
-import com.mprtcz.timeloggerdesktop.backend.utilities.DataExporter;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,6 +83,33 @@ public class ActivityService {
     }
 
     public void exportDataToFile() throws Exception {
-        DataExporter.exportData(getHoursData().getHoursArray());
+        this.marshallAndExport();
+    }
+
+    private void marshallAndExport() throws Exception {
+        JAXBContext jc = JAXBContext.newInstance(Activities.class);
+
+//        Unmarshaller unmarshaller = jc.createUnmarshaller();
+//        File xml = new File("src/forum15881876/input.xml");
+//        SummaryCart sc = (SummaryCart) unmarshaller.unmarshal(xml);
+
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        Activities activities = new Activities(getActivities());
+        marshaller.marshal(activities, new File("./data.xsd"));
+    }
+
+    @XmlRootElement(name="Activities")
+    @XmlAccessorType(XmlAccessType.FIELD)
+    private static class Activities {
+
+        @XmlElement(name = "activity")
+        List<Activity> activities = new ArrayList<>();
+
+        public Activities() {}
+
+        Activities(List<Activity> activities) {
+            this.activities = activities;
+        }
     }
 }

@@ -43,7 +43,6 @@ public class ValidationResult {
         ValidationStatus validationStatus;
 
         CustomErrorEnum(String value, ValidationStatus validationStatus) {
-            System.out.println("CONSTRUCTING ENUM = " + value);
             this.value = value;
             this.validationStatus = validationStatus;
         }

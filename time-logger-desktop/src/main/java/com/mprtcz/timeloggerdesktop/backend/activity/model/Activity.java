@@ -7,6 +7,7 @@ import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -15,10 +16,13 @@ import java.util.Collection;
  */
 @Getter
 @Setter
+@XmlRootElement(name="Activity")
+@XmlAccessorType(XmlAccessType.FIELD)
 @DatabaseTable(tableName = "activities")
 public class Activity {
 
     @DatabaseField(generatedId = true)
+    @XmlTransient
     private Long id;
 
     @DatabaseField(canBeNull = false)
@@ -31,6 +35,7 @@ public class Activity {
     private String color;
 
     @ForeignCollectionField(eager = true)
+    @XmlElement(name="activityRecord")
     Collection<Record> activityRecords;
 
     public Activity() {}
