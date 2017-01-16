@@ -155,8 +155,7 @@ public class AddRecordPopup extends JFXPopup {
     private String getFormattedDatetime(LocalDate date, LocalTime time) {
         LocalDateTime datetime = LocalDateTime.of(date, time);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm");
-        String formattedDateTime = datetime.format(formatter);
-        return formattedDateTime;
+        return datetime.format(formatter);
     }
 
     public RecordValidator.ValidationObject getObjectToValidate() {
