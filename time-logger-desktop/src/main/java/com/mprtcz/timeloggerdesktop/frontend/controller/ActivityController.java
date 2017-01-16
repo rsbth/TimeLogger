@@ -192,7 +192,6 @@ public class ActivityController {
     }
 
     private Task<ValidationResult> addActivityTask;
-
     public void addNewActivity(Activity createdActivity) {
         try {
             this.addActivityTask = new Task<ValidationResult>() {

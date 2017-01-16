@@ -196,7 +196,7 @@ public class AppController {
     }
 
     @FXML
-    public void onChangeColorButtonClicked() {
+    public void onEditButtonClicked() {
         this.closeDialogIfExists();
         this.activityController.showEditActivityDialog(this.activityNamesList, this.bottomStackPane);
     }

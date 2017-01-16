@@ -84,14 +84,6 @@ public class SettingsController {
         };
     }
 
-    private EventHandler<WorkerStateEvent> exportDataResult() {
-        return (WorkerStateEvent event) -> {
-            SettingsController.this.confirmButtonHandler.setResult(
-                    new ValidationResult(ValidationResult.CustomErrorEnum.DATA_EXPORTED));
-            SettingsController.this.confirmButtonHandler.handle(event);
-        };
-    }
-
     public void getSettings(Region popupSource) {
         Task<AppSettings> task = new Task<AppSettings>() {
             @Override
