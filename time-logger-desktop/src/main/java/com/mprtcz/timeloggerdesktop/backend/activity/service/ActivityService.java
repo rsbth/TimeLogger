@@ -50,6 +50,10 @@ public class ActivityService {
         return activities;
     }
 
+    public void removeActivity(Activity activity) throws Exception {
+        this.customDao.remove(activity);
+    }
+
     public ValidationResult addActivity(Activity activity) throws Exception {
         logger.info("new activity.toString() = {}", activity.toString());
         return validateNewActivityAndSave(activity);

@@ -51,10 +51,10 @@ public class ActivityController {
         this.executorService = executorService;
     }
 
-    public void initActivityRemoveConfirmationPopup(Region source) {
+    public void initActivityRemoveConfirmationPopup(Region source, Activity activity) {
         this.confirmationPopup = new ConfirmationPopup(messages.getString("remove_activitypopup_label"), source, this.messages);
         this.confirmationPopup.getConfirmButton().setOnAction(e -> {
-            //TODO remove activity
+            this.removeActivity(activity);
             System.out.println("Remove Activity clicked");
             this.confirmationPopup.close();
         });
@@ -110,6 +110,28 @@ public class ActivityController {
         updateActivityTask.exceptionProperty().addListener(this.exceptionListener);
         updateActivityTask.setOnFailed(this.onFailedTaskEventHandler);
         this.executorService.execute(updateActivityTask);
+    }
+
+    private void removeActivity(Activity activity) {
+        Task task = new Task() {
+            @Override
+            protected Object call() throws Exception {
+                ActivityController.this.activityService.removeActivity(activity);
+                return null;
+            }
+        };
+        task.setOnSucceeded(this.getRemoveActivitySucceeded());
+        task.exceptionProperty().addListener(this.exceptionListener);
+        task.setOnFailed(this.onFailedTaskEventHandler);
+        this.executorService.execute(task);
+    }
+
+    private EventHandler<WorkerStateEvent> getRemoveActivitySucceeded() {
+        return (WorkerStateEvent event) -> {
+            ActivityController.this.onSucceededActivityAddEventHandler.setResult(
+                    new ValidationResult(ValidationResult.CustomErrorEnum.ACTIVITY_REMOVED));
+            ActivityController.this.onSucceededActivityAddEventHandler.handle(event);
+        };
     }
 
 

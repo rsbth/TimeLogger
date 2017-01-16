@@ -13,6 +13,8 @@ public interface CustomDao {
 
     void update(Activity activity) throws Exception;
 
+    void remove(Activity activity) throws Exception;
+
     List<Activity> getAllActivities() throws Exception;
 
     List<Record> getAllRecords() throws Exception;

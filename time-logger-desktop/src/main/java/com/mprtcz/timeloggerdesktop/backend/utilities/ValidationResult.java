@@ -23,6 +23,7 @@ public class ValidationResult {
         RECORD_SAVED(messages.getString("record_saved"), ValidationStatus.SUCCESSFUL),
         ACTIVITY_UPDATED(messages.getString("activity_updated"), ValidationStatus.SUCCESSFUL),
         DATA_EXPORTED(messages.getString("data_exported"), ValidationStatus.SUCCESSFUL),
+        ACTIVITY_REMOVED(messages.getString("activity_removed"), ValidationStatus.SUCCESSFUL),
 
         ACTIVITY_NAME_EMPTY(messages.getString("activity_name_empty"), ValidationStatus.FAILED),
         ACTIVITY_COLOR_EMPTY(messages.getString("activity_color_empty"), ValidationStatus.FAILED),

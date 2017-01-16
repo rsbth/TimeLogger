@@ -190,7 +190,9 @@ public class AppController {
     @FXML
     public void onRemoveActivityButtonClicked() {
         this.closeDialogIfExists();
-        this.activityController.initActivityRemoveConfirmationPopup(this.bottomStackPane);
+        Activity selectedActivity = this.activityNamesList.getSelectionModel().getSelectedItem();
+        this.activityController.initActivityRemoveConfirmationPopup(this.bottomStackPane, selectedActivity);
+        this.updateGUI();
     }
 
     @FXML
@@ -255,7 +257,7 @@ public class AppController {
         this.canvas.setVisible(settings.isGraphicVisible());
         this.canvasController.setVisibleDays(settings.getNumberOfVisibleDays());
         this.canvasController.setHeadersVisibility(settings.isHeadersVisible());
-        this.getTableData();
+        this.updateGUI();
 
 
         if (settings.getLanguage() != this.language) {
@@ -362,8 +364,7 @@ public class AppController {
             @Override
             public void handle(Event event) {
                 AppController.this.displayValidationResult(result);
-                AppController.this.activityListController.populateListView();
-                AppController.this.getTableData();
+                AppController.this.updateGUI();
             }
         };
     }
@@ -426,6 +427,11 @@ public class AppController {
             exception.printStackTrace();
             AppController.this.showAlertDialog(exception.getMessage());
         });
+    }
+
+    private void updateGUI() {
+        this.getTableData();
+        this.activityListController.populateListView();
     }
 
     private void getTableData() {
@@ -498,7 +504,6 @@ public class AppController {
         fileChooser.setInitialDirectory(new File("./"));
         File selectedFile = fileChooser.showOpenDialog(stage);
         if (selectedFile != null) {
-            System.out.println("selected file" + selectedFile);
             processImportedFile(selectedFile);
         }
     }
@@ -511,21 +516,13 @@ public class AppController {
                 return null;
             }
         };
-        task.setOnSucceeded(event -> {
-            System.out.println("Success");
-            this.getTableData();
-        });
-        task.setOnFailed(event -> System.out.println("Failed"));
+        task.setOnSucceeded(event -> this.updateGUI());
+        task.setOnFailed(event -> getOnFailedTaskEventHandler());
         this.addTaskExceptionListener(task);
         this.executorService.execute(task);
     }
 
     private EventHandler<ActionEvent> getOpenFileChooserEventHandler() {
-        return new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                AppController.this.openFileChooser();
-            }
-        };
+        return event -> AppController.this.openFileChooser();
     }
 }

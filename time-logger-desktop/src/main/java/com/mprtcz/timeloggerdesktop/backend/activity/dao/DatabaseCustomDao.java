@@ -47,6 +47,11 @@ public class DatabaseCustomDao implements CustomDao {
     }
 
     @Override
+    public void remove(Activity activity) throws Exception {
+        activityDao.delete(activity);
+    }
+
+    @Override
     public List<Activity> getAllActivities() throws SQLException {
         return this.activityDao.queryForAll();
     }
