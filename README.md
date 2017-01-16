@@ -5,7 +5,7 @@ A java application which logs time the user spent on various activities during t
 Desktop Application uses Material Design controls from a JFoenix library: [JFoenix](https://github.com/jfoenixadmin/JFoenix)
 , therefore it requires JRE version at least  1.8u60
 
-![mainUI](https://sc-cdn.scaleengine.net/i/3fdd2852f87244f11c967970fcc80de16.png)
+![mainUI](https://sc-cdn.scaleengine.net/i/45af08ff5267cf22d340cd28f175e46e2.png)
 
 The application allows a user to define and store activity records with an hourly accuracy. 
 
