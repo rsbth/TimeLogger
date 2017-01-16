@@ -25,7 +25,6 @@ import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -55,7 +54,7 @@ import static com.mprtcz.timeloggerdesktop.frontend.controller.AppController.Bot
 /**
  * Created by mprtcz on 2017-01-02.
  */
-public class AppController {
+public class AppController implements MainController {
     private Logger logger = LoggerFactory.getLogger(AppController.class);
 
     @FXML
@@ -126,23 +125,15 @@ public class AppController {
     }
 
     private void initializeListViewController() {
-        this.activityListController = new ActivityListController(this.activityNamesList, this.activityService,
-                getTaskExceptionListener(), getListViewChangeListener(), this.executorService);
+        this.activityListController = new ActivityListController(this, this.activityNamesList,
+                this.activityService, this.executorService);
         this.activityListController.populateListView();
         this.activityListController.setUpListViewListener();
         this.activityListController.setListViewFactory();
     }
 
     private void initializeActivityController() {
-        ActivityController.ActivityControllerBuilder activityControllerBuilder =
-                new ActivityController.ActivityControllerBuilder(
-                        this.activityService,
-                        this.messages,
-                        this.executorService);
-        activityControllerBuilder.exceptionListener(getTaskExceptionListener())
-                .onFailedTaskEventHandler(getOnFailedTaskEventHandler())
-                .onSucceededActivityAddEventHandler(getOnTaskSucceedEventHandler());
-        this.activityController = activityControllerBuilder.getInstance();
+        this.activityController = new ActivityController(this, this.activityService, this.messages, this.executorService);
     }
 
     private void initializeSettingsService() {
@@ -154,22 +145,12 @@ public class AppController {
     }
 
     private void initializeRecordController() {
-        RecordController.RecordControllerBuilder recordControllerBuilder =
-                new RecordController.RecordControllerBuilder(
-                        this.recordService,
-                        this.addRecordPopup,
-                        this.executorService);
-        recordControllerBuilder.exceptionListener(getTaskExceptionListener())
-                .onFailedTaskEventHandler(getOnFailedTaskEventHandler())
-                .onSucceededRecordAddEventHandler(getOnTaskSucceedEventHandler());
-        this.recordController = recordControllerBuilder.getInstance();
+        this.recordController = new RecordController(this, this.recordService, this.addRecordPopup, this.executorService);
     }
 
     private void initializeSettingsController() {
-        this.settingsController = new SettingsController(this.messages,
-                this.settingsService, getTaskExceptionListener(),
-                this.getExportDataHandler(), this.getOpenFileChooserEventHandler(),
-                this.borderPane, this.executorService);
+        this.settingsController = new SettingsController(
+                this, this.messages, this.settingsService, this.borderPane, this.executorService);
     }
 
     private void initializeCanvasController() {
@@ -346,34 +327,12 @@ public class AppController {
         this.addActivityHBox.maxWidthProperty().bind(this.activityNamesList.widthProperty());
     }
 
-
-    private ResultEventHandler getOnTaskSucceedEventHandler() {
-        return new ResultEventHandler() {
-            ValidationResult result;
-
-            @Override
-            public void setResult(ValidationResult result) {
-                this.result = result;
-            }
-
-            @Override
-            public ValidationResult getResult() {
-                return this.result;
-            }
-
-            @Override
-            public void handle(Event event) {
-                AppController.this.displayValidationResult(result);
-                AppController.this.updateGUI();
-            }
-        };
-    }
-
-    private void displayValidationResult(ValidationResult result) {
+    public void displayValidationResult(ValidationResult result) {
         if (result != null) {
             if (result.isErrorFree()) {
                 System.out.println("result.getCustomErrorEnumList() = " + result.getCustomMessage());
                 this.showInfoDialog(result.getCustomErrorEnum().getValue());
+                this.updateGUI();
             } else {
                 this.showAlertDialog(result.getEnumMessage());
             }
@@ -384,7 +343,7 @@ public class AppController {
         this.showAlertDialog(e.getMessage());
     }
 
-    private void showAlertDialog(String value) {
+    public void showAlertDialog(String value) {
         this.showDialog(value, MessageType.ALERT);
     }
 
@@ -453,11 +412,7 @@ public class AppController {
         }
     }
 
-    private EventHandler<ActionEvent> getExportDataHandler() {
-        return event -> AppController.this.exportData();
-    }
-
-    private void exportData() {
+    public void exportData() {
         Task task = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -471,8 +426,8 @@ public class AppController {
         this.executorService.execute(task);
     }
 
-    private ChangeListener getListViewChangeListener() {
-        return (ChangeListener<Activity>) (observable, oldValue, newValue) -> {
+    public ChangeListener<Activity> getListViewChangeListener() {
+        return (observable, oldValue, newValue) -> {
             if (newValue != null) {
                 closeAddRecordPopupIfExists();
                 AppController.this.styleSetter.setVisibility(true);
@@ -487,7 +442,7 @@ public class AppController {
         this.showInfoDialog(item.getDescription());
     }
 
-    private ChangeListener<Throwable> getTaskExceptionListener() {
+    public ChangeListener<Throwable> getTaskExceptionListener() {
         return (observable, oldValue, newValue) -> {
             Exception exception = (Exception) newValue;
             exception.printStackTrace();
@@ -520,9 +475,5 @@ public class AppController {
         task.setOnFailed(event -> getOnFailedTaskEventHandler());
         this.addTaskExceptionListener(task);
         this.executorService.execute(task);
-    }
-
-    private EventHandler<ActionEvent> getOpenFileChooserEventHandler() {
-        return event -> AppController.this.openFileChooser();
     }
 }

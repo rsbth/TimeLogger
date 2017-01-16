@@ -8,11 +8,7 @@ import com.mprtcz.timeloggerdesktop.backend.activity.service.ActivityService;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.ConfirmationPopup;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor;
-import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
-import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -30,23 +26,16 @@ public class ActivityController {
     private Logger logger = LoggerFactory.getLogger(ActivityController.class);
 
     private ActivityService activityService;
-    private ChangeListener<Throwable> exceptionListener;
-    private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
-    private ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler;
     private ResourceBundle messages;
     private ConfirmationPopup confirmationPopup;
     private JFXDialog bottomDialog;
     private ExecutorService executorService;
+    MainController mainController;
 
-
-    private ActivityController(ActivityService activityService, ChangeListener<Throwable> exceptionListener,
-                               EventHandler<WorkerStateEvent> onFailedTaskEventHandler,
-                               ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler,
+    public ActivityController(MainController mainController, ActivityService activityService,
                                ResourceBundle messages, ExecutorService executorService) {
+        this.mainController = mainController;
         this.activityService = activityService;
-        this.exceptionListener = exceptionListener;
-        this.onFailedTaskEventHandler = onFailedTaskEventHandler;
-        this.onSucceededActivityAddEventHandler = onSucceededActivityAddEventHandler;
         this.messages = messages;
         this.executorService = executorService;
     }
@@ -79,8 +68,9 @@ public class ActivityController {
     }
 
     private Activity activityToUpdate;
+
     private void processUpdateActivity(Activity activity) {
-        logger.info("processUpdateActivity(), activity = {} " , activity.toString());
+        logger.info("processUpdateActivity(), activity = {} ", activity.toString());
         if (activity.getName().equals("") || activity.getName() == null) {
             return;
         }
@@ -94,21 +84,25 @@ public class ActivityController {
         this.bottomDialog.close();
     }
 
-    private Task updateActivityTask;
+    private Task<ValidationResult> updateActivityTask;
+
     public void updateChangedActivityAndUI(Activity activity) {
         logger.info(" updateChangedActivityAndUI activity = {}", activity);
         if (activity == null) {
             return;
         }
-        this.updateActivityTask = new Task() {
+        this.updateActivityTask = new Task<ValidationResult>() {
             @Override
             protected ValidationResult call() throws Exception {
                 return ActivityController.this.activityService.updateActivity(activity);
             }
         };
-        updateActivityTask.setOnSucceeded(this.addActivitySucceeded(this.updateActivityTask));
-        updateActivityTask.exceptionProperty().addListener(this.exceptionListener);
-        updateActivityTask.setOnFailed(this.onFailedTaskEventHandler);
+        updateActivityTask.setOnSucceeded(event ->
+                this.mainController.displayValidationResult(this.updateActivityTask.getValue()));
+
+        updateActivityTask.exceptionProperty().addListener(this.mainController.getTaskExceptionListener());
+        updateActivityTask.setOnFailed(event ->
+                ActivityController.this.mainController.showAlertDialog(event.toString()));
         this.executorService.execute(updateActivityTask);
     }
 
@@ -120,18 +114,11 @@ public class ActivityController {
                 return null;
             }
         };
-        task.setOnSucceeded(this.getRemoveActivitySucceeded());
-        task.exceptionProperty().addListener(this.exceptionListener);
-        task.setOnFailed(this.onFailedTaskEventHandler);
+        task.setOnSucceeded(event -> this.mainController.displayValidationResult(
+                new ValidationResult(ValidationResult.CustomErrorEnum.ACTIVITY_REMOVED)));
+        task.exceptionProperty().addListener(this.mainController.getTaskExceptionListener());
+        task.setOnFailed(event -> this.mainController.showAlertDialog(event.toString()));
         this.executorService.execute(task);
-    }
-
-    private EventHandler<WorkerStateEvent> getRemoveActivitySucceeded() {
-        return (WorkerStateEvent event) -> {
-            ActivityController.this.onSucceededActivityAddEventHandler.setResult(
-                    new ValidationResult(ValidationResult.CustomErrorEnum.ACTIVITY_REMOVED));
-            ActivityController.this.onSucceededActivityAddEventHandler.handle(event);
-        };
     }
 
 
@@ -142,6 +129,7 @@ public class ActivityController {
     }
 
     private Activity createdActivity;
+
     public void loadAddDialog(StackPane bottomStackPane) {
         closeDialogIfExists();
         DialogElementsConstructor dialogElementsConstructor = new DialogElementsConstructor(messages);
@@ -173,12 +161,12 @@ public class ActivityController {
     public void initEmptyDescriptionConfirmationPopup(ActivityMethodType methodType) {
         this.confirmationPopup = new ConfirmationPopup(messages.getString("empty_description_confirm_label"),
                 this.bottomDialog, this.messages);
-        if(methodType == ActivityMethodType.CREATE) {
+        if (methodType == ActivityMethodType.CREATE) {
             this.confirmationPopup.getConfirmButton().setOnAction(e -> {
                 this.addNewActivity(this.createdActivity);
                 this.confirmationPopup.close();
             });
-        } else if(methodType == ActivityMethodType.UPDATE) {
+        } else if (methodType == ActivityMethodType.UPDATE) {
             this.confirmationPopup.getConfirmButton().setOnAction(e -> {
                 this.updateChangedActivityAndUI(activityToUpdate);
                 this.confirmationPopup.close();
@@ -192,6 +180,7 @@ public class ActivityController {
     }
 
     private Task<ValidationResult> addActivityTask;
+
     public void addNewActivity(Activity createdActivity) {
         try {
             this.addActivityTask = new Task<ValidationResult>() {
@@ -200,62 +189,12 @@ public class ActivityController {
                     return ActivityController.this.activityService.addActivity(createdActivity);
                 }
             };
-            addActivityTask.setOnSucceeded(this.addActivitySucceeded(this.addActivityTask));
-            addActivityTask.exceptionProperty().addListener(this.exceptionListener);
+            addActivityTask.setOnSucceeded(event ->
+                    this.mainController.displayValidationResult(this.addActivityTask.getValue()));
+            addActivityTask.exceptionProperty().addListener(this.mainController.getTaskExceptionListener());
             this.executorService.execute(addActivityTask);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private EventHandler<WorkerStateEvent> addActivitySucceeded(Task task) {
-        return (WorkerStateEvent event) -> {
-            ActivityController.this.onSucceededActivityAddEventHandler.setResult((ValidationResult) task.getValue());
-            ActivityController.this.onSucceededActivityAddEventHandler.handle(event);
-        };
-    }
-
-    public static class ActivityControllerBuilder {
-        private ActivityService activityService;
-        private ChangeListener<Throwable> exceptionListener;
-        private EventHandler<WorkerStateEvent> onFailedTaskEventHandler;
-        private ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler;
-        private ResourceBundle messages;
-        private ExecutorService executorService;
-
-        public ActivityControllerBuilder(ActivityService activityService,
-                                         ResourceBundle messages,
-                                         ExecutorService executorService) {
-            this.activityService = activityService;
-            this.messages = messages;
-            this.executorService = executorService;
-        }
-
-        public ActivityControllerBuilder exceptionListener(ChangeListener<Throwable> exceptionListener) {
-            this.exceptionListener = exceptionListener;
-            return this;
-        }
-
-        public ActivityControllerBuilder onFailedTaskEventHandler(EventHandler<WorkerStateEvent> onFailedTaskEventHandler) {
-            this.onFailedTaskEventHandler = onFailedTaskEventHandler;
-            return this;
-        }
-
-        public ActivityControllerBuilder onSucceededActivityAddEventHandler
-                (ResultEventHandler<WorkerStateEvent> onSucceededActivityAddEventHandler) {
-            this.onSucceededActivityAddEventHandler = onSucceededActivityAddEventHandler;
-            return this;
-        }
-
-        public ActivityController getInstance() {
-            return new ActivityController(
-                    this.activityService,
-                    this.exceptionListener,
-                    this.onFailedTaskEventHandler,
-                    this.onSucceededActivityAddEventHandler,
-                    this.messages,
-                    this.executorService
-            );
         }
     }
 }

@@ -5,7 +5,6 @@ import com.jfoenix.controls.JFXListView;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.activity.service.ActivityService;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.scene.control.ListCell;
@@ -26,17 +25,16 @@ public class ActivityListController {
 
     private JFXListView<Activity> activityNamesList;
     private ActivityService activityService;
-    private ChangeListener exceptionListener;
-    private ChangeListener changeListener;
     private ExecutorService executorService;
+    private MainController mainController;
 
-    public ActivityListController(JFXListView<Activity> activityNamesList, ActivityService activityService,
-                                  ChangeListener exceptionListener, ChangeListener changeListener,
-                                  ExecutorService executorService) {
+    ActivityListController(MainController mainController,
+                           JFXListView<Activity> activityNamesList,
+                           ActivityService activityService,
+                           ExecutorService executorService) {
+        this.mainController = mainController;
         this.activityNamesList = activityNamesList;
         this.activityService = activityService;
-        this.exceptionListener = exceptionListener;
-        this.changeListener = changeListener;
         this.executorService = executorService;
 
         this.populateListView();
@@ -77,12 +75,13 @@ public class ActivityListController {
             }
         };
         task.setOnSucceeded(event -> this.setActivityListItems(task.getValue()));
-        task.setOnFailed(event -> System.out.println(task.exceptionProperty().toString()));
-        task.exceptionProperty().addListener(this.exceptionListener);
+        task.setOnFailed(event -> ActivityListController.this.mainController.showAlertDialog(event.toString()));
+        task.exceptionProperty().addListener(this.mainController.getTaskExceptionListener());
         this.executorService.execute(task);
     }
 
     void setUpListViewListener() {
-        this.activityNamesList.getSelectionModel().selectedItemProperty().addListener(this.changeListener);
+        this.activityNamesList.getSelectionModel().selectedItemProperty()
+                .addListener(this.mainController.getListViewChangeListener());
     }
 }

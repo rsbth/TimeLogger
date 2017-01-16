@@ -7,7 +7,6 @@ import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.ConfirmationPopup;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.SettingsPopup;
 import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
-import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
@@ -28,26 +27,20 @@ public class SettingsController {
 
     private ResourceBundle messages;
     private SettingsService settingsService;
-    private ChangeListener<Throwable> exceptionListener;
-    private EventHandler<ActionEvent> exportDataEventHandler;
-    private EventHandler<ActionEvent> openFileEventHandler;
     private ResultEventHandler<WorkerStateEvent> confirmButtonHandler;
     private Region rootPane;
     private ExecutorService executorService;
+    private MainController mainController;
 
-    public SettingsController(ResourceBundle messages,
+    public SettingsController(MainController mainController,
+                              ResourceBundle messages,
                               SettingsService settingsService,
-                              ChangeListener<Throwable> exceptionListener,
-                              EventHandler<ActionEvent> exportDataEventHandler,
-                              EventHandler<ActionEvent> openFileEventHandler,
                               Region rootPane, ExecutorService executorService) {
+        this.mainController = mainController;
         this.messages = messages;
         this.settingsService = settingsService;
-        this.exceptionListener = exceptionListener;
-        this.exportDataEventHandler = exportDataEventHandler;
         this.rootPane = rootPane;
         this.executorService = executorService;
-        this.openFileEventHandler = openFileEventHandler;
     }
 
     public void initializeSettingsMenu(Region popupSource, ResultEventHandler<WorkerStateEvent> confirmButtonHandler) {
@@ -67,8 +60,9 @@ public class SettingsController {
                     }
                 };
                 appSettingsTask.setOnSucceeded(settingsValidationResult());
-                appSettingsTask.setOnFailed(event1 -> System.out.println(appSettingsTask.exceptionProperty().toString()));
-                appSettingsTask.exceptionProperty().addListener(SettingsController.this.exceptionListener);
+                appSettingsTask.exceptionProperty().addListener(this.mainController.getTaskExceptionListener());
+                appSettingsTask.setOnFailed(alertEvent -> this.mainController.showAlertDialog(event.toString()));
+
                 executorService.execute(appSettingsTask);
                 SettingsController.this.settingsService.updateSettings(SettingsController.this.settingsPopup.getSettingsObject());
             } catch (Exception e) {
@@ -92,8 +86,8 @@ public class SettingsController {
             }
         };
         task.setOnSucceeded(event -> SettingsController.this.showSettingsPopup(task.getValue(), popupSource));
-        task.setOnFailed(event -> System.out.println(task.exceptionProperty().toString()));
-        task.exceptionProperty().addListener(this.exceptionListener);
+        task.exceptionProperty().addListener(this.mainController.getTaskExceptionListener());
+        task.setOnFailed(event -> this.mainController.showAlertDialog(event.toString()));
         this.executorService.execute(task);
     }
 
@@ -104,7 +98,7 @@ public class SettingsController {
         double xOffset = this.getXCoordinate(popupSource);
         this.settingsPopup = new SettingsPopup(popupSource, this.messages, currentSettings);
         this.settingsPopup.getConfirmButton().addEventHandler(ActionEvent.ACTION, getApplySettingsEventHandler());
-        this.settingsPopup.getExportDataButton().addEventHandler(ActionEvent.ACTION,  this.exportDataEventHandler);
+        this.settingsPopup.getExportDataButton().addEventHandler(ActionEvent.ACTION,  event -> this.mainController.exportData());
         this.settingsPopup.getImportDataButton().addEventHandler(ActionEvent.ACTION,  getOpenFileEventHandler(this.settingsPopup.getConfirmButton()));
         this.settingsPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, xOffset, 0);
     }
@@ -113,7 +107,7 @@ public class SettingsController {
         return event -> {
             ConfirmationPopup importConfPopup =
                     new ConfirmationPopup(messages.getString("import_data_conf"), source, SettingsController.this.messages);
-            importConfPopup.getConfirmButton().setOnAction(SettingsController.this.openFileEventHandler);
+            importConfPopup.getConfirmButton().setOnAction(openFileEvent -> this.mainController.openFileChooser());
             importConfPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT);
         };
     }
