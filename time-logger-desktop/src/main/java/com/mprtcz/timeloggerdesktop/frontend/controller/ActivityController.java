@@ -9,10 +9,10 @@ import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.ConfirmationPopup;
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsConstructor;
 import javafx.concurrent.Task;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Transform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ public class ActivityController {
     private ConfirmationPopup confirmationPopup;
     private JFXDialog bottomDialog;
     private ExecutorService executorService;
-    MainController mainController;
+    private MainController mainController;
 
     public ActivityController(MainController mainController, ActivityService activityService,
                                ResourceBundle messages, ExecutorService executorService) {
@@ -44,10 +44,10 @@ public class ActivityController {
         this.confirmationPopup = new ConfirmationPopup(messages.getString("remove_activitypopup_label"), source, this.messages);
         this.confirmationPopup.getConfirmButton().setOnAction(e -> {
             this.removeActivity(activity);
-            System.out.println("Remove Activity clicked");
             this.confirmationPopup.close();
         });
-        this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, 10, -10);
+        this.confirmationPopup.setPrefWidth(CONFIRMATION_POPUP_PREF_WIDTH);
+        this.confirmationPopup.show(JFXPopup.PopupVPosition.BOTTOM, JFXPopup.PopupHPosition.LEFT, getXCoordinate(source), -20);
     }
 
     public void showEditActivityDialog(JFXListView<Activity> activityNamesList, StackPane source) {
@@ -129,12 +129,11 @@ public class ActivityController {
     }
 
     private Activity createdActivity;
-
-    public void loadAddDialog(StackPane bottomStackPane) {
+    public void loadAddDialog(Region rootPane, StackPane bottomStackPane) {
         closeDialogIfExists();
         DialogElementsConstructor dialogElementsConstructor = new DialogElementsConstructor(messages);
         dialogElementsConstructor.getConfirmButton().setOnMouseClicked(event ->
-                ActivityController.this.processSaveActivity(dialogElementsConstructor.getNewActivity(), event));
+                ActivityController.this.processSaveActivity(dialogElementsConstructor.getNewActivity(), rootPane));
         dialogElementsConstructor.getCancelButton().setOnMouseClicked(event ->
                 ActivityController.this.bottomDialog.close());
         VBox overlayVBox = (VBox) dialogElementsConstructor.getContent();
@@ -142,16 +141,22 @@ public class ActivityController {
         this.bottomDialog.show();
     }
 
-    public void processSaveActivity(Activity createdActivity,
-                                    MouseEvent event) {
+    private double getXCoordinate(Region rootPane) {
+        Transform transform = rootPane.getLocalToSceneTransform();
+        return (rootPane.getWidth() / 2) - (CONFIRMATION_POPUP_PREF_WIDTH/2) - (transform.getTx());
+    }
+
+    private static final double CONFIRMATION_POPUP_PREF_WIDTH = 150;
+    public void processSaveActivity(Activity createdActivity, Region rootPane) {
         if (createdActivity.getName().equals("") || createdActivity.getName() == null) {
             return;
         }
         if (createdActivity.getDescription().equals("")) {
             this.createdActivity = createdActivity;
             this.initEmptyDescriptionConfirmationPopup(ActivityMethodType.CREATE);
+            this.confirmationPopup.setPrefWidth(CONFIRMATION_POPUP_PREF_WIDTH);
             this.confirmationPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT,
-                    event.getX(), event.getY());
+                    getXCoordinate(rootPane), 50);
         } else {
             ActivityController.this.addNewActivity(createdActivity);
         }

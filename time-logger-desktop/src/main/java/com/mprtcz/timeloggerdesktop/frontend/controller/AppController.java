@@ -127,6 +127,7 @@ public class AppController implements MainController {
     private void initializeListViewController() {
         this.activityListController = new ActivityListController(this, this.activityNamesList,
                 this.activityService, this.executorService);
+        this.activityNamesList.prefWidthProperty().bind(this.borderPane.widthProperty());
         this.activityListController.populateListView();
         this.activityListController.setUpListViewListener();
         this.activityListController.setListViewFactory();
@@ -185,7 +186,7 @@ public class AppController implements MainController {
     @FXML
     public void onAddActivityButtonClicked() {
         this.closeDialogIfExists();
-        this.activityController.loadAddDialog(this.bottomStackPane);
+        this.activityController.loadAddDialog(this.borderPane, this.bottomStackPane);
     }
 
     @FXML
@@ -455,7 +456,7 @@ public class AppController implements MainController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("xsd files", "*.xsd"));
+                new FileChooser.ExtensionFilter("xml files", "*.xml"));
         fileChooser.setInitialDirectory(new File("./"));
         File selectedFile = fileChooser.showOpenDialog(stage);
         if (selectedFile != null) {

@@ -33,12 +33,12 @@
                <children>
                   <VBox alignment="TOP_CENTER">
                      <children>
-                        <JFXListView fx:id="activityNamesList" depthProperty="1" maxWidth="300.0" minWidth="300.0" prefHeight="168.0" prefWidth="300.0">
+                        <JFXListView fx:id="activityNamesList" depthProperty="1" maxWidth="600.0" minWidth="300.0" prefHeight="168.0" prefWidth="300.0">
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
                            <VBox.margin>
-                              <Insets top="10.0" />
+                              <Insets left="50.0" right="50.0" top="10.0" />
                            </VBox.margin>
                         </JFXListView>
                         <HBox fx:id="addActivityHBox" alignment="TOP_RIGHT">
@@ -60,7 +60,7 @@
                   </VBox>
                   <Canvas fx:id="canvas" height="100.0" width="300.0">
                      <FlowPane.margin>
-                        <Insets left="10.0" />
+                        <Insets left="10.0" top="10.0" />
                      </FlowPane.margin></Canvas>
                </children>
                <padding>

@@ -51,6 +51,7 @@ public class DialogElementsConstructor {
     public DialogElementsConstructor(ResourceBundle messages, Activity activity) {
         this(messages);
         this.titleLabel.setText(messages.getString("edit_activity_label"));
+        this.confirmButton.setText(messages.getString("confirm_edit_button"));
         logger.info("activity to update = {}", activity.toString());
         this.updatedActivity = activity;
         this.newActivityNameTextField.setText(activity.getName());

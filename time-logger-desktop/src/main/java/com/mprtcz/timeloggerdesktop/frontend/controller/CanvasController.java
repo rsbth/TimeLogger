@@ -26,6 +26,7 @@ public class CanvasController {
     private static final String FONT = "Roboto";
     private static final String FONT_COLOR = "darkgray";
     private static final int BASIC_CELL_HEIGHT = 10;
+    private static final int MAX_CELL_HEIGHT = 15;
 
     private int visibleDays = 5;
     private int basicCellHeight = 10;
@@ -47,14 +48,21 @@ public class CanvasController {
 
         this.setTrimmedArray(hoursArray);
         basicCellHeight = (int) (canvas.getHeight() / this.trimmedHourArray.length);
+        if(basicCellHeight > MAX_CELL_HEIGHT) {
+            basicCellHeight = MAX_CELL_HEIGHT;
+        }
 
         if (areHeadersEnabled) {
-            this.cellWidth = (int) (canvas.getWidth() / 26);
-            xOffset = 2;
+            this.cellWidth = (int) (canvas.getWidth() / 27);
+            xOffset = 3;
             yOffset = 1;
             leftLegendWidth = xOffset * cellWidth;
             headerHeight = yOffset * BASIC_CELL_HEIGHT;
             basicCellHeight = (int) ((canvas.getHeight() - (yOffset * BASIC_CELL_HEIGHT)) / this.trimmedHourArray.length);
+            logger.info("basicCellHeight = {}", basicCellHeight);
+            if(basicCellHeight > MAX_CELL_HEIGHT) {
+                basicCellHeight = MAX_CELL_HEIGHT;
+            }
             drawHeader(canvas.getGraphicsContext2D(), cellWidth, xOffset);
         }
 
@@ -96,10 +104,19 @@ public class CanvasController {
                 (basicCellHeight * yCoordinate) + (yOffset * BASIC_CELL_HEIGHT),
                 cellWidth, basicCellHeight);
         if (areHeadersEnabled && (yCoordinate % 2 == 0) && hour != null) {
-            String dayString = hour.getDatetime().getDayOfMonth() + "." + hour.getDatetime().getMonthValue();
+            String dayString = hour.getDatetime().getDayOfMonth() + "." + getMonthValue(hour);
             graphicsContext.setFont(Font.font(FONT));
             graphicsContext.setFill(Paint.valueOf(FONT_COLOR));
             graphicsContext.fillText(dayString, 0, (yCoordinate + 1) * basicCellHeight + (headerHeight));
+        }
+    }
+
+    private String getMonthValue(HoursData.Hour hour) {
+        int month = hour.getDatetime().getMonthValue();
+        if(month > 9) {
+            return String.valueOf(month);
+        } else {
+            return "0" + String.valueOf(month);
         }
     }
 
@@ -164,7 +181,7 @@ public class CanvasController {
             tooltip.setText(activityName + "\n" + result);
         });
         canvas.setOnMouseExited(event -> tooltip.hide());
-        Tooltip.install(canvas, tooltip); //TODO tooltip
+        Tooltip.install(canvas, tooltip);
     }
 
     public void setHeadersVisibility(boolean headersVisible) {

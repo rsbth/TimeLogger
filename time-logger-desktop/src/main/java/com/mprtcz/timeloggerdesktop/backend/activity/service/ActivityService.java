@@ -130,7 +130,7 @@ public class ActivityService {
         Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         Activities activities = new Activities(getActivities());
-        marshaller.marshal(activities, new File("./data.xsd"));
+        marshaller.marshal(activities, new File("./data.xml"));
     }
 
     @XmlRootElement(name="Activities")
