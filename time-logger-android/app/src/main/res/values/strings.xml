@@ -4,4 +4,8 @@
     <string name="title_activity_activities">ActivitiesActivity</string>
     <string name="mainActivityButton">Go to activities list</string>
     <string name="activitiesListToolbarText">Activities</string>
+    <string name="addRecordButtonText">Add</string>
+    <string name="editActivityButtonText">Edit</string>
+    <string name="removeActivityButtonText">Remove</string>
+    <string name="settingsButtonText">Settings</string>
 </resources>

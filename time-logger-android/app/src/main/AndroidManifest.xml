@@ -15,10 +15,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.ActivitiesActivity"
-            android:label="@string/title_activity_activities"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".activities.ActivitiesListActivity"></activity>
     </application>
 
 </manifest>

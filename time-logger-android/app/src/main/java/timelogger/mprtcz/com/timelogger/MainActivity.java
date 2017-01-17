@@ -1,11 +1,11 @@
 package timelogger.mprtcz.com.timelogger;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import timelogger.mprtcz.com.timelogger.activities.ActivitiesActivity;
+import timelogger.mprtcz.com.timelogger.activities.ActivitiesListActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onMainActivityButtonCLicked(View view) {
-        Intent intent = new Intent(this, ActivitiesActivity.class);
+        Intent intent = new Intent(this, ActivitiesListActivity.class);
         startActivity(intent);
     }
 }

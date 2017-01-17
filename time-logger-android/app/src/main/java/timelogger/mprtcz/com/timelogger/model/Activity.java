@@ -41,11 +41,11 @@ public class Activity {
 
     public static List<Activity> activities = new ArrayList<>();
     static {
-        activities.add(new Activity(1L, "name", "description", "#ffcdd2"));
-        activities.add(new Activity(2L, "name2", "long description", "#f8bbd0"));
-        activities.add(new Activity(3L, "name3", "even longer description", "#e1bee7"));
+        activities.add(new Activity(1L, "name", "description", "#03a9f4"));
+        activities.add(new Activity(2L, "name2", "long description", "#009688"));
+        activities.add(new Activity(3L, "name3", "even longer description", "#795548"));
         activities.add(new Activity(4L, "name4", "even longer description \nwhich will contain more than 50 " +
-                "word necessary to identify whether a string cutting method appears to work correctly", "#d1c4e9"));
+                "word necessary to identify whether a string cutting method appears to work correctly", "#2196f3"));
     }
 
 }
