@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">TimeLogger</string>
+    <string name="no_data">No data</string>
+    <string name="title_activity_activities">ActivitiesActivity</string>
+    <string name="mainActivityButton">Go to activities list</string>
+    <string name="activitiesListToolbarText">Activities</string>
 </resources>
