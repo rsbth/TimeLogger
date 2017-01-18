@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import timelogger.mprtcz.com.timelogger.activities.ActivitiesListActivity;
+import timelogger.mprtcz.com.timelogger.activities.TasksListActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onMainActivityButtonCLicked(View view) {
-        Intent intent = new Intent(this, ActivitiesListActivity.class);
+        Intent intent = new Intent(this, TasksListActivity.class);
         startActivity(intent);
     }
 }

@@ -17,8 +17,8 @@ import timelogger.mprtcz.com.timelogger.R;
  * Created by Azet on 2017-01-17.
  */
 
-public class ActivitiesAdapter extends ArrayAdapter<Activity> {
-    public ActivitiesAdapter(Context context, List<Activity> objects) {
+public class TasksAdapter extends ArrayAdapter<Task> {
+    public TasksAdapter(Context context, List<Task> objects) {
         super(context, R.layout.activities_row_view, objects);
     }
 
@@ -26,7 +26,7 @@ public class ActivitiesAdapter extends ArrayAdapter<Activity> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final Activity activity = getItem(position);
+        final Task task = getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(
@@ -36,20 +36,20 @@ public class ActivitiesAdapter extends ArrayAdapter<Activity> {
         final TextView nameTextView = (TextView) convertView.findViewById(R.id.activityNameTextView);
         TextView colorTextView = (TextView) convertView.findViewById(R.id.colorTextView);
 
-        nameTextView.setText(activity.getName());
+        nameTextView.setText(task.getName());
         colorTextView.setText("     ");
 
-        colorTextView.setBackgroundColor(Color.parseColor(activity.getColor()));
+        colorTextView.setBackgroundColor(Color.parseColor(task.getColor()));
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Activity " + activity.toString());
+                System.out.println("Activity " + task.toString());
                 if(toast != null) {
                     toast.cancel();
                 }
                 toast = Toast.makeText(
-                        getContext(), activity.getDescription(), Toast.LENGTH_SHORT);
+                        getContext(), task.getDescription(), Toast.LENGTH_SHORT);
                 toast.show();
             }
         });

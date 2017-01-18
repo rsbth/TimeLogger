@@ -8,4 +8,21 @@
     <string name="editActivityButtonText">Edit</string>
     <string name="removeActivityButtonText">Remove</string>
     <string name="settingsButtonText">Settings</string>
+    <string name="newTaskDataLabel">Enter new task\'s data</string>
+    <string name="taskName">Task name</string>
+    <string name="add_task_description">Task description</string>
+    <string name="colorPickerText">Choose color</string>
+    <string name="taskNameLabel">Task name:</string>
+    <string name="taskDescriptionLabel">Task Description:</string>
+    <string name="addColorTextView">Choose color:</string>
+    <string name="addTaskButtonText">Add Task</string>
+    <string name="cancelTaskAddButtonText">Cancel</string>
+    <string name="colorButtonText" />
+    <string name="name_cannot_be_null">Name cannot be null</string>
+    <string name="emptyDescriptionConfirmationLabel">Add with empty description?</string>
+    <string name="yesButtonText">Yes</string>
+    <string name="noButtonText">No</string>
+    <string name="emptyDescriptionPopupTitle">Empty Description</string>
+    <string name="pickColorToast">Pick a color</string>
+    <string name="taskSavedToast">Task Saved:</string>
 </resources>

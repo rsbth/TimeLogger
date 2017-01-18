@@ -18,6 +18,9 @@ android {
         }
     }
 }
+repositories {
+    jcenter()
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -27,5 +30,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'org.projectlombok:lombok:1.16.12'
     compile 'com.android.support:design:25.1.0'
+    compile 'com.pes.materialcolorpicker:library:1.0.2'
     testCompile 'junit:junit:4.12'
 }

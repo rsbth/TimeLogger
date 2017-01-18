@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_activities_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/selectableItemBackground"
+    tools:context="timelogger.mprtcz.com.timelogger.activities.TasksListActivity">
+
+    <ListView
+        android:id="@+id/activitiesList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:listSelector="@drawable/list_selector"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <LinearLayout
+        android:id="@+id/footer"
+        style="@android:style/ButtonBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/addRecordButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_add_white_24dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/addRecordButtonText"
+            android:textColor="#ffffff" />
+
+        <Button
+            android:id="@+id/editActivityButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_create_white_24dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/editActivityButtonText"
+            android:textColor="#ffffff" />
+
+        <Button
+            android:id="@+id/removeActivityButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_clear_white_24dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/removeActivityButtonText"
+            android:textColor="#ffffff" />
+
+        <Button
+            android:id="@+id/settingsButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_settings_white_24dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/settingsButtonText"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/ic_add_white_18dp"
+        android:layout_above="@+id/footer"
+        android:layout_alignParentEnd="true"
+        android:onClick="onAddActivityButtonClicked" />
+
+</RelativeLayout>

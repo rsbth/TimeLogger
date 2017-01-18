@@ -14,7 +14,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Activity {
+public class Task {
 
     private Long id;
 
@@ -26,25 +26,25 @@ public class Activity {
 
     Collection<Record> activityRecords;
 
-    public Activity(String name, String description, String color) {
+    public Task(String name, String description, String color) {
         this.name = name;
         this.description = description;
         this.color = color;
     }
 
-    public Activity(Long id, String name, String description, String color) {
+    public Task(Long id, String name, String description, String color) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.color = color;
     }
 
-    public static List<Activity> activities = new ArrayList<>();
+    public static List<Task> activities = new ArrayList<>();
     static {
-        activities.add(new Activity(1L, "name", "description", "#03a9f4"));
-        activities.add(new Activity(2L, "name2", "long description", "#009688"));
-        activities.add(new Activity(3L, "name3", "even longer description", "#795548"));
-        activities.add(new Activity(4L, "name4", "even longer description \nwhich will contain more than 50 " +
+        activities.add(new Task(1L, "name", "description", "#03a9f4"));
+        activities.add(new Task(2L, "name2", "long description", "#009688"));
+        activities.add(new Task(3L, "name3", "even longer description", "#795548"));
+        activities.add(new Task(4L, "name4", "even longer description \nwhich will contain more than 50 " +
                 "word necessary to identify whether a string cutting method appears to work correctly", "#2196f3"));
     }
 

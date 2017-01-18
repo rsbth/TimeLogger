@@ -14,7 +14,7 @@ public class Record {
 
     private Long id;
 
-    private Activity activity;
+    private Task task;
 
     private Date startDateTime;
 
@@ -24,8 +24,8 @@ public class Record {
                   Date endTime,
                   Date startDate,
                   Date endDate,
-                  Activity activity) {
-        this.activity = activity;
+                  Task task) {
+        this.task = task;
         this.startDateTime = new Date(
                 startDate.getYear(), startDate.getMonth(), startDate.getDay(),
                 startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
@@ -39,7 +39,7 @@ public class Record {
     public String toString() {
         return "Record{" +
                 "id=" + id +
-                ", activityName=" + activity.getName() +
+                ", activityName=" + task.getName() +
                 ", startDateTime=" + startDateTime +
                 ", endDateTime=" + endDateTime +
                 '}';
