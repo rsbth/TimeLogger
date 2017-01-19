@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import lombok.Getter;
 import timelogger.mprtcz.com.timelogger.R;
 
 /**
@@ -23,9 +24,11 @@ public class TasksAdapter extends ArrayAdapter<Task> {
     }
 
     Toast toast;
+    @Getter
+    Task selectedTask;
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         final Task task = getItem(position);
 
         if (convertView == null) {
@@ -41,16 +44,25 @@ public class TasksAdapter extends ArrayAdapter<Task> {
 
         colorTextView.setBackgroundColor(Color.parseColor(task.getColor()));
 
+
+        final View finalConvertView = convertView;
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Activity " + task.toString());
+                System.out.println("Task " + task.toString());
+
+                for(int a = 0; a < parent.getChildCount(); a++) {
+                    parent.getChildAt(a).setBackgroundColor(Color.TRANSPARENT);
+                }
+                finalConvertView.setBackgroundColor(Color.parseColor("#3F51B5"));
+
                 if(toast != null) {
                     toast.cancel();
                 }
                 toast = Toast.makeText(
                         getContext(), task.getDescription(), Toast.LENGTH_SHORT);
                 toast.show();
+                selectedTask = task;
             }
         });
 

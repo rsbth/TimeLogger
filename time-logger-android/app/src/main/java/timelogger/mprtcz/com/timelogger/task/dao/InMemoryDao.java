@@ -32,6 +32,11 @@ public class InMemoryDao implements CustomDao {
         return null;
     }
 
+    @Override
+    public void removeTask(Task task) {
+        Task.tasks.remove(task);
+    }
+
     private Long getLargestId() {
         Long biggest = -1L;
         for (Task task :

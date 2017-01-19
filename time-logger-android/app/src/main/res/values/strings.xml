@@ -26,6 +26,14 @@
     <string name="pickColorToast">Pick a color</string>
     <string name="taskSavedToast">Task Saved:</string>
     <string name="validationSuccessFul">Validation Successful</string>
-    <string name="activityExists">Activity with that name exists</string>
+    <string name="taskExists">Activity with that name exists</string>
     <string name="taskNameExists">Task name already exists</string>
+    <string name="taskValidationSuccessful">Task validation successful</string>
+    <string name="taskNameEmpty">Task name cannot be empty</string>
+    <string name="taskColorEmpty">Task color cannot be empty</string>
+    <string name="taskIdEmpty">Update task id cannot be null</string>
+    <string name="validationUnsuccessful">Validation unsuccessful</string>
+    <string name="warningMessage">Warning</string>
+    <string name="removeTaskConfirmTitle">Are you sure?</string>
+    <string name="removeTaskConfirmLabel">Do you really want to delete this task?</string>
 </resources>

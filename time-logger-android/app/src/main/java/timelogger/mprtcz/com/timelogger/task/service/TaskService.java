@@ -4,6 +4,8 @@ import java.util.List;
 
 import timelogger.mprtcz.com.timelogger.task.dao.CustomDao;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
+import timelogger.mprtcz.com.timelogger.task.validator.TaskValidator;
+import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 
 /**
  * Created by Azet on 2017-01-18.
@@ -17,8 +19,22 @@ public class TaskService {
         this.customDao = customDao;
     }
 
-    public void saveTask(Task task) {
-        this.customDao.saveTask(task);
+    public ValidationResult saveTask(Task task) {
+        System.out.println("TaskService.saveTask");
+        TaskValidator taskValidator = new TaskValidator();
+        ValidationResult validationResult = taskValidator.validateNewTask(task, getAllTasks());
+        if (validationResult.isErrorFree()) {
+            this.customDao.saveTask(task);
+        }
+        return validationResult;
+    }
+
+    public void removeTask(Task task) {
+        this.customDao.removeTask(task);
+    }
+
+    public List<Task> getAllTasks() {
+        return customDao.getAllTasks();
     }
 
     public boolean isNameUnique(String taskName) {

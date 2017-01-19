@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,10 +12,16 @@ import android.widget.Toast;
 
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.task.dao.InMemoryDao;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
+import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 
 
 public class AddTaskActivity extends Activity {
@@ -24,13 +31,19 @@ public class AddTaskActivity extends Activity {
     String description = "";
     TaskService taskService;
     EditText nameEditText;
+    public static final String TAG = "AddTaskActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("AddTaskActivity.onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
-        this.taskService = new TaskService(new InMemoryDao());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                taskService = new TaskService(new InMemoryDao());
+            }
+        }).start();
         this.nameEditText = (EditText) findViewById(R.id.taskNameEditText);
         this.nameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             boolean isNameUnique = true;
@@ -99,26 +112,34 @@ public class AddTaskActivity extends Activity {
     private void saveNewTask() {
         final Task newTask = new Task(this.name,
                 this.description, this.stringColor);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                taskService.saveTask(newTask);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        ValidationResult returnValue = null;
+        Future<ValidationResult> result = executor.submit(new Callable<ValidationResult>() {
+            public ValidationResult call() throws Exception {
+                Log.d("Task save", "saving task");
+                return taskService.saveTask(newTask);
             }
         });
-        thread.start();
         try {
-            thread.join();
-        } catch (InterruptedException e) {
+            returnValue = result.get();
+            Log.i(TAG, "return value = " +returnValue.toString());
+        } catch (Exception e) {
             e.printStackTrace();
-            Toast exceptionToast = Toast.makeText(
-                    this, e.toString(), Toast.LENGTH_SHORT);
-            exceptionToast.show();
+            messageBox("Exception", e.toString());
         }
-        String message = getResources().getString(R.string.taskSavedToast) + "  " + newTask.getName();
-        Toast toast = Toast.makeText(
-                this, message, Toast.LENGTH_SHORT);
-        toast.show();
-        finish();
+        String message;
+        if(returnValue != null && returnValue.isErrorFree()) {
+            message = getResources().getString(R.string.taskSavedToast) + "  " + newTask.getName();
+            Toast toast = Toast.makeText(
+                    this, message, Toast.LENGTH_SHORT);
+            toast.show();
+            finish();
+        } else {
+            message = getResources().getString(returnValue.getCustomErrorEnum().getValue());
+            messageBox(getResources().getString(R.string.warningMessage), message);
+        }
+
     }
 
     public void onCancelAddTaskButtonClicked(View view) {
@@ -144,4 +165,15 @@ public class AddTaskActivity extends Activity {
         });
     }
 
+    private void messageBox(String method, String message)
+    {
+        Log.d("EXCEPTION: " + method,  message);
+
+        AlertDialog.Builder messageBox = new AlertDialog.Builder(this);
+        messageBox.setTitle(method);
+        messageBox.setMessage(message);
+        messageBox.setCancelable(false);
+        messageBox.setNeutralButton("OK", null);
+        messageBox.show();
+    }
 }

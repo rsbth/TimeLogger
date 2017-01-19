@@ -10,9 +10,11 @@ import timelogger.mprtcz.com.timelogger.task.model.Task;
 
 public interface CustomDao {
 
-    public void saveTask(Task task);
+    void saveTask(Task task);
 
-    public List<Task> getAllTasks();
+    List<Task> getAllTasks();
 
-    public Task findTaskById(Long id);
+    Task findTaskById(Long id);
+
+    void removeTask(Task task);
 }
