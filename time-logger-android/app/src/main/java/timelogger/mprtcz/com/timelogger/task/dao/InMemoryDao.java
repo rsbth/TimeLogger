@@ -1,5 +1,7 @@
 package timelogger.mprtcz.com.timelogger.task.dao;
 
+import android.util.Log;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -23,9 +25,11 @@ public class InMemoryDao implements CustomDao {
 
     @Override
     public Task findTaskById(Long id) {
+        Log.d("InMemorydao", "find by id =" +id);
         for (Task task :
                 getAllTasks()){
             if (Objects.equals(task.getId(), id)) {
+                Log.d("InMemorydao", "returning task = " +task.toString());
                 return task;
             }
         }
@@ -35,6 +39,16 @@ public class InMemoryDao implements CustomDao {
     @Override
     public void removeTask(Task task) {
         Task.tasks.remove(task);
+    }
+
+    @Override
+    public void updateTask(Task newTask) {
+        Task task = findTaskById(newTask.getId());
+        int index = Task.tasks.indexOf(task);
+        task.setName(newTask.getName());
+        task.setDescription(newTask.getDescription());
+        task.setColor(newTask.getColor());
+        Task.tasks.set(index, task);
     }
 
     private Long getLargestId() {

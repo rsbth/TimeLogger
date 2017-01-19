@@ -17,4 +17,6 @@ public interface CustomDao {
     Task findTaskById(Long id);
 
     void removeTask(Task task);
+
+    void updateTask(Task newTask);
 }

@@ -1,5 +1,7 @@
 package timelogger.mprtcz.com.timelogger.task.service;
 
+import android.util.Log;
+
 import java.util.List;
 
 import timelogger.mprtcz.com.timelogger.task.dao.CustomDao;
@@ -31,6 +33,20 @@ public class TaskService {
 
     public void removeTask(Task task) {
         this.customDao.removeTask(task);
+    }
+
+    public Task getTaskById(Long id) {
+        return this.customDao.findTaskById(id);
+    }
+
+    public ValidationResult updateTask(Task task) {
+        TaskValidator taskValidator = new TaskValidator();
+        ValidationResult result = taskValidator.validateUpdatedTask(task);
+        Log.d("TaskService.updateTask", "update task validation result = " + result.toString());
+        if(result.isErrorFree()) {
+            this.customDao.updateTask(task);
+        }
+        return result;
     }
 
     public List<Task> getAllTasks() {

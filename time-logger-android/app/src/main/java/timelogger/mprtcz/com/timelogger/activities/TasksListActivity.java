@@ -14,6 +14,8 @@ import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.model.TasksAdapter;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
 
+import static timelogger.mprtcz.com.timelogger.activities.AddTaskActivity.EDITED_ACTIVITY_ID;
+
 public class TasksListActivity extends AppCompatActivity {
     TasksAdapter adapter;
     TaskService taskService;
@@ -56,5 +58,13 @@ public class TasksListActivity extends AppCompatActivity {
                         })
                 .setNegativeButton(getResources().getString(R.string.noButtonText), null)
                 .show();
+    }
+
+    public void onEditTaskButtonClicked(View view) {
+        Intent intent = new Intent(this, AddTaskActivity.class);
+        if(adapter.getSelectedTask() != null) {
+            intent.putExtra(EDITED_ACTIVITY_ID, adapter.getSelectedTask().getId());
+            startActivity(intent);
+        }
     }
 }

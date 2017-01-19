@@ -24,7 +24,7 @@
     <string name="noButtonText">No</string>
     <string name="emptyDescriptionPopupTitle">Empty Description</string>
     <string name="pickColorToast">Pick a color</string>
-    <string name="taskSavedToast">Task Saved:</string>
+    <string name="taskSavedToast">Task Saved</string>
     <string name="validationSuccessFul">Validation Successful</string>
     <string name="taskExists">Activity with that name exists</string>
     <string name="taskNameExists">Task name already exists</string>

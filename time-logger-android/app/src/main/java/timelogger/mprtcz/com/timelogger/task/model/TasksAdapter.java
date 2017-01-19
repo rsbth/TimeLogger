@@ -44,7 +44,6 @@ public class TasksAdapter extends ArrayAdapter<Task> {
 
         colorTextView.setBackgroundColor(Color.parseColor(task.getColor()));
 
-
         final View finalConvertView = convertView;
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override

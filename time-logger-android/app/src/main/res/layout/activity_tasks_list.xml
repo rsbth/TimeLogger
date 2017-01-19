@@ -45,7 +45,8 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text="@string/editActivityButtonText"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff"
+            android:onClick="onEditTaskButtonClicked" />
 
         <Button
             android:id="@+id/removeTaskButton"
