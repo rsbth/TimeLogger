@@ -1,8 +1,8 @@
-package timelogger.mprtcz.com.timelogger.dao;
+package timelogger.mprtcz.com.timelogger.task.dao;
 
 import java.util.List;
 
-import timelogger.mprtcz.com.timelogger.model.Task;
+import timelogger.mprtcz.com.timelogger.task.model.Task;
 
 /**
  * Created by Azet on 2017-01-18.

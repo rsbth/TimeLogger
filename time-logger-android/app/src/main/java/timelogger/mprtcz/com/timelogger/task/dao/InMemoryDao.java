@@ -1,9 +1,9 @@
-package timelogger.mprtcz.com.timelogger.dao;
+package timelogger.mprtcz.com.timelogger.task.dao;
 
 import java.util.List;
 import java.util.Objects;
 
-import timelogger.mprtcz.com.timelogger.model.Task;
+import timelogger.mprtcz.com.timelogger.task.model.Task;
 
 /**
  * Created by Azet on 2017-01-18.
@@ -13,11 +13,12 @@ public class InMemoryDao implements CustomDao {
     @Override
     public void saveTask(Task task) {
         task.setId(getLargestId() + 1);
+        Task.tasks.add(task);
     }
 
     @Override
     public List<Task> getAllTasks() {
-        return Task.activities;
+        return Task.tasks;
     }
 
     @Override

@@ -12,7 +12,9 @@ import android.widget.Toast;
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 
 import timelogger.mprtcz.com.timelogger.R;
-import timelogger.mprtcz.com.timelogger.model.Task;
+import timelogger.mprtcz.com.timelogger.task.dao.InMemoryDao;
+import timelogger.mprtcz.com.timelogger.task.model.Task;
+import timelogger.mprtcz.com.timelogger.task.service.TaskService;
 
 
 public class AddTaskActivity extends Activity {
@@ -20,12 +22,41 @@ public class AddTaskActivity extends Activity {
     int selectedColorRGB = 0;
     String name = "";
     String description = "";
+    TaskService taskService;
+    EditText nameEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("AddTaskActivity.onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
+        this.taskService = new TaskService(new InMemoryDao());
+        this.nameEditText = (EditText) findViewById(R.id.taskNameEditText);
+        this.nameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            boolean isNameUnique = true;
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        isNameUnique = taskService.isNameUnique(nameEditText.getText().toString());
+                    }
+                });
+                thread.start();
+                try {
+                    thread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    Toast exceptionToast = Toast.makeText(
+                            AddTaskActivity.this, e.toString(), Toast.LENGTH_SHORT);
+                    exceptionToast.show();
+                }
+                if (!isNameUnique) {
+                    nameEditText.setError(getResources().getString(R.string.taskNameExists));
+                }
+            }
+        });
     }
 
     public void onAddTaskButtonClicked(View view) {
@@ -66,13 +97,28 @@ public class AddTaskActivity extends Activity {
     }
 
     private void saveNewTask() {
-        Task newTask = new Task(this.name,
+        final Task newTask = new Task(this.name,
                 this.description, this.stringColor);
-        System.out.println("newTask = " + newTask);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                taskService.saveTask(newTask);
+            }
+        });
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Toast exceptionToast = Toast.makeText(
+                    this, e.toString(), Toast.LENGTH_SHORT);
+            exceptionToast.show();
+        }
         String message = getResources().getString(R.string.taskSavedToast) + "  " + newTask.getName();
         Toast toast = Toast.makeText(
                 this, message, Toast.LENGTH_SHORT);
         toast.show();
+        finish();
     }
 
     public void onCancelAddTaskButtonClicked(View view) {
@@ -92,9 +138,10 @@ public class AddTaskActivity extends Activity {
                 Button colorButton = (Button) findViewById(R.id.pickColorButton);
 
                 colorButton.setBackgroundColor(selectedColorRGB);
-                stringColor = String.format("%02x%02x%02x", cp.getRed(), cp.getGreen(), cp.getBlue());
+                stringColor = "#" + String.format("%02x%02x%02x", cp.getRed(), cp.getGreen(), cp.getBlue());
                 cp.dismiss();
             }
         });
     }
+
 }

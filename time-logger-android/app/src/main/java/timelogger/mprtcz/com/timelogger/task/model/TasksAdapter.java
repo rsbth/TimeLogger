@@ -1,4 +1,4 @@
-package timelogger.mprtcz.com.timelogger.model;
+package timelogger.mprtcz.com.timelogger.task.model;
 
 import android.content.Context;
 import android.graphics.Color;

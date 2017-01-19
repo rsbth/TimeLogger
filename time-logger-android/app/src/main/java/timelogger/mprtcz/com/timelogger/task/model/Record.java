@@ -1,4 +1,4 @@
-package timelogger.mprtcz.com.timelogger.model;
+package timelogger.mprtcz.com.timelogger.task.model;
 
 import java.util.Date;
 

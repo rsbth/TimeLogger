@@ -7,8 +7,8 @@ import android.view.View;
 import android.widget.ListView;
 
 import timelogger.mprtcz.com.timelogger.R;
-import timelogger.mprtcz.com.timelogger.model.TasksAdapter;
-import timelogger.mprtcz.com.timelogger.model.Task;
+import timelogger.mprtcz.com.timelogger.task.model.TasksAdapter;
+import timelogger.mprtcz.com.timelogger.task.model.Task;
 
 public class TasksListActivity extends AppCompatActivity {
 
@@ -17,13 +17,18 @@ public class TasksListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasks_list);
 
-        ListView listView = (ListView) findViewById(R.id.activitiesList);
-        TasksAdapter adapter = new TasksAdapter(this, Task.activities);
-        listView.setAdapter(adapter);
     }
 
     public void onAddActivityButtonClicked(View view) {
         Intent intent = new Intent(this, AddTaskActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ListView listView = (ListView) findViewById(R.id.activitiesList);
+        TasksAdapter adapter = new TasksAdapter(this, Task.tasks);
+        listView.setAdapter(adapter);
     }
 }
