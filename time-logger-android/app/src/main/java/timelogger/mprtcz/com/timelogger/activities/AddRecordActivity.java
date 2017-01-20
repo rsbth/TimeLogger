@@ -6,6 +6,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
+
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,6 +20,7 @@ import timelogger.mprtcz.com.timelogger.record.controller.RecordController;
 import timelogger.mprtcz.com.timelogger.record.model.Record;
 import timelogger.mprtcz.com.timelogger.record.service.RecordService;
 import timelogger.mprtcz.com.timelogger.task.dao.InMemoryDao;
+import timelogger.mprtcz.com.timelogger.task.model.HoursData;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
 import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
@@ -40,7 +44,8 @@ public class AddRecordActivity extends AppCompatActivity {
         this.startFragment = (DateTimeFragment) getSupportFragmentManager().findFragmentById(R.id.startDatetimeFragment);
         this.endFragment = (DateTimeFragment) getSupportFragmentManager().findFragmentById(R.id.endDatetimeFragment);
         TextView summaryTextView = (TextView) findViewById(R.id.newRecordSummaryTextView);
-        this.recordController = new RecordController(this, startFragment, endFragment, getTaskById(), summaryTextView);
+        this.recordController = new RecordController(this, startFragment,
+                endFragment, getTaskById(), summaryTextView, getRecordsLatestHour());
     }
 
     private Task getTaskById() {
@@ -60,6 +65,30 @@ public class AddRecordActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
             messageBox(this, "Exception", e.toString());
+        }
+        return returnValue;
+    }
+
+    private DateTime getRecordsLatestHour() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        DateTime returnValue = null;
+        Future<DateTime> result;
+        result = executor.submit(new Callable<DateTime>() {
+            public DateTime call() throws Exception {
+                Log.d("Task save", "saving task");
+                List<Task> tasks = taskService.getAllTasks();
+                HoursData hoursData = new HoursData(tasks);
+                return hoursData.getLatest();
+            }
+        });
+        try {
+            returnValue = result.get();
+            Log.i(TAG, "return value = " + returnValue.toString());
+        } catch(NullPointerException npe) {
+            Log.d("getRecordsLatestHour", npe.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            messageBox(this, "getRecordsLatestHourException", e.toString());
         }
         return returnValue;
     }

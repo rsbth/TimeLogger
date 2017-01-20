@@ -1,7 +1,10 @@
 package timelogger.mprtcz.com.timelogger.task.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import lombok.Getter;
@@ -41,6 +44,7 @@ public class Task {
     }
 
     public void addRecord(Record record) {
+        Log.d("Task.addRecord", "record added = " +record.toString());
         if(this.taskRecords == null) {
             this.taskRecords = new ArrayList<>();
         }
@@ -54,6 +58,7 @@ public class Task {
         tasks.add(new Task(3L, "name3", "even longer description", "#795548"));
         tasks.add(new Task(4L, "name4", "even longer description \nwhich will contain more than 50 " +
                 "word necessary to identify whether a string cutting method appears to work correctly", "#2196f3"));
+        Record record = new Record(new Date(2017, 1, 20), new Date(2017, 1, 20), tasks.get(0));
     }
 
 }

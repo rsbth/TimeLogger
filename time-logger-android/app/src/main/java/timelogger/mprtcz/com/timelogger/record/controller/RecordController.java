@@ -27,16 +27,24 @@ public class RecordController {
 
     public RecordController(Activity parent, DateTimeFragment startFragment,
                             DateTimeFragment endFragment, Task task,
-                            TextView summaryTextView) {
+                            TextView summaryTextView, DateTime latestHour) {
         this.parentActivity = parent;
         this.startFragment = startFragment;
         this.endFragment = endFragment;
         this.summaryTextView = summaryTextView;
-        this.initialDateTime = new DateTime(2017, 1, 10, 0, 0);
+        this.setupInitialDateTime(latestHour);
         this.rootTask = task;
         this.setUpInitialDateTimes();
         setListeners();
         setUpHeaders();
+    }
+
+    private void setupInitialDateTime(DateTime dateTime) {
+        if(dateTime != null) {
+            this.initialDateTime = dateTime;
+        } else {
+            this.initialDateTime = new DateTime();
+        }
     }
 
     private void setListeners() {

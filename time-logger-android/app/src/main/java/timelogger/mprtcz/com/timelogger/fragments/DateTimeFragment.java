@@ -207,7 +207,7 @@ public class DateTimeFragment extends Fragment {
 
         public DateTimeValues parseTo(DateTime dateTime, OnChangeListener listener) {
             DateTimeValues dateTimeValues = new DateTimeValues();
-            dateTimeValues.setTime(dateTime.hourOfDay().get(), dateTime.getMinuteOfDay());
+            dateTimeValues.setTime(dateTime.hourOfDay().get(), dateTime.getMinuteOfHour());
             dateTimeValues.setDate(dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth());
             dateTimeValues.setListener(listener);
             return dateTimeValues;

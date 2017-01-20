@@ -14,8 +14,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
+
+import static timelogger.mprtcz.com.timelogger.utils.UiUtils.messageBox;
 
 /**
  * Created by Azet on 2017-01-19.
@@ -32,6 +35,8 @@ public class EditTaskController extends AddTaskController {
                               Activity activity, Button pickColorButton) {
         super(nameEditText, descriptionEditText, activity);
         this.pickColorButton = pickColorButton;
+        Button confirmButton = (Button) activity.findViewById(R.id.addTaskConfButton);
+        confirmButton.setText(activity.getResources().getText(R.string.updateTaskButtonText));
         this.populateFieldsWithEditData();
     }
 
