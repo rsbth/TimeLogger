@@ -86,7 +86,7 @@ public class AddTaskController {
             taskServiceThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
-            messageBox("Exception", e.toString());
+            messageBox(baseActivity.getApplicationContext(), "Exception", e.toString());
         }
     }
 
@@ -168,7 +168,7 @@ public class AddTaskController {
             toast.show();
         } else {
             message = context.getResources().getString(returnValue.getCustomErrorEnum().getValue());
-            messageBox(context.getResources().getString(R.string.warningMessage), message);
+            messageBox(baseActivity.getApplicationContext(), "Exception ", message);
         }
         return returnValue.isErrorFree();
     }
@@ -194,15 +194,15 @@ public class AddTaskController {
             Log.i(TAG, "return value = " + returnValue.toString());
         } catch (Exception e) {
             e.printStackTrace();
-            messageBox("Exception", e.toString());
+            messageBox(baseActivity.getApplicationContext(), "Exception", e.toString());
         }
         return returnValue;
     }
 
-    void messageBox(String method, String message) {
+    public static void messageBox(Context context, String method, String message) {
         Log.d("EXCEPTION: " + method, message);
 
-        AlertDialog.Builder messageBox = new AlertDialog.Builder(this.context);
+        AlertDialog.Builder messageBox = new AlertDialog.Builder(context);
         messageBox.setTitle(method);
         messageBox.setMessage(message);
         messageBox.setCancelable(false);

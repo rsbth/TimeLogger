@@ -15,7 +15,8 @@ import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.model.TasksAdapter;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
 
-import static timelogger.mprtcz.com.timelogger.activities.AddTaskActivity.EDITED_ACTIVITY_ID;
+import static timelogger.mprtcz.com.timelogger.activities.AddRecordActivity.ADD_TASK_ID;
+import static timelogger.mprtcz.com.timelogger.activities.AddTaskActivity.EDITED_TASK_ID;
 
 public class TasksListActivity extends AppCompatActivity {
     TasksAdapter adapter;
@@ -69,7 +70,7 @@ public class TasksListActivity extends AppCompatActivity {
     public void onEditTaskButtonClicked(View view) {
         Intent intent = new Intent(this, AddTaskActivity.class);
         if (adapter.getSelectedTask() != null) {
-            intent.putExtra(EDITED_ACTIVITY_ID, adapter.getSelectedTask().getId());
+            intent.putExtra(EDITED_TASK_ID, adapter.getSelectedTask().getId());
             startActivity(intent);
         } else {
             Toast exceptionToast = Toast.makeText(
@@ -81,7 +82,7 @@ public class TasksListActivity extends AppCompatActivity {
     public void onAddRecordButtonClicked(View view) {
         Intent intent = new Intent(this, AddRecordActivity.class);
         if (adapter.getSelectedTask() != null) {
-            intent.putExtra(EDITED_ACTIVITY_ID, adapter.getSelectedTask().getId());
+            intent.putExtra(ADD_TASK_ID, adapter.getSelectedTask().getId());
             startActivity(intent);
         } else {
             Toast exceptionToast = Toast.makeText(

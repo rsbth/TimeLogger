@@ -25,11 +25,11 @@ public class EditTaskController extends AddTaskController {
 
     private Button pickColorButton;
     private static final String TAG = "EditTaskActivity";
-    public static final String EDITED_ACTIVITY_ID = "EDITED_ACTIVITY_ID";
+    public static final String EDITED_ACTIVITY_ID = "EDITED_TASK_ID";
     private Task updatingTask;
 
     public EditTaskController(EditText nameEditText, EditText descriptionEditText,
-                              Activity activity, Long editedTaskID, Button pickColorButton) {
+                              Activity activity, Button pickColorButton) {
         super(nameEditText, descriptionEditText, activity);
         this.pickColorButton = pickColorButton;
         this.populateFieldsWithEditData();
@@ -50,7 +50,7 @@ public class EditTaskController extends AddTaskController {
             Log.i(TAG, "returned task = " + returnedTask.toString());
         } catch (Exception e) {
             e.printStackTrace();
-            messageBox("Exception", e.toString());
+            messageBox(baseActivity, "Exception", e.toString());
         }
         if (returnedTask != null) {
             Log.i(TAG, "returned task's name = " + returnedTask.getName());
@@ -91,7 +91,7 @@ public class EditTaskController extends AddTaskController {
             Log.i(TAG, "return value = " + returnValue.toString());
         } catch (Exception e) {
             e.printStackTrace();
-            messageBox("Exception", e.toString());
+            messageBox(baseActivity, "Exception", e.toString());
         }
         return returnValue;
     }

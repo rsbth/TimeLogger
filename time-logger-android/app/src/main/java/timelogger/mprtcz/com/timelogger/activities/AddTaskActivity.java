@@ -15,7 +15,7 @@ public class AddTaskActivity extends Activity {
     EditText nameEditText;
     EditText descriptionEditText;
     Button pickColorButton;
-    public static final String EDITED_ACTIVITY_ID = "EDITED_ACTIVITY_ID";
+    public static final String EDITED_TASK_ID = "EDITED_TASK_ID";
     AddTaskController addTaskController;
 
     @Override
@@ -27,9 +27,8 @@ public class AddTaskActivity extends Activity {
         this.pickColorButton = (Button) findViewById(R.id.pickColorButton);
         this.descriptionEditText = (EditText) findViewById(R.id.taskDescriptionEditText);
         if (getIntent().getExtras() != null) {
-            final Long taskId = getIntent().getLongExtra(EDITED_ACTIVITY_ID, -1);
             this.addTaskController = new EditTaskController(this.nameEditText,
-                    this.descriptionEditText, this, taskId, this.pickColorButton);
+                    this.descriptionEditText, this, this.pickColorButton);
         } else {
             this.addTaskController = new AddTaskController(this.nameEditText,
                     this.descriptionEditText, this);
