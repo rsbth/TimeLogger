@@ -1,9 +1,10 @@
-package timelogger.mprtcz.com.timelogger.task.model;
+package timelogger.mprtcz.com.timelogger.record.model;
 
 import java.util.Date;
 
 import lombok.Getter;
 import lombok.Setter;
+import timelogger.mprtcz.com.timelogger.task.model.Task;
 
 /**
  * Created by Azet on 2017-01-17.
@@ -20,19 +21,12 @@ public class Record {
 
     private Date endDateTime;
 
-    public Record(Date startTime,
-                  Date endTime,
-                  Date startDate,
-                  Date endDate,
+    public Record(Date startDateTime,
+                  Date endDateTime,
                   Task task) {
         this.task = task;
-        this.startDateTime = new Date(
-                startDate.getYear(), startDate.getMonth(), startDate.getDay(),
-                startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
-        this.endDateTime = new Date(
-                endDate.getYear(), endDate.getMonth(), endDate.getDay(),
-                endTime.getHours(), endTime.getMinutes(), endTime.getSeconds()
-        );
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
     }
 
     @Override

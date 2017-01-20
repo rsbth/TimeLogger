@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import timelogger.mprtcz.com.timelogger.record.model.Record;
 
 /**
  * Created by Azet on 2017-01-17.
@@ -24,7 +25,7 @@ public class Task {
 
     private String color;
 
-    Collection<Record> activityRecords;
+    Collection<Record> taskRecords;
 
     public Task(String name, String description, String color) {
         this.name = name;
@@ -37,6 +38,13 @@ public class Task {
         this.name = name;
         this.description = description;
         this.color = color;
+    }
+
+    public void addRecord(Record record) {
+        if(this.taskRecords == null) {
+            this.taskRecords = new ArrayList<>();
+        }
+        this.taskRecords.add(record);
     }
 
     public static List<Task> tasks = new ArrayList<>();

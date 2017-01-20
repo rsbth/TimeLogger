@@ -9,6 +9,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.fragments.DateTimeFragment;
+import timelogger.mprtcz.com.timelogger.record.model.Record;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 
 /**
@@ -74,8 +75,14 @@ public class RecordController {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
         endDateTime = endFragment.getDateTimeValues().parseDate();
         startDateTime = startFragment.getDateTimeValues().parseDate();
-        String message = this.rootTask.getName() +"\nStart: " + formatter.print(this.startDateTime) +
+        String message = this.rootTask.getName() + "\nStart: " + formatter.print(this.startDateTime) +
                 "\nEnd: " + formatter.print(this.endDateTime);
         this.summaryTextView.setText(message);
+    }
+
+    public Record addRecord() {
+        endDateTime = endFragment.getDateTimeValues().parseDate();
+        startDateTime = startFragment.getDateTimeValues().parseDate();
+        return new Record(this.startDateTime.toDate(), this.endDateTime.toDate(), this.rootTask);
     }
 }

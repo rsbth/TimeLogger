@@ -3,6 +3,7 @@ package timelogger.mprtcz.com.timelogger.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.concurrent.Callable;
@@ -13,11 +14,15 @@ import java.util.concurrent.Future;
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.fragments.DateTimeFragment;
 import timelogger.mprtcz.com.timelogger.record.controller.RecordController;
+import timelogger.mprtcz.com.timelogger.record.model.Record;
+import timelogger.mprtcz.com.timelogger.record.service.RecordService;
 import timelogger.mprtcz.com.timelogger.task.dao.InMemoryDao;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
+import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 
-import static timelogger.mprtcz.com.timelogger.task.controllers.AddTaskController.messageBox;
+import static timelogger.mprtcz.com.timelogger.utils.UiUtils.displayValidationResult;
+import static timelogger.mprtcz.com.timelogger.utils.UiUtils.messageBox;
 
 public class AddRecordActivity extends AppCompatActivity {
     DateTimeFragment startFragment;
@@ -57,5 +62,32 @@ public class AddRecordActivity extends AppCompatActivity {
             messageBox(this, "Exception", e.toString());
         }
         return returnValue;
+    }
+
+    public void onAddRecordCancelButtonClicked(View view) {
+        finish();
+    }
+
+    public void onAddRecordConfirmButtonClicked(View view) {
+        final Record record = this.recordController.addRecord();
+        final RecordService recordService = new RecordService(this.taskService);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        ValidationResult returnValue = null;
+        Future<ValidationResult> result;
+        result = executor.submit(new Callable<ValidationResult>() {
+            public ValidationResult call() throws Exception {
+                Log.d("record save", "saving record = " + record.toString());
+                return recordService.addRecord(record);
+            }
+        });
+        try {
+            returnValue = result.get();
+            displayValidationResult(this, returnValue,
+                    getResources().getString(R.string.recordValidationMsgBoxHeader));
+            Log.i(TAG, "return value = " + returnValue.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            messageBox(this, "Exception", e.toString());
+        }
     }
 }

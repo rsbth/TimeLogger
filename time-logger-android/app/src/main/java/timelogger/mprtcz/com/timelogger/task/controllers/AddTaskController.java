@@ -23,6 +23,9 @@ import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
 import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 
+import static timelogger.mprtcz.com.timelogger.utils.UiUtils.displayValidationResult;
+import static timelogger.mprtcz.com.timelogger.utils.UiUtils.messageBox;
+
 /**
  * Created by Azet on 2017-01-19.
  */
@@ -160,16 +163,7 @@ public class AddTaskController {
 
     private boolean saveOrUpdateNewTask() {
         ValidationResult returnValue = getTaskValidationResult();
-        String message;
-        if (returnValue != null && returnValue.isErrorFree()) {
-            message = getTaskServiceSuccessMessage();
-            Toast toast = Toast.makeText(
-                    this.context, message, Toast.LENGTH_SHORT);
-            toast.show();
-        } else {
-            message = context.getResources().getString(returnValue.getCustomErrorEnum().getValue());
-            messageBox(baseActivity.getApplicationContext(), "Exception ", message);
-        }
+        displayValidationResult(this.baseActivity, returnValue, getTaskServiceSuccessMessage());
         return returnValue.isErrorFree();
     }
 
@@ -197,16 +191,5 @@ public class AddTaskController {
             messageBox(baseActivity.getApplicationContext(), "Exception", e.toString());
         }
         return returnValue;
-    }
-
-    public static void messageBox(Context context, String method, String message) {
-        Log.d("EXCEPTION: " + method, message);
-
-        AlertDialog.Builder messageBox = new AlertDialog.Builder(context);
-        messageBox.setTitle(method);
-        messageBox.setMessage(message);
-        messageBox.setCancelable(false);
-        messageBox.setNeutralButton("OK", null);
-        messageBox.show();
     }
 }
