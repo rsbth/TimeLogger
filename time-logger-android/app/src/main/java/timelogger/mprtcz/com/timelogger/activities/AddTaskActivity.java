@@ -29,6 +29,9 @@ public class AddTaskActivity extends Activity {
         if (getIntent().getExtras() != null) {
             this.addTaskController = new EditTaskController(this.nameEditText,
                     this.descriptionEditText, this, this.pickColorButton);
+
+            Button confirmButton = (Button) findViewById(R.id.addTaskConfButton);
+            confirmButton.setText(getResources().getText(R.string.updateTaskButtonText));
         } else {
             this.addTaskController = new AddTaskController(this.nameEditText,
                     this.descriptionEditText, this);

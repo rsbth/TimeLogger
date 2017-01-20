@@ -39,13 +39,40 @@ public class DateTimeFragment extends Fragment {
     }
 
     private void setUpEditTextValues() {
-        this.timeEditText =(EditText) getView().findViewById(R.id.hourEditText);
-        this.dateEditText =  (EditText) getView().findViewById(R.id.dateEditText);
-        this.dateEditText.setText(this.dateTimeValues.getDayOfMonth() + "."
-                + (this.dateTimeValues.getMonth() + 1) + "."
-                + this.dateTimeValues.getYear());
-        this.timeEditText.setText(this.dateTimeValues.getHourOfDay() + ":"
-                + this.dateTimeValues.getMinute());
+        this.timeEditText = (EditText) getView().findViewById(R.id.hourEditText);
+        this.dateEditText = (EditText) getView().findViewById(R.id.dateEditText);
+        this.dateEditText.setText(modelDateString(
+                this.dateTimeValues.getDayOfMonth(),
+                (this.dateTimeValues.getMonth() + 1),
+                this.dateTimeValues.getYear()));
+        this.timeEditText.setText(modelTimeString(this.dateTimeValues.getHourOfDay(),
+                this.dateTimeValues.getMinute()));
+    }
+
+    private String modelDateString(int day, int month, int year) {
+        String dayString = String.valueOf(day);
+        String monthString = String.valueOf(month);
+        String yearString = String.valueOf(year);
+
+        if (day < 10) {
+            dayString = "0" + day;
+        }
+        if (month < 10) {
+            monthString = "0" + month;
+        }
+        return dayString + "." + monthString + "." + yearString;
+    }
+
+    private String modelTimeString(int hour, int minute) {
+        String hourString = String.valueOf(hour);
+        String minuteString = String.valueOf(minute);
+        if (hour < 10) {
+            hourString = "0" + hour;
+        }
+        if (minute < 10) {
+            minuteString = "0" + minute;
+        }
+        return hourString + ":" + minuteString;
     }
 
     public void setUpListeners(OnChangeListener summaryListener) {
@@ -103,7 +130,7 @@ public class DateTimeFragment extends Fragment {
         return new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                dateEditText.setText(dayOfMonth + "." + (month + 1) + "." + year);
+                dateEditText.setText(modelDateString(dayOfMonth, (month + 1), year));
                 dateTimeValues.setDate(year, month, dayOfMonth);
             }
         };
@@ -115,7 +142,7 @@ public class DateTimeFragment extends Fragment {
         return new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                timeEditText.setText(hourOfDay + ":" + minute);
+                timeEditText.setText(modelTimeString(hourOfDay, minute));
                 dateTimeValues.setTime(hourOfDay, minute);
             }
         };
@@ -145,31 +172,31 @@ public class DateTimeFragment extends Fragment {
         }
 
         public void setDate(int year, int month, int dayOfMonth) {
-            Log.d("DateTimeFrag",  "year = " +year + "month = " +month + "dayOfMonth = " +dayOfMonth);
+            Log.d("DateTimeFrag", "year = " + year + "month = " + month + "dayOfMonth = " + dayOfMonth);
             this.year = year;
             this.month = month;
             this.dayOfMonth = dayOfMonth;
-            if(this.listener != null) {
+            if (this.listener != null) {
                 this.listener.onChange(this.parseDate());
             }
         }
 
         public void setTime(int hourOfDay, int minute) {
-            Log.d("DateTimeFrag", "hourOfDay = " +hourOfDay + " minute = " +minute);
+            Log.d("DateTimeFrag", "hourOfDay = " + hourOfDay + " minute = " + minute);
             this.hourOfDay = hourOfDay;
             this.minute = minute;
-            if(this.listener != null) {
+            if (this.listener != null) {
                 this.listener.onChange(this.parseDate());
             }
         }
 
         public DateTime parseDate() {
             Log.d("parsingDate", "" +
-                    "this.year = " +  this.year +
-                    "\nthis.month = " +this.month +
-                    "\nthis.dayOfMonth = " +this.dayOfMonth+
-                    "\nthis.hourOfDay = " +this.hourOfDay +
-                    "\nthis.minute = " +this.minute);
+                    "this.year = " + this.year +
+                    "\nthis.month = " + this.month +
+                    "\nthis.dayOfMonth = " + this.dayOfMonth +
+                    "\nthis.hourOfDay = " + this.hourOfDay +
+                    "\nthis.minute = " + this.minute);
             return new DateTime(
                     this.year,
                     (this.month + 1),
@@ -181,7 +208,7 @@ public class DateTimeFragment extends Fragment {
         public DateTimeValues parseTo(DateTime dateTime, OnChangeListener listener) {
             DateTimeValues dateTimeValues = new DateTimeValues();
             dateTimeValues.setTime(dateTime.hourOfDay().get(), dateTime.getMinuteOfDay());
-            dateTimeValues.setDate(dateTime.getYear(), dateTime.getMonthOfYear() -1, dateTime.getDayOfMonth());
+            dateTimeValues.setDate(dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth());
             dateTimeValues.setListener(listener);
             return dateTimeValues;
         }

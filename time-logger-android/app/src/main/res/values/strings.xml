@@ -48,4 +48,5 @@
     <string name="addRecordConfirmButtonText">Add record</string>
     <string name="addRecordCancelButtonText">Cancel</string>
     <string name="addRecordHeaderText">Add new Record</string>
+    <string name="updateTaskButtonText">Update Task</string>
 </resources>
