@@ -36,4 +36,16 @@
     <string name="warningMessage">Warning</string>
     <string name="removeTaskConfirmTitle">Are you sure?</string>
     <string name="removeTaskConfirmLabel">Do you really want to delete this task?</string>
+    <string name="chooseTaskFirstToast">Choose a task first</string>
+    <string name="chooseStartTimeButtonText">Button</string>
+    <string name="chooseStartDateButtonText">Button</string>
+    <string name="chooseDateTimeButtonText">Button</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="startFragmentHeaderText">Pick start date and time</string>
+    <string name="endFragmentHeaderText">Pick end date and time</string>
+    <string name="addRecordConfirmButtonText">Add record</string>
+    <string name="addRecordCancelButtonText">Cancel</string>
+    <string name="addRecordHeaderText">Add new Record</string>
 </resources>

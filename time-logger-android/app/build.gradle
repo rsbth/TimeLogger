@@ -31,6 +31,9 @@ dependencies {
     compile 'org.projectlombok:lombok:1.16.12'
     compile 'com.android.support:design:25.1.0'
     compile 'com.pes.materialcolorpicker:library:1.0.2'
+    compile 'com.google.android.gms:play-services-appindexing:9.8.0'
+    // https://mvnrepository.com/artifact/joda-time/joda-time
+    compile group: 'joda-time', name: 'joda-time', version: '2.9.7'
+    compile 'com.android.support:support-v4:25.1.0'
     testCompile 'junit:junit:4.12'
-    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }

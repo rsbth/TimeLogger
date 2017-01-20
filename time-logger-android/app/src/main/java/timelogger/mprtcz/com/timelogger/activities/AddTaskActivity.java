@@ -37,7 +37,10 @@ public class AddTaskActivity extends Activity {
     }
 
     public void onAddTaskButtonClicked(View view) {
-        this.addTaskController.onAddTaskButtonClicked();
+        boolean returnValue = this.addTaskController.onAddTaskButtonClicked();
+        if (returnValue) {
+            finish();
+        }
     }
 
     public void onCancelAddTaskButtonClicked(View view) {

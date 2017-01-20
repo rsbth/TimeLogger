@@ -1,0 +1,67 @@
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:columnCount="2"
+    tools:context="timelogger.mprtcz.com.timelogger.fragments.DateTimeFragment">
+
+    <TextView
+        android:id="@+id/dateTimeFragmentHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_columnSpan="2"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="5dp"
+        android:layout_row="0"
+        android:text="@string/hello_blank_fragment" />
+
+    <EditText
+        android:id="@+id/hourEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_columnWeight="1"
+        android:layout_gravity="end"
+        android:layout_margin="5dp"
+        android:layout_row="1"
+        android:inputType="time" />
+
+    <Button
+        android:id="@+id/timeDialogButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_columnWeight="1"
+        android:layout_gravity="start"
+        android:layout_margin="5dp"
+        android:layout_row="1"
+        android:width="24dp"
+        android:height="24dp"
+        android:background="@drawable/ic_query_builder_black_24dp"
+        android:text=""
+        android:minWidth="48dip"/>
+
+    <EditText
+        android:id="@+id/dateEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_gravity="end"
+        android:layout_margin="5dp"
+        android:layout_row="2"
+        android:inputType="date" />
+
+    <Button
+        android:id="@+id/dateDialogButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_gravity="start"
+        android:layout_margin="5dp"
+        android:layout_row="2"
+        android:background="@drawable/ic_date_range_black_24dp"
+        android:text=""
+        android:minWidth="48dip"/>
+
+</GridLayout>

@@ -120,22 +120,24 @@ public class AddTaskController {
     String name;
     String description;
 
-    public void onAddTaskButtonClicked() {
+    public boolean onAddTaskButtonClicked() {
         this.name = nameEditText.getText().toString();
         this.description = descriptionEditText.getText().toString();
         if (name.equals("")) {
             Toast toast = Toast.makeText(
                     context, this.context.getResources().getString(R.string.name_cannot_be_null), Toast.LENGTH_SHORT);
             toast.show();
-            return;
+            return false;
         }
         if (stringColor.equals("")) {
             Toast toast = Toast.makeText(
                     this.context, this.context.getResources().getString(R.string.pickColorToast), Toast.LENGTH_SHORT);
             toast.show();
-            return;
+            return false;
         }
         if (description.equals("")) {
+            final boolean[] valueToReturn = new boolean[1];
+            valueToReturn[0] = false;
             new AlertDialog.Builder(this.baseActivity)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle(this.context.getResources().getString(R.string.emptyDescriptionPopupTitle))
@@ -145,17 +147,18 @@ public class AddTaskController {
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    saveOrUpdateNewTask();
+                                    valueToReturn[0] = saveOrUpdateNewTask();
                                 }
                             })
                     .setNegativeButton(this.context.getResources().getString(R.string.noButtonText), null)
                     .show();
+            return valueToReturn[0];
         } else {
-            this.saveOrUpdateNewTask();
+            return this.saveOrUpdateNewTask();
         }
     }
 
-    private void saveOrUpdateNewTask() {
+    private boolean saveOrUpdateNewTask() {
         ValidationResult returnValue = getTaskValidationResult();
         String message;
         if (returnValue != null && returnValue.isErrorFree()) {
@@ -167,6 +170,7 @@ public class AddTaskController {
             message = context.getResources().getString(returnValue.getCustomErrorEnum().getValue());
             messageBox(context.getResources().getString(R.string.warningMessage), message);
         }
+        return returnValue.isErrorFree();
     }
 
     private String getTaskServiceSuccessMessage() {

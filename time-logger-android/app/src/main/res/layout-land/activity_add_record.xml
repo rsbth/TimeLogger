@@ -29,8 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_column="0"
-            android:layout_columnSpan="2"
-            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
             android:layout_row="1" />
 
         <fragment
@@ -38,19 +37,18 @@
             class="timelogger.mprtcz.com.timelogger.fragments.DateTimeFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_column="0"
-            android:layout_columnSpan="2"
-            android:layout_gravity="center_horizontal"
-            android:layout_row="2" />
+            android:layout_column="1"
+            android:layout_margin="10dp"
+            android:layout_row="1" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_row="3"
+            android:layout_row="2"
             android:layout_column="0"
             android:layout_columnSpan="2"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
+            android:text="ohei"
             android:layout_marginBottom="20dp"
             android:id="@+id/newRecordSummaryTextView"
             />
@@ -63,7 +61,7 @@
             android:layout_columnWeight="1"
             android:layout_gravity="end"
             android:layout_margin="10dp"
-            android:layout_row="4"
+            android:layout_row="3"
             android:text="@string/addRecordConfirmButtonText"
             android:theme="@style/SpecialButton" />
 
@@ -75,7 +73,7 @@
             android:layout_columnWeight="1"
             android:layout_gravity="start"
             android:layout_margin="10dp"
-            android:layout_row="4"
+            android:layout_row="3"
             android:text="@string/addRecordCancelButtonText" />
     </GridLayout>
 </LinearLayout>

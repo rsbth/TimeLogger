@@ -34,7 +34,8 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text="@string/addRecordButtonText"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff"
+            android:onClick="onAddRecordButtonClicked"/>
 
         <Button
             android:id="@+id/editTaskButton"
