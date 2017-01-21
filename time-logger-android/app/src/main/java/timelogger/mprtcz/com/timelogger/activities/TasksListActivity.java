@@ -98,4 +98,6 @@ public class TasksListActivity extends AppCompatActivity {
     }
 
 
+    public void onGraphicButtonClicked(View view) {
+    }
 }

@@ -27,67 +27,66 @@
 
         <Button
             android:id="@+id/addRecordButton"
-            style="?android:attr/borderlessButtonStyle"
+            style="@style/FooterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_add_white_24dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="@string/addRecordButtonText"
-            android:textColor="#ffffff"
-            android:onClick="onAddRecordButtonClicked"/>
+            android:onClick="onAddRecordButtonClicked"
+            android:text="@string/addRecordButtonText"/>
 
         <Button
             android:id="@+id/editTaskButton"
-            style="?android:attr/borderlessButtonStyle"
+            style="@style/FooterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_create_white_24dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="@string/editActivityButtonText"
-            android:textColor="#ffffff"
-            android:onClick="onEditTaskButtonClicked" />
+            android:onClick="onEditTaskButtonClicked"
+            android:text="@string/editActivityButtonText" />
 
         <Button
             android:id="@+id/removeTaskButton"
-            style="?android:attr/borderlessButtonStyle"
+            style="@style/FooterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_clear_white_24dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="@string/removeActivityButtonText"
-            android:textColor="#ffffff"
-            android:onClick="onRemoveTaskButtonClicked" />
+            android:onClick="onRemoveTaskButtonClicked"
+            android:text="@string/removeActivityButtonText" />
+
+        <Button
+            android:id="@+id/displayGraphicButton"
+            style="@style/FooterButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_clear_white_24dp"
+            android:onClick="onGraphicButtonClicked"
+            android:text="@string/DisplayGraphicsButtonText" />
 
         <Button
             android:id="@+id/settingsButton"
-            style="?android:attr/borderlessButtonStyle"
+            style="@style/FooterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_settings_white_24dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:scaleType="center"
-            android:text="@string/settingsButtonText"
-            android:textColor="#ffffff" />
+            android:text="@string/settingsButtonText" />
     </LinearLayout>
+
     <FrameLayout
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_above="@+id/footer"
         android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true">
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        app:fabSize="mini"
-        app:srcCompat="@drawable/ic_add_white_18dp"
-        android:onClick="onAddActivityButtonClicked" /></FrameLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="20dp"
+            android:clickable="true"
+            android:onClick="onAddActivityButtonClicked"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_add_white_18dp" />
+    </FrameLayout>
 
 </RelativeLayout>

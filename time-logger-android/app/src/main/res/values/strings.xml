@@ -56,4 +56,7 @@
     <string name="endDateBeforeStart">End date is before start date</string>
     <string name="startEndEqual">Task cannot take 0 hours</string>
     <string name="recordValidationMsgBoxHeader">Record not saved</string>
+    <string name="recordsRepresentationText">Records representation</string>
+    <string name="sliderTitleText">Visible days</string>
+    <string name="DisplayGraphicsButtonText">Graphics</string>
 </resources>

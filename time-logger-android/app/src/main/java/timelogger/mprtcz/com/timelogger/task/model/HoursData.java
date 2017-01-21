@@ -55,6 +55,5 @@ public class HoursData {
             this.earliest = new DateTime(earliestRecord);
             this.latest = new DateTime(latestRecord);
         }
-
     }
 }
