@@ -5,20 +5,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import timelogger.mprtcz.com.timelogger.R;
-import timelogger.mprtcz.com.timelogger.task.dao.InMemoryDao;
-import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.model.TasksAdapter;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
 
 import static timelogger.mprtcz.com.timelogger.activities.AddRecordActivity.ADD_TASK_ID;
 import static timelogger.mprtcz.com.timelogger.activities.AddTaskActivity.EDITED_TASK_ID;
+import static timelogger.mprtcz.com.timelogger.utils.UiUtils.getAllTasksFromBackendAsync;
 
 public class TasksListActivity extends AppCompatActivity {
+    public static final String TAG = "TasksListActivity";
     TasksAdapter adapter;
     TaskService taskService;
 
@@ -26,7 +27,7 @@ public class TasksListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasks_list);
-        this.taskService = new TaskService(new InMemoryDao());
+        this.taskService = TaskService.getInstance(this);
     }
 
     public void onAddActivityButtonClicked(View view) {
@@ -38,7 +39,7 @@ public class TasksListActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         ListView listView = (ListView) findViewById(R.id.activitiesList);
-        adapter = new TasksAdapter(this, Task.tasks);
+        adapter = new TasksAdapter(this, getAllTasksFromBackendAsync(this));
         listView.setAdapter(adapter);
     }
 
@@ -54,7 +55,12 @@ public class TasksListActivity extends AppCompatActivity {
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    taskService.removeTask(adapter.getSelectedTask());
+                                    try {
+                                        taskService.removeTask(adapter.getSelectedTask());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        Log.e(TAG, "Exception while removing task: " +e.toString());
+                                    }
                                     onStart();
                                 }
                             })
@@ -90,4 +96,6 @@ public class TasksListActivity extends AppCompatActivity {
             exceptionToast.show();
         }
     }
+
+
 }

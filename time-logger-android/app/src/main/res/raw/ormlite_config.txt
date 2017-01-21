@@ -1,0 +1,30 @@
+#
+# generated on 2017/01/21 10:45:40
+#
+# --table-start--
+dataClass=timelogger.mprtcz.com.timelogger.task.model.Task
+tableName=tasks
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=name
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=description
+# --field-end--
+# --field-start--
+fieldName=color
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=taskRecords
+foreignCollection=true
+foreignCollectionEager=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################

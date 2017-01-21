@@ -2,6 +2,10 @@ package timelogger.mprtcz.com.timelogger.task.model;
 
 import android.util.Log;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -18,17 +22,26 @@ import timelogger.mprtcz.com.timelogger.record.model.Record;
 @Getter
 @Setter
 @ToString
+@DatabaseTable(tableName = "tasks")
 public class Task {
 
+    @DatabaseField(generatedId = true)
     private Long id;
 
+    @DatabaseField(canBeNull = false)
     private String name;
 
+    @DatabaseField
     private String description;
 
+    @DatabaseField(canBeNull = false)
     private String color;
 
+    @ForeignCollectionField(eager = true)
     Collection<Record> taskRecords;
+
+    public Task() {
+    }
 
     public Task(String name, String description, String color) {
         this.name = name;
@@ -44,7 +57,7 @@ public class Task {
     }
 
     public void addRecord(Record record) {
-        Log.d("Task.addRecord", "record added = " +record.toString());
+        Log.d("Task.addRecordAsync", "record added = " +record.toString());
         if(this.taskRecords == null) {
             this.taskRecords = new ArrayList<>();
         }

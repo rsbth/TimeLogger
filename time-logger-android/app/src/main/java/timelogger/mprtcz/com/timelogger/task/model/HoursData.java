@@ -1,5 +1,7 @@
 package timelogger.mprtcz.com.timelogger.task.model;
 
+import android.util.Log;
+
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import timelogger.mprtcz.com.timelogger.record.model.Record;
  */
 @Getter
 public class HoursData {
+    public static final String TAG = "HoursData";
 
     private List<Task> allTasks;
     private List<Record> allRecords;
@@ -33,6 +36,8 @@ public class HoursData {
                 this.allRecords.addAll(task.getTaskRecords());
             }
         }
+        System.out.println("allRecords = " + allRecords);
+        Log.d(TAG, "allRecords = " + allRecords);
     }
 
     private void setExtremeRecords() {

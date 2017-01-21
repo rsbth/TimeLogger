@@ -1,5 +1,8 @@
 package timelogger.mprtcz.com.timelogger.record.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.Date;
 
 import lombok.Getter;
@@ -11,15 +14,23 @@ import timelogger.mprtcz.com.timelogger.task.model.Task;
  */
 @Getter
 @Setter
+@DatabaseTable(tableName = "records")
 public class Record {
 
+    @DatabaseField(generatedId = true)
     private Long id;
 
+    @DatabaseField(canBeNull = false, foreign = true)
     private Task task;
 
+    @DatabaseField
     private Date startDateTime;
 
+    @DatabaseField
     private Date endDateTime;
+
+    public Record() {
+    }
 
     public Record(Date startDateTime,
                   Date endDateTime,

@@ -18,7 +18,7 @@ public class RecordService {
         this.taskService = taskService;
     }
 
-    public ValidationResult addRecord(Record record) {
+    public ValidationResult addRecord(Record record) throws Exception {
         RecordValidator recordValidator = new RecordValidator();
         ValidationResult validationResult = recordValidator.validateNewRecordData(record);
         if(validationResult.isErrorFree()) {

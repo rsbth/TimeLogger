@@ -34,6 +34,10 @@ dependencies {
     compile 'com.google.android.gms:play-services-appindexing:9.8.0'
     // https://mvnrepository.com/artifact/joda-time/joda-time
     compile group: 'joda-time', name: 'joda-time', version: '2.9.7'
+    // https://mvnrepository.com/artifact/com.j256.ormlite/ormlite-android
+    compile group: 'com.j256.ormlite', name: 'ormlite-android', version: '5.0'
+    // https://mvnrepository.com/artifact/com.j256.ormlite/ormlite-core
+    compile group: 'com.j256.ormlite', name: 'ormlite-core', version: '5.0'
     compile 'com.android.support:support-v4:25.1.0'
     testCompile 'junit:junit:4.12'
 }

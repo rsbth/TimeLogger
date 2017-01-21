@@ -12,15 +12,10 @@ import android.widget.Toast;
 
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import timelogger.mprtcz.com.timelogger.R;
-import timelogger.mprtcz.com.timelogger.task.dao.InMemoryDao;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
+import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 
 import static timelogger.mprtcz.com.timelogger.utils.UiUtils.displayValidationResult;
@@ -58,13 +53,18 @@ public class AddTaskController {
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        isNameUnique = taskService.isNameUnique(nameEditText.getText().toString());
+                        try {
+                            isNameUnique = taskService.isNameUnique(nameEditText.getText().toString());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "Exception while name uniqeness check: " +e.toString());
+                        }
                     }
                 });
                 thread.start();
                 try {
                     thread.join();
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     Toast exceptionToast = Toast.makeText(
                             context, e.toString(), Toast.LENGTH_SHORT);
@@ -81,7 +81,7 @@ public class AddTaskController {
         Thread taskServiceThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                taskService = new TaskService(new InMemoryDao());
+                taskService = TaskService.getInstance(baseActivity);
             }
         });
         taskServiceThread.start();
@@ -172,24 +172,8 @@ public class AddTaskController {
     }
 
     public ValidationResult getTaskValidationResult() {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        ValidationResult returnValue = null;
-        Future<ValidationResult> result;
         final Task newTask = new Task(this.name,
                 this.description, this.stringColor);
-        result = executor.submit(new Callable<ValidationResult>() {
-            public ValidationResult call() throws Exception {
-                Log.d("Task save", "saving task");
-                return taskService.saveTask(newTask);
-            }
-        });
-        try {
-            returnValue = result.get();
-            Log.i(TAG, "return value = " + returnValue.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageBox(baseActivity.getApplicationContext(), "Exception", e.toString());
-        }
-        return returnValue;
+        return UiUtils.saveTaskAsync(newTask, baseActivity);
     }
 }

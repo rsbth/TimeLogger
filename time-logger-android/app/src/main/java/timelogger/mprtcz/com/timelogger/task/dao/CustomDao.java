@@ -10,13 +10,13 @@ import timelogger.mprtcz.com.timelogger.task.model.Task;
 
 public interface CustomDao {
 
-    void saveTask(Task task);
+    void saveTask(Task task) throws Exception;
 
-    List<Task> getAllTasks();
+    List<Task> getAllTasks() throws Exception;
 
-    Task findTaskById(Long id);
+    Task findTaskById(Long id) throws Exception;
 
-    void removeTask(Task task);
+    void removeTask(Task task) throws Exception;
 
-    void updateTask(Task newTask);
+    void updateTask(Task newTask) throws Exception;
 }

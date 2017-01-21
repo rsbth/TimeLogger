@@ -23,7 +23,7 @@ public class TasksAdapter extends ArrayAdapter<Task> {
         super(context, R.layout.activities_row_view, objects);
     }
 
-    Toast toast;
+    private Toast toast;
     @Getter
     Task selectedTask;
 
