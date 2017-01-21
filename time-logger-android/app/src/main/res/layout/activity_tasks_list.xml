@@ -57,9 +57,9 @@
             style="@style/FooterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableTop="@drawable/ic_clear_white_24dp"
+            android:drawableTop="@drawable/ic_insert_photo_white_24dp"
             android:onClick="onGraphicButtonClicked"
-            android:text="@string/DisplayGraphicsButtonText" />
+            android:text="@string/displayGraphicsButtonText" />
 
         <Button
             android:id="@+id/settingsButton"

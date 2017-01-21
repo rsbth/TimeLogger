@@ -58,5 +58,5 @@
     <string name="recordValidationMsgBoxHeader">Record not saved</string>
     <string name="recordsRepresentationText">Records representation</string>
     <string name="sliderTitleText">Visible days</string>
-    <string name="DisplayGraphicsButtonText">Graphics</string>
+    <string name="displayGraphicsButtonText">Graphics</string>
 </resources>
