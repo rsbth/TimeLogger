@@ -99,5 +99,7 @@ public class TasksListActivity extends AppCompatActivity {
 
 
     public void onGraphicButtonClicked(View view) {
+        Intent intent = new Intent(this, GraphicDataActivity.class);
+        startActivity(intent);
     }
 }
