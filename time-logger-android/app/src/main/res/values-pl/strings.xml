@@ -52,4 +52,7 @@
     <string name="validationUnsuccessful">Walidacja nieudana</string>
     <string name="warningMessage">Uwaga</string>
     <string name="yesButtonText">Tak</string>
+    <string name="recordEndtimeSummaryText">Do: </string>
+    <string name="recordStartTimeSummaryText">Od: </string>
+    <string name="selectLanguageHeader">Wybierz język</string>
 </resources>

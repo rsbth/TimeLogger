@@ -59,4 +59,7 @@
     <string name="recordsRepresentationText">Records representation</string>
     <string name="sliderTitleText">Visible days</string>
     <string name="displayGraphicsButtonText">Graphics</string>
+    <string name="recordStartTimeSummaryText">"Start: "</string>
+    <string name="recordEndtimeSummaryText">"End: "</string>
+    <string name="selectLanguageHeader">Select language</string>
 </resources>

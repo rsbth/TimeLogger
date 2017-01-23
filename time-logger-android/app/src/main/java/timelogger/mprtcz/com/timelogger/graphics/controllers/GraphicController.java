@@ -98,6 +98,7 @@ public class GraphicController {
     }
 
     private void setTrimmedArray(HoursDataService.Hour[][] hourArray) {
+        Log.d(TAG, "hourArray = " + Arrays.deepToString(hourArray));
         this.trimmedHourArray = new HoursDataService.Hour[hourArray.length -
                 getDrawStartingDay(hourArray.length)][hourArray[0].length];
         int index = 0;

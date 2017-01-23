@@ -108,6 +108,7 @@ public class HoursDataService {
         for (Record record : this.allRecords) {
             DateTime start = new DateTime(record.getStartDateTime());
             DateTime end = new DateTime(record.getEndDateTime());
+            Log.d(TAG, "Start datetime = " +start +", end Datetime = "+ end);
             long duration = Hours.hoursBetween(start, end).getHours();
             int position = getListPositionOfSpecificHour(start);
             for (int i = 0; i < duration; i++) {
@@ -121,10 +122,13 @@ public class HoursDataService {
     private int getListPositionOfSpecificHour(DateTime hourToFind) {
         for (Hour hour :
                 this.hours) {
+            Log.d(TAG, "Current hour = " +hour);
+            Log.d(TAG, "hour to find = " +hourToFind);
             if (hourToFind.equals(hour.getDatetime())) {
                 return this.hours.indexOf(hour);
             }
         }
+        Log.e(TAG, "Couldn't find hour = " +hourToFind);
         return -1;
     }
 

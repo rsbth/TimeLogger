@@ -93,7 +93,8 @@ public class DateTimeFragment extends Fragment {
     }
 
     public void setInitialDateTime(DateTime dateTime) {
-        this.dateTimeValues = new DateTimeValues().parseTo(dateTime,
+        DateTime zeroMinutesDateTime = new DateTime(dateTime).withMinuteOfHour(0);
+        this.dateTimeValues = new DateTimeValues().parseTo(zeroMinutesDateTime,
                 this.dateTimeValues.getListener());
     }
 

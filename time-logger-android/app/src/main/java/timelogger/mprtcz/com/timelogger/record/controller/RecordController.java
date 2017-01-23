@@ -83,14 +83,18 @@ public class RecordController {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
         endDateTime = endFragment.getDateTimeValues().parseDate();
         startDateTime = startFragment.getDateTimeValues().parseDate();
-        String message = this.rootTask.getName() + "\nStart: " + formatter.print(this.startDateTime) +
-                "\nEnd: " + formatter.print(this.endDateTime);
+        String message = this.rootTask.getName() + "\n" +
+                parentActivity.getString(R.string.recordStartTimeSummaryText) +
+                formatter.print(this.startDateTime) + "\n" +
+                parentActivity.getString(R.string.recordEndtimeSummaryText) +
+                formatter.print(this.endDateTime);
         this.summaryTextView.setText(message);
     }
 
     public Record addRecord() {
-        endDateTime = endFragment.getDateTimeValues().parseDate();
         startDateTime = startFragment.getDateTimeValues().parseDate();
-        return new Record(this.startDateTime.toDate(), this.endDateTime.toDate(), this.rootTask);
+        endDateTime = endFragment.getDateTimeValues().parseDate();
+        return new Record(new DateTime(this.startDateTime.toDate()).withMinuteOfHour(0).toDate(),
+                new DateTime(this.endDateTime.toDate()).withMinuteOfHour(0).toDate(), this.rootTask);
     }
 }
