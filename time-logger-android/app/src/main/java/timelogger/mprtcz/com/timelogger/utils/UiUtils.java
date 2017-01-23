@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +18,7 @@ import java.util.concurrent.Future;
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.record.model.Record;
 import timelogger.mprtcz.com.timelogger.record.service.RecordService;
-import timelogger.mprtcz.com.timelogger.task.model.HoursData;
+import timelogger.mprtcz.com.timelogger.task.model.HoursDataService;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
 
@@ -97,8 +98,8 @@ public class UiUtils {
     }
 
     public static DateTime getRecordsLatestHourAsync(Activity activity) {
-        HoursData hoursData = new HoursData(getAllTasksFromBackendAsync(activity));
-        return hoursData.getLatest();
+        HoursDataService hoursDataService = new HoursDataService(getAllTasksFromBackendAsync(activity));
+        return hoursDataService.getLatest();
     }
 
     public static ValidationResult saveTaskAsync(final Task newTask, Activity activity) {
@@ -165,4 +166,27 @@ public class UiUtils {
         }
         return returnValue;
     }
+
+    public static HoursDataService.Hour[][] getHoursArrayAsync(Activity activity) {
+        final TaskService taskService = TaskService.getInstance(activity);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        HoursDataService.Hour[][] returnValue = null;
+        final Future<HoursDataService.Hour[][]> result;
+        result = executor.submit(new Callable<HoursDataService.Hour[][]>() {
+            public HoursDataService.Hour[][] call() throws Exception {
+                HoursDataService hoursDataService = new HoursDataService(taskService.getAllTasks());
+                return hoursDataService.getHoursArray();
+            }
+        });
+        try {
+            returnValue = result.get();
+            Log.i(TAG, "return value = " + Arrays.deepToString(returnValue));
+        } catch (Exception e) {
+            e.printStackTrace();
+            messageBox(activity, "Exception", e.toString());
+        }
+        return returnValue;
+    }
+
+
 }

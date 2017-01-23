@@ -3,11 +3,13 @@ package timelogger.mprtcz.com.timelogger.graphics.controllers;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.util.Log;
 
 import java.util.Arrays;
 
-import timelogger.mprtcz.com.timelogger.task.model.HoursData;
+import lombok.Setter;
+import timelogger.mprtcz.com.timelogger.task.model.HoursDataService;
 
 /**
  * Created by Azet on 2017-01-21.
@@ -20,8 +22,10 @@ public class GraphicController {
     private static final String FONT_COLOR = "darkgray";
     private static final int BASIC_CELL_HEIGHT = 10;
     private static final int MAX_CELL_HEIGHT = 40;
+    public static final int HEADER_FONT_SIZE = 20;
 
-    private int visibleDays = 5;
+    @Setter
+    private int visibleDays = 10;
     private int basicCellHeight = 10;
     private int headerHeight = 0;
     private int cellWidth = 0;
@@ -29,10 +33,10 @@ public class GraphicController {
 
     private Paint paint;
 
-    private HoursData.Hour[][] trimmedHourArray;
-    private HoursData.Hour[][] hoursArray;
+    private HoursDataService.Hour[][] trimmedHourArray;
+    private HoursDataService.Hour[][] hoursArray;
 
-    public GraphicController(HoursData.Hour[][] hoursArray) {
+    public GraphicController(HoursDataService.Hour[][] hoursArray) {
         this.hoursArray = hoursArray;
         this.paint = new Paint();
     }
@@ -40,26 +44,26 @@ public class GraphicController {
     public void drawArrayOnCanvas(Canvas canvas) {
         Log.d(TAG, "drawArrayOnCanvas");
         Log.d(TAG, "Hours array = " + Arrays.deepToString(this.hoursArray));
-        int startingDayIndex = getDrawStartingDay(hoursArray.length);
 
         int xOffset = 0;
         int yOffset = 0;
-        this.cellWidth = (int) (canvas.getWidth() / 24);
+        this.cellWidth = canvas.getWidth() / 24;
 
         this.setTrimmedArray(hoursArray);
-        basicCellHeight = (int) (canvas.getHeight() / this.trimmedHourArray.length);
-        if(basicCellHeight > MAX_CELL_HEIGHT) {
+        basicCellHeight = canvas.getHeight() / this.trimmedHourArray.length;
+        if (basicCellHeight > MAX_CELL_HEIGHT) {
             basicCellHeight = MAX_CELL_HEIGHT;
         }
 
         if (areHeadersEnabled) {
-            this.cellWidth = (int) (canvas.getWidth() / 27);
+            this.cellWidth = canvas.getWidth() / 27;
             xOffset = 1;
             yOffset = 1;
             leftLegendWidth = xOffset * cellWidth;
             headerHeight = yOffset * BASIC_CELL_HEIGHT;
-            basicCellHeight = (int) ((canvas.getHeight() - (yOffset * BASIC_CELL_HEIGHT)) / this.trimmedHourArray.length);
-            if(basicCellHeight > MAX_CELL_HEIGHT) {
+            basicCellHeight = (canvas.getHeight() -
+                    (yOffset * BASIC_CELL_HEIGHT)) / this.trimmedHourArray.length;
+            if (basicCellHeight > MAX_CELL_HEIGHT) {
                 basicCellHeight = MAX_CELL_HEIGHT;
             }
             drawHeader(canvas, cellWidth, xOffset);
@@ -67,7 +71,7 @@ public class GraphicController {
 
         for (int i = 0; i < this.trimmedHourArray.length; i++) {
             for (int j = 0; j < this.trimmedHourArray[i].length; j++) {
-                drawArrayCellOnCanvas(canvas, this.trimmedHourArray[i][j], j, i, xOffset, yOffset, cellWidth);
+                drawArrayCellOnCanvas(canvas, this.trimmedHourArray[i][j], j, i, xOffset, yOffset);
             }
         }
 
@@ -76,6 +80,8 @@ public class GraphicController {
     private void drawHeader(Canvas canvas, int unit, int leftOffset) {
         int tick = 2;
         paint.setColor(Color.parseColor("#000000"));
+        paint.setTextSize(HEADER_FONT_SIZE);
+        paint.setTypeface(Typeface.SANS_SERIF);
         for (int i = leftOffset; i < (24 + leftOffset); i = (i + tick)) {
             canvas.drawText(String.valueOf(i - leftOffset), unit * i, basicCellHeight, paint);
         }
@@ -84,13 +90,16 @@ public class GraphicController {
     private int getDrawStartingDay(int arrayLength) {
         if (visibleDays > arrayLength) {
             return 0;
+        } else if(visibleDays < 1) {
+            return arrayLength - 1;
         } else {
             return arrayLength - visibleDays;
         }
     }
 
-    private void setTrimmedArray(HoursData.Hour[][] hourArray) {
-        this.trimmedHourArray = new HoursData.Hour[hourArray.length - getDrawStartingDay(hourArray.length)][hourArray[0].length];
+    private void setTrimmedArray(HoursDataService.Hour[][] hourArray) {
+        this.trimmedHourArray = new HoursDataService.Hour[hourArray.length -
+                getDrawStartingDay(hourArray.length)][hourArray[0].length];
         int index = 0;
         for (int i = getDrawStartingDay(hourArray.length); i < hourArray.length; i++) {
             this.trimmedHourArray[index] = hourArray[i];
@@ -98,36 +107,35 @@ public class GraphicController {
         }
     }
 
-    private void drawArrayCellOnCanvas(Canvas canvas, HoursData.Hour hour,
+    private void drawArrayCellOnCanvas(Canvas canvas, HoursDataService.Hour hour,
                                        int xCoordinate, int yCoordinate,
-                                       int xOffset, int yOffset, int cellWidth) {
+                                       int xOffset, int yOffset) {
         Log.d(TAG, "drawArrayCellOnCanvas");
-        yOffset = 0;
         String color = determineCellColor(hour);
 
         paint.setColor(Color.parseColor(color));
         DrawingCoordinates coords = new DrawingCoordinates(xCoordinate, xOffset, yCoordinate, yOffset, paint);
-        Log.d(TAG, "Coords to string = " +coords.toString());
+        Log.d(TAG, "Coords to string = " + coords.toString());
 
-        canvas.drawRect( coords.X0,coords.Y0,coords.width,coords.height, coords.paint);
-        if (areHeadersEnabled &&  hour != null) {
+        canvas.drawRect(coords.X0, coords.Y0, coords.width, coords.height, coords.paint);
+        if (areHeadersEnabled && hour != null) {
             String dayString = hour.getDatetime().getDayOfMonth() + "." + getMonthValue(hour);
             paint.setColor(Color.parseColor("#000000"));
-            paint.setTextSize(20f);
-            canvas.drawText(dayString, 0, (yCoordinate + 1) * basicCellHeight + (headerHeight), paint);
+            paint.setTextSize(HEADER_FONT_SIZE);
+            canvas.drawText(dayString, 0, (yCoordinate + 1) * basicCellHeight + (basicCellHeight), paint);
         }
     }
 
-    private String getMonthValue(HoursData.Hour hour) {
+    private String getMonthValue(HoursDataService.Hour hour) {
         int month = hour.getDatetime().getMonthOfYear();
-        if(month > 9) {
+        if (month > 9) {
             return String.valueOf(month);
         } else {
             return "0" + String.valueOf(month);
         }
     }
 
-    private String determineCellColor(HoursData.Hour hour) {
+    private String determineCellColor(HoursDataService.Hour hour) {
         if (hour == null) {
             return "#ffffff";
         }
@@ -148,14 +156,10 @@ public class GraphicController {
         DrawingCoordinates(int xCoordinate, int xOffset,
                            int yCoordinate, int yOffset, Paint paint) {
             this.X0 = (cellWidth * xCoordinate) + (xOffset * cellWidth);
-            this.Y0 = (basicCellHeight * yCoordinate) + (yOffset * BASIC_CELL_HEIGHT) +basicCellHeight;
+            this.Y0 = (basicCellHeight * yCoordinate) + (yOffset * BASIC_CELL_HEIGHT) + basicCellHeight;
             this.width = X0 + cellWidth;
             this.height = Y0 + basicCellHeight;
             this.paint = paint;
-        }
-
-        String getBasics() {
-            return String.valueOf(X0) +"+"+ String.valueOf(Y0);
         }
 
         @Override
@@ -169,6 +173,4 @@ public class GraphicController {
                     '}';
         }
     }
-
-
 }

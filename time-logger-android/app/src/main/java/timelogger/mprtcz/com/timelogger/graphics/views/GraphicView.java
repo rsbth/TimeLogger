@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import lombok.Getter;
 import lombok.Setter;
 import timelogger.mprtcz.com.timelogger.graphics.controllers.GraphicController;
 
@@ -28,6 +29,7 @@ public class GraphicView extends View {
     }
 
     @Setter
+    @Getter
     GraphicController graphicController;
 
     private Paint paint = new Paint();

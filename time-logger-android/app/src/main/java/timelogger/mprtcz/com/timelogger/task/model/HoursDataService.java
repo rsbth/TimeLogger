@@ -18,8 +18,8 @@ import timelogger.mprtcz.com.timelogger.record.model.Record;
  * Created by Azet on 2017-01-20.
  */
 @Getter
-public class HoursData {
-    public static final String TAG = "HoursData";
+public class HoursDataService {
+    public static final String TAG = "HoursDataService";
 
     private List<Task> allTasks;
     private List<Record> allRecords;
@@ -28,7 +28,7 @@ public class HoursData {
 
     private List<Hour> hours = new ArrayList<>();
 
-    public HoursData(List<Task> allTasks) {
+    public HoursDataService(List<Task> allTasks) {
         this.allTasks = allTasks;
         this.getAllRecords();
         this.setExtremeRecords();
@@ -70,28 +70,24 @@ public class HoursData {
         return Days.daysBetween(earliestModulus, current).getDays();
     }
 
-    public HoursData.Hour[][] getHoursArray() {
+    public HoursDataService.Hour[][] getHoursArray() {
         long dayDelta = calculateDayDelta(earliest, latest);
         Log.d(TAG, "getHoursArray dayDelta = " +dayDelta);
         Log.d(TAG, "earlitest =" +earliest);
         Log.d(TAG, "latest = " +latest);
         int dayDeltaInt = (int)dayDelta;
+        HoursDataService.Hour[][] hoursArray = new HoursDataService.Hour[dayDeltaInt + 1][24];
 
-
-        HoursData.Hour[][] hoursArray = new HoursData.Hour[dayDeltaInt + 1][24];
-
-        for (HoursData.Hour hourObject : this.getHours()) {
+        for (HoursDataService.Hour hourObject : this.getHours()) {
             int hour = hourObject.getDatetime().getHourOfDay();
             int objectsDayDelta = (int)(calculateDayDelta(earliest, hourObject.getDatetime()));
 
             hoursArray[objectsDayDelta][hour] = hourObject;
         }
-
         return hoursArray;
     }
 
     private void createHoursList() {
-//        long hoursDelta = earliest.until(latest, ChronoUnit.HOURS);
         long hoursDelta = Hours.hoursBetween(earliest, latest).getHours();
         System.out.println("hoursDelta = " + hoursDelta);
         DateTime currentHour = earliest;
@@ -108,7 +104,6 @@ public class HoursData {
             DateTime start = new DateTime(record.getStartDateTime());
             DateTime end = new DateTime(record.getEndDateTime());
             long duration = Hours.hoursBetween(start, end).getHours();
-//            long duration = start.until(end, ChronoUnit.HOURS);
             int position = getListPositionOfSpecificHour(start);
             for (int i = 0; i < duration; i++) {
                 Hour hour = this.hours.get(position);
@@ -127,7 +122,6 @@ public class HoursData {
         }
         return -1;
     }
-
 
     @Getter
     @EqualsAndHashCode
