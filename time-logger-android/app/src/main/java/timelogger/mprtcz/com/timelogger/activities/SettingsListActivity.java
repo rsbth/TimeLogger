@@ -46,7 +46,7 @@ public class SettingsListActivity extends ListActivity {
     AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Language language = languages[position];
+            Language language = languages[position - 1]; //subtracting 1 because of header
             loadChosenLanguage(language.getLocale());
             Log.d(TAG, "language : " + language.getLocale());
             saveLanguage(language.getLocale().getCountry().toLowerCase());
