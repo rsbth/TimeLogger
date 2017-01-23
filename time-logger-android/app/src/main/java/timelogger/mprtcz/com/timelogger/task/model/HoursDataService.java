@@ -61,6 +61,9 @@ public class HoursDataService {
             }
             this.earliest = new DateTime(earliestRecord);
             this.latest = new DateTime(latestRecord);
+        } else {
+            this.latest = new DateTime();
+            this.earliest = new DateTime();
         }
     }
 
@@ -88,6 +91,8 @@ public class HoursDataService {
     }
 
     private void createHoursList() {
+        Log.d(TAG, "Earliest = " + earliest);
+        Log.d(TAG, "Latest = " + latest);
         long hoursDelta = Hours.hoursBetween(earliest, latest).getHours();
         System.out.println("hoursDelta = " + hoursDelta);
         DateTime currentHour = earliest;
@@ -121,6 +126,28 @@ public class HoursDataService {
             }
         }
         return -1;
+    }
+
+    public static DateTime getLatestDateTime(List<Task> allTasks) {
+        Date latestRecord = new Date(Long.MIN_VALUE);
+        boolean recordsEmpty = true;
+
+        for (Task task :
+                allTasks) {
+            for (Record record :
+                    task.getTaskRecords()) {
+                recordsEmpty = false;
+                   if(record.getEndDateTime().after(latestRecord)) {
+                       latestRecord = record.getEndDateTime();
+                   }
+            }
+        }
+
+        if(recordsEmpty) {
+            return new DateTime();
+        } else {
+            return new DateTime(latestRecord);
+        }
     }
 
     @Getter

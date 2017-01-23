@@ -9,6 +9,7 @@ import android.widget.EditText;
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.task.controllers.AddTaskController;
 import timelogger.mprtcz.com.timelogger.task.controllers.EditTaskController;
+import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 
 
 public class AddTaskActivity extends Activity {
@@ -23,6 +24,7 @@ public class AddTaskActivity extends Activity {
         System.out.println("AddTaskActivity.onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
+        UiUtils.loadLanguage(this);
         this.nameEditText = (EditText) findViewById(R.id.taskNameEditText);
         this.pickColorButton = (Button) findViewById(R.id.pickColorButton);
         this.descriptionEditText = (EditText) findViewById(R.id.taskDescriptionEditText);

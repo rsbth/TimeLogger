@@ -10,9 +10,12 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.Locale;
+
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.task.model.TasksAdapter;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
+import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 
 import static timelogger.mprtcz.com.timelogger.activities.AddRecordActivity.ADD_TASK_ID;
 import static timelogger.mprtcz.com.timelogger.activities.AddTaskActivity.EDITED_TASK_ID;
@@ -22,6 +25,7 @@ public class TasksListActivity extends AppCompatActivity {
     public static final String TAG = "TasksListActivity";
     TasksAdapter adapter;
     TaskService taskService;
+    static Locale locale;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +34,7 @@ public class TasksListActivity extends AppCompatActivity {
         this.taskService = TaskService.getInstance(this);
     }
 
-    public void onAddActivityButtonClicked(View view) {
+    public void onAddTaskButtonClicked(View view) {
         Intent intent = new Intent(this, AddTaskActivity.class);
         startActivity(intent);
     }
@@ -38,9 +42,12 @@ public class TasksListActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart()");
         ListView listView = (ListView) findViewById(R.id.activitiesList);
         adapter = new TasksAdapter(this, getAllTasksFromBackendAsync(this));
         listView.setAdapter(adapter);
+        UiUtils.loadLanguage(this, locale);
+        locale = Locale.getDefault();
     }
 
     public void onRemoveTaskButtonClicked(View view) {
@@ -97,9 +104,13 @@ public class TasksListActivity extends AppCompatActivity {
         }
     }
 
-
     public void onGraphicButtonClicked(View view) {
         Intent intent = new Intent(this, GraphicDataActivity.class);
+        startActivity(intent);
+    }
+
+    public void onSettingsButtonClicked(View view) {
+        Intent intent = new Intent(this, SettingsListActivity.class);
         startActivity(intent);
     }
 }

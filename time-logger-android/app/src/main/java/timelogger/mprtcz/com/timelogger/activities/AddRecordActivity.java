@@ -24,6 +24,7 @@ public class AddRecordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_record);
+        UiUtils.loadLanguage(this);
         this.taskService = TaskService.getInstance(this);
         this.startFragment = (DateTimeFragment) getSupportFragmentManager().findFragmentById(R.id.startDatetimeFragment);
         this.endFragment = (DateTimeFragment) getSupportFragmentManager().findFragmentById(R.id.endDatetimeFragment);

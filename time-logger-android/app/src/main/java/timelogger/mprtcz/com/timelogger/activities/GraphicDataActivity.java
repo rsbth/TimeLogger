@@ -7,6 +7,7 @@ import android.widget.SeekBar;
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.graphics.controllers.GraphicController;
 import timelogger.mprtcz.com.timelogger.graphics.views.GraphicView;
+import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 
 import static timelogger.mprtcz.com.timelogger.utils.UiUtils.getHoursArrayAsync;
 
@@ -18,6 +19,7 @@ public class GraphicDataActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graphic_data);
+        UiUtils.loadLanguage(this);
         this.graphicView = (GraphicView) findViewById(R.id.graphicViewElement);
         setSeekBarListener();
         this.graphicView.setGraphicController(new GraphicController(getHoursArrayAsync(this)));

@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">TimeLogger</string>
     <string name="no_data">No data</string>
-    <string name="title_activity_activities">ActivitiesActivity</string>
-    <string name="mainActivityButton">Go to activities list</string>
-    <string name="activitiesListToolbarText">Activities</string>
+    <string name="title_activity_activities" translatable="false">TasksActivity</string>
+    <string name="mainActivityButton">Go to tasks list</string>
+    <string name="activitiesListToolbarText">Tasks</string>
     <string name="addRecordButtonText">Add</string>
     <string name="editActivityButtonText">Edit</string>
     <string name="removeActivityButtonText">Remove</string>
@@ -17,7 +17,7 @@
     <string name="addColorTextView">Choose color:</string>
     <string name="addTaskButtonText">Add Task</string>
     <string name="cancelTaskAddButtonText">Cancel</string>
-    <string name="colorButtonText" />
+    <string name="colorButtonText" translatable="false" />
     <string name="name_cannot_be_null">Name cannot be null</string>
     <string name="emptyDescriptionConfirmationLabel">Add with empty description?</string>
     <string name="yesButtonText">Yes</string>
@@ -37,12 +37,12 @@
     <string name="removeTaskConfirmTitle">Are you sure?</string>
     <string name="removeTaskConfirmLabel">Do you really want to delete this task?</string>
     <string name="chooseTaskFirstToast">Choose a task first</string>
-    <string name="chooseStartTimeButtonText">Button</string>
-    <string name="chooseStartDateButtonText">Button</string>
-    <string name="chooseDateTimeButtonText">Button</string>
+    <string name="chooseStartTimeButtonText" translatable="false">Button</string>
+    <string name="chooseStartDateButtonText" translatable="false">Button</string>
+    <string name="chooseDateTimeButtonText" translatable="false">Button</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="startFragmentHeaderText">Pick start date and time</string>
     <string name="endFragmentHeaderText">Pick end date and time</string>
     <string name="addRecordConfirmButtonText">Add record</string>
@@ -52,7 +52,7 @@
     <string name="recordSaved">Record saved!</string>
     <string name="startTimeNull">Start time cannot be null</string>
     <string name="endTimeNull">End time null</string>
-    <string name="recordsTaskNull">Record\'s tas kcannot be null</string>
+    <string name="recordsTaskNull">Record\'s task cannot be null</string>
     <string name="endDateBeforeStart">End date is before start date</string>
     <string name="startEndEqual">Task cannot take 0 hours</string>
     <string name="recordValidationMsgBoxHeader">Record not saved</string>

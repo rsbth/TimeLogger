@@ -3,6 +3,8 @@ package timelogger.mprtcz.com.timelogger.utils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -10,6 +12,7 @@ import org.joda.time.DateTime;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -98,8 +101,7 @@ public class UiUtils {
     }
 
     public static DateTime getRecordsLatestHourAsync(Activity activity) {
-        HoursDataService hoursDataService = new HoursDataService(getAllTasksFromBackendAsync(activity));
-        return hoursDataService.getLatest();
+        return HoursDataService.getLatestDateTime(getAllTasksFromBackendAsync(activity));
     }
 
     public static ValidationResult saveTaskAsync(final Task newTask, Activity activity) {
@@ -188,5 +190,27 @@ public class UiUtils {
         return returnValue;
     }
 
+    public static void loadLanguage(final Activity activity) {
+        loadLanguage(activity, Locale.getDefault());
+    }
 
+
+    public static void loadLanguage(final Activity activity, Locale oldLocale) {
+        SharedPreferences preferences = activity.getSharedPreferences("language", 0);
+        String lang = preferences.getString("languageToLoad", "en");
+        Log.d(TAG, "loadLanguage(final Activity activity, Locale oldLocale) " +lang);
+        Locale locale = new Locale(lang);
+        Log.d(TAG, "oldLocale = " +Locale.getDefault());
+        Locale.setDefault(locale);
+        Locale newLocale = Locale.getDefault();
+        Log.d(TAG, "newLocale = " +Locale.getDefault());
+        if(oldLocale == null || !oldLocale.equals(newLocale)) {
+            activity.recreate();
+        }
+        Configuration config = new Configuration();
+        config.locale = locale;
+        activity.getBaseContext().getResources().updateConfiguration(config,
+                activity.getBaseContext().getResources().getDisplayMetrics());
+        Log.d(TAG, "config = " +config.toString());
+    }
 }

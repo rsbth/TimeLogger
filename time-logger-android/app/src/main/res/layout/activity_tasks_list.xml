@@ -67,6 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_settings_white_24dp"
+            android:onClick="onSettingsButtonClicked"
             android:text="@string/settingsButtonText" />
     </LinearLayout>
 
@@ -84,7 +85,7 @@
             android:layout_marginBottom="20dp"
             android:layout_marginEnd="20dp"
             android:clickable="true"
-            android:onClick="onAddActivityButtonClicked"
+            android:onClick="onAddTaskButtonClicked"
             app:fabSize="mini"
             app:srcCompat="@drawable/ic_add_white_18dp" />
     </FrameLayout>
