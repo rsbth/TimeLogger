@@ -32,10 +32,10 @@ public class RecordEntityDtoConverterImpl implements RecordEntityDtoConverter {
     public Record toEntity(RecordDto recordDto, Task task) {
         Record record = new Record();
         record.setTask(task);
-        record.setEndDateTime(toLocalDateTime(recordDto.getEndDateTime()));
-        record.setStartDateTime(toLocalDateTime(recordDto.getStartDateTime()));
+        record.setEndDateTime(toLocalDateTimeWithZeroMinutes(recordDto.getEndDateTime()));
+        record.setStartDateTime(toLocalDateTimeWithZeroMinutes(recordDto.getStartDateTime()));
         if(recordDto.getCreationDate() != null) {
-            record.setCreationDate(toLocalDateTime(recordDto.getCreationDate()));
+            record.setCreationDate(toLocalDateTimeWithZeroMinutes(recordDto.getCreationDate()));
         }
         record.setSynchronizationDate(LocalDateTime.now());
         return record;
@@ -62,8 +62,8 @@ public class RecordEntityDtoConverterImpl implements RecordEntityDtoConverter {
         return recordDtos;
     }
 
-    private static LocalDateTime toLocalDateTime(Date date) {
-        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+    private static LocalDateTime toLocalDateTimeWithZeroMinutes(Date date) {
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).withMinute(0).withSecond(0).withNano(0);
     }
 
     private static Date toDate(LocalDateTime localDateTime) {

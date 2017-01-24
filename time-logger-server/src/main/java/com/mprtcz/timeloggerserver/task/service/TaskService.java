@@ -5,6 +5,8 @@ import com.mprtcz.timeloggerserver.task.model.Task;
 import com.mprtcz.timeloggerserver.task.model.TaskDto;
 import com.mprtcz.timeloggerserver.task.model.converter.TaskEntityDtoConverter;
 import com.mprtcz.timeloggerserver.task.repository.TaskRepository;
+import com.mprtcz.timeloggerserver.task.validator.TaskValidator;
+import com.mprtcz.timeloggerserver.utils.exceptions.TaskNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,7 @@ public class TaskService {
 
     public void saveTask(TaskDto taskDto) {
         Task task = this.taskEntityDtoConverter.toEntity(taskDto);
+        TaskValidator.validateNewTask(task, this.getAllTasks());
         this.taskRepository.save(task);
     }
 
@@ -47,20 +50,36 @@ public class TaskService {
                 return this.taskEntityDtoConverter.toDto(t);
             }
         }
-        return null;
+        throw new TaskNotFoundException("Task with this name not found");
     }
 
     public TaskDto getTaskDtoById(Long id) {
+        checkIfTaskWithIdExists(id);
         TaskDto taskDto = this.taskEntityDtoConverter.toDto(this.taskRepository.findOne(id));
         return taskDto;
     }
 
     public Task getTaskById(Long id) {
+        checkIfTaskWithIdExists(id);
         return this.taskRepository.findOne(id);
     }
 
     public void deleteTask(Long id) {
+        checkIfTaskWithIdExists(id);
         this.taskRepository.delete(id);
+    }
+
+    public void checkIfTaskWithIdExists(Long id) {
+        if(!this.taskRepository.exists(id)) {
+            throw new TaskNotFoundException("Task with this id does not exist");
+        }
+    }
+
+
+    private void taskNullCheck(Task task) {
+        if(task == null) {
+            throw new TaskNotFoundException("Task with this id does not exist");
+        }
     }
 
     public void updateTask(TaskDto taskDto) {

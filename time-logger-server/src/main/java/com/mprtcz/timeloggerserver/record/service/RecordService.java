@@ -5,6 +5,7 @@ import com.mprtcz.timeloggerserver.record.model.RecordDto;
 import com.mprtcz.timeloggerserver.record.model.converter.RecordEntityDtoConverter;
 import com.mprtcz.timeloggerserver.record.repository.CustomRecordRepository;
 import com.mprtcz.timeloggerserver.record.repository.RecordRepository;
+import com.mprtcz.timeloggerserver.record.validator.RecordValidator;
 import com.mprtcz.timeloggerserver.task.model.Task;
 import com.mprtcz.timeloggerserver.task.service.TaskService;
 import org.slf4j.Logger;
@@ -49,14 +50,21 @@ public class RecordService {
         logger.info("associatedTask : {}", associatedTask);
         Record record = this.recordEntityDtoConverter.toEntity(r, associatedTask);
         logger.info("Record to save : {}", record);
+        RecordValidator recordValidator = new RecordValidator(record, getAllRecords());
+        recordValidator.validateNewRecord();
         this.recordRepository.save(record);
     }
 
-    public Iterable<RecordDto> getAllRecords() {
+    public Iterable<RecordDto> getAllRecordDtos() {
         return this.recordEntityDtoConverter.toDtos(this.recordRepository.findAll());
     }
 
+    private Iterable<Record> getAllRecords() {
+        return this.recordRepository.findAll();
+    }
+
     public List<RecordDto> getRecordsByTaskId(Long taskId) {
+        this.taskService.checkIfTaskWithIdExists(taskId);
         return this.recordEntityDtoConverter.toDtos(this.customRecordRepository.getRecordsByTaskId(taskId));
     }
 }

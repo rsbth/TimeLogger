@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 /**
@@ -41,9 +40,6 @@ public class TaskController {
     @RequestMapping("/{taskName}")
     public ResponseEntity getTaskByName(@PathVariable String taskName) {
         TaskDto taskDto = this.taskService.getTaskDtoByName(taskName);
-        if(taskDto == null) {
-            return new ResponseEntity(NOT_FOUND);
-        }
         return new ResponseEntity<>(taskDto, OK);
     }
 
@@ -55,6 +51,7 @@ public class TaskController {
 
     @RequestMapping(value = "/{taskId}/records")
     public ResponseEntity getRecordsOfTask(@PathVariable Long taskId) {
+        this.taskService.checkIfTaskWithIdExists(taskId);
         List<RecordDto> recordsByTaskId = this.recordService.getRecordsByTaskId(taskId);
         return new ResponseEntity<>(recordsByTaskId, OK);
     }

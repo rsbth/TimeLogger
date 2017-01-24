@@ -31,7 +31,7 @@ public class RecordController {
 
     @RequestMapping("/all")
     public ResponseEntity getAllRecords() {
-        Iterable<RecordDto> allRecords = this.recordService.getAllRecords();
+        Iterable<RecordDto> allRecords = this.recordService.getAllRecordDtos();
         return new ResponseEntity<>(allRecords, OK);
     }
 

@@ -49,4 +49,25 @@ public class Record {
                 ", synchronizationDate=" + synchronizationDate +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Record record = (Record) o;
+
+        if (!task.equals(record.task)) return false;
+        if (!startDateTime.equals(record.startDateTime)) return false;
+        return endDateTime.equals(record.endDateTime);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = task.hashCode();
+        result = 31 * result + startDateTime.hashCode();
+        result = 31 * result + endDateTime.hashCode();
+        return result;
+    }
 }
