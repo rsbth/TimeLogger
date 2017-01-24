@@ -44,7 +44,7 @@ public class TaskEntityDtoConverterImpl implements TaskEntityDtoConverter {
     }
 
     @Override
-    public List<TaskDto> toDtos(List<Task> entities) {
+    public Iterable<TaskDto> toDtos(Iterable<Task> entities) {
         List<TaskDto> taskDtos = new ArrayList<>();
         for (Task task :
                 entities) {

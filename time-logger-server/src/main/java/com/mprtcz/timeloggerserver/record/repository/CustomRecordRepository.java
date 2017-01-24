@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * Created by mprtcz on 2017-01-24.
  */
 @Repository
+@Transactional
 public class CustomRecordRepository {
 
     private
@@ -20,7 +22,7 @@ public class CustomRecordRepository {
 
     public List<Record> getRecordsByTaskId(Long id) {
         Criteria criteria = this.sessionFactory.getCurrentSession().createCriteria(Record.class)
-                .add(Restrictions.eq("TASK_ID", id));
+                .add(Restrictions.eq("task.id", id)); //HQL uses class name instead of table name, and property names instead of column name.
         return criteria.list();
     }
 

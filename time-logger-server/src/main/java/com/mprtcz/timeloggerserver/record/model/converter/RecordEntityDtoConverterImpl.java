@@ -2,7 +2,8 @@ package com.mprtcz.timeloggerserver.record.model.converter;
 
 import com.mprtcz.timeloggerserver.record.model.Record;
 import com.mprtcz.timeloggerserver.record.model.RecordDto;
-import com.mprtcz.timeloggerserver.task.model.converter.TaskEntityDtoConverter;
+import com.mprtcz.timeloggerserver.task.model.Task;
+import com.mprtcz.timeloggerserver.task.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,45 +19,37 @@ import java.util.List;
 @Component
 public class RecordEntityDtoConverterImpl implements RecordEntityDtoConverter {
 
+
     private final
-    TaskEntityDtoConverter taskEntityDtoConverter;
+    TaskService taskService;
 
     @Autowired
-    public RecordEntityDtoConverterImpl(TaskEntityDtoConverter taskEntityDtoConverter) {
-        this.taskEntityDtoConverter = taskEntityDtoConverter;
+    public RecordEntityDtoConverterImpl(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     @Override
-    public Record toEntity(RecordDto recordDto) {
+    public Record toEntity(RecordDto recordDto, Task task) {
         Record record = new Record();
-        record.setTask(taskEntityDtoConverter.toEntity(recordDto.getTaskDto()));
+        record.setTask(task);
         record.setEndDateTime(toLocalDateTime(recordDto.getEndDateTime()));
         record.setStartDateTime(toLocalDateTime(recordDto.getStartDateTime()));
-        if(record.getCreationDate() != null) {
+        if(recordDto.getCreationDate() != null) {
             record.setCreationDate(toLocalDateTime(recordDto.getCreationDate()));
         }
-        return null;
+        record.setSynchronizationDate(LocalDateTime.now());
+        return record;
     }
 
     @Override
     public RecordDto toDto(Record record) {
         RecordDto recordDto = new RecordDto();
-        recordDto.setTaskDto(taskEntityDtoConverter.toDto(record.getTask()));
+        recordDto.setTaskID(record.getTask().getId());
         recordDto.setCreationDate(toDate(record.getCreationDate()));
         recordDto.setStartDateTime(toDate(record.getStartDateTime()));
         recordDto.setEndDateTime(toDate(record.getEndDateTime()));
         recordDto.setSynchronizationDate(toDate(record.getSynchronizationDate()));
         return recordDto;
-    }
-
-    @Override
-    public List<Record> toEntities(List<RecordDto> dtos) {
-        List<Record> records = new ArrayList<>();
-        for (RecordDto recordDto :
-                dtos) {
-            records.add(toEntity(recordDto));
-        }
-        return records;
     }
 
     @Override

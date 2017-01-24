@@ -2,6 +2,7 @@ package com.mprtcz.timeloggerserver.record.model.converter;
 
 import com.mprtcz.timeloggerserver.record.model.Record;
 import com.mprtcz.timeloggerserver.record.model.RecordDto;
+import com.mprtcz.timeloggerserver.task.model.Task;
 
 import java.util.List;
 
@@ -10,12 +11,9 @@ import java.util.List;
  */
 public interface RecordEntityDtoConverter {
 
-    Record toEntity(RecordDto recordDto);
+    Record toEntity(RecordDto recordDto, Task task);
 
     RecordDto toDto(Record record);
 
-    List<Record> toEntities(List<RecordDto> dtos);
-
     List<RecordDto> toDtos(Iterable<Record> entities);
-
 }

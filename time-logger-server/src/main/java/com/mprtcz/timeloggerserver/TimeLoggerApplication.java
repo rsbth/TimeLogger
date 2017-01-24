@@ -19,4 +19,6 @@ public class TimeLoggerApplication {
 	public HibernateJpaSessionFactoryBean sessionFactory() {
 		return new HibernateJpaSessionFactoryBean();
 	}
+
+
 }

@@ -3,6 +3,7 @@ package com.mprtcz.timeloggerserver.task.model;
 import com.mprtcz.timeloggerserver.record.model.Record;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.Collection;
  */
 @Getter
 @Setter
+@ToString
 @Entity
 @Table(name="tasks")
 public class Task {

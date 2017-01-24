@@ -37,4 +37,16 @@ public class Record {
     private LocalDateTime synchronizationDate;
 
     public Record() {}
+
+    @Override
+    public String toString() {
+        return "Record{" +
+                "id=" + id +
+                ", taskID=" + task.getId() +
+                ", startDateTime=" + startDateTime +
+                ", endDateTime=" + endDateTime +
+                ", creationDate=" + creationDate +
+                ", synchronizationDate=" + synchronizationDate +
+                '}';
+    }
 }

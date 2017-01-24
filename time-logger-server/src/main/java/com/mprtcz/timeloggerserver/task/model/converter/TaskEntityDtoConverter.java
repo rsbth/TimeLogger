@@ -16,5 +16,5 @@ public interface TaskEntityDtoConverter {
 
     List<Task> toEntities(List<TaskDto> dtos);
 
-    List<TaskDto> toDtos(List<Task> entities);
+    Iterable<TaskDto> toDtos(Iterable<Task> entities);
 }
