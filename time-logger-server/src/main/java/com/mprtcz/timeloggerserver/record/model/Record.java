@@ -1,6 +1,5 @@
 package com.mprtcz.timeloggerserver.record.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mprtcz.timeloggerserver.task.model.Task;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,15 +21,20 @@ public class Record {
     private Long id;
 
     @ManyToOne
-    @JsonIgnore //for now
     @JoinColumn(name = "TASK_ID")
     private Task task;
 
-    @Column(name = "START_DATETIME")
+    @Column(name = "START_DATETIME", nullable = false)
     private LocalDateTime startDateTime;
 
-    @Column(name = "END_DATETIME")
+    @Column(name = "END_DATETIME", nullable = false)
     private LocalDateTime endDateTime;
+
+    @Column(name = "CREATION_DATETIME")
+    private LocalDateTime creationDate;
+
+    @Column(name = "SYNCH_DATETIME", nullable = false)
+    private LocalDateTime synchronizationDate;
 
     public Record() {}
 }

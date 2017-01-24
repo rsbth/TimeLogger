@@ -45,9 +45,4 @@ public class CustomController {
         recordService.saveRecord(r);
         return new ResponseEntity<>("saved", HttpStatus.OK);
     }
-
-    @RequestMapping("/tasks")
-    public ResponseEntity getAllTasks() {
-        return new ResponseEntity<>(this.taskService.getAllTasks(), HttpStatus.OK);
-    }
 }

@@ -1,17 +1,25 @@
 package com.mprtcz.timeloggerserver.record.model;
 
-import com.mprtcz.timeloggerserver.task.model.Task;
+import com.mprtcz.timeloggerserver.task.model.TaskDto;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Created by mprtcz on 2017-01-24.
  */
+@Getter
+@Setter
 public class RecordDto {
 
-    private Task task;
+    private TaskDto taskDto;
 
-    private LocalDateTime startDateTime;
+    private Date startDateTime;
 
-    private LocalDateTime endDateTime;
+    private Date endDateTime;
+
+    private Date creationDate;
+
+    private Date synchronizationDate;
 }

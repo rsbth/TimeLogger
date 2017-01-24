@@ -9,7 +9,8 @@ import static org.springframework.http.HttpStatus.OK;
 /**
  * Created by mprtcz on 2017-01-24.
  */
-@RestController("/task")
+@RestController
+@RequestMapping("/task/")
 public class TaskController {
 
     @RequestMapping("/all")
@@ -27,8 +28,8 @@ public class TaskController {
         return new ResponseEntity(OK);
     }
 
-    @RequestMapping(value = "/{taskName}/records")
-    public ResponseEntity getRecordsOfTask(@PathVariable String taskName) {
+    @RequestMapping(value = "/{taskId}/records")
+    public ResponseEntity getRecordsOfTask(@PathVariable Long taskId) {
         return new ResponseEntity(OK);
     }
 
