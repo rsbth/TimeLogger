@@ -18,7 +18,7 @@ public class ValidationResult {
     public enum CustomErrorEnum {
 
         OK(R.string.taskValidationSuccessful, ValidationStatus.SUCCESSFUL),
-        TASK_SAVED(R.string.taskValidationSuccessful, ValidationStatus.SUCCESSFUL),
+        TASK_SAVED(R.string.taskSavedToast, ValidationStatus.SUCCESSFUL),
 
         TASK_NAME_EMPTY(R.string.taskNameEmpty, ValidationStatus.FAILED),
         TASK_COLOR_EMPTY(R.string.taskColorEmpty, ValidationStatus.FAILED),

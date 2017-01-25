@@ -5,7 +5,7 @@ import java.util.List;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 
-import static timelogger.mprtcz.com.timelogger.utils.ValidationResult.CustomErrorEnum.OK;
+import static timelogger.mprtcz.com.timelogger.utils.ValidationResult.CustomErrorEnum.TASK_SAVED;
 
 /**
  * Created by Azet on 2017-01-19.
@@ -16,7 +16,7 @@ public class TaskValidator {
     private ValidationResult validationResult;
 
     public ValidationResult validateNewTask(Task newTask, List<Task> existingTasksList) {
-        this.validationResult = new ValidationResult(OK);
+        this.validationResult = new ValidationResult(TASK_SAVED);
         if(newTask.getName().equals("")) {
             this.validationResult.getNewErrorEnum(ValidationResult.CustomErrorEnum.TASK_NAME_EMPTY);
         }
