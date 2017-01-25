@@ -51,7 +51,7 @@ Every defined activity can have it's name, description and the color changed:
   The user can export and import data from and to xml format. Importing data will replace existing database with the data from selected file,
   if the data is formed correctly.
   
-  ![importgif](https://media.giphy.com/media/26xBD2gI4J176WnC0/source.gif)
+  ![importgif](https://media.giphy.com/media/26gskU7EPaxzYhjaM/source.gif)
   
   ---
   
