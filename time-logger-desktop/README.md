@@ -33,7 +33,7 @@ Every defined activity can have it's name, description and the color changed:
   
   The user can change the application's language at a runtime. Available languages are: Polish, English(default)
   
-  ![languagegif](https://media.giphy.com/media/26gsw3RJxoOHcSrL2/source.gif)
+  ![languagegif](https://media.giphy.com/media/26gsrKyZ38lme2rhC/source.gif)
   
   
   The user can set visibility of data displayed on the graph and the headers showing which hour and day is displayed:
