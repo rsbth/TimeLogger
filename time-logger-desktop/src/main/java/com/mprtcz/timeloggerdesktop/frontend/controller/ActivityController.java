@@ -41,6 +41,7 @@ public class ActivityController {
     }
 
     public void initActivityRemoveConfirmationPopup(Region source, Activity activity) {
+        logger.info("ActivityController.initActivityRemoveConfirmationPopup");
         this.confirmationPopup = new ConfirmationPopup(messages.getString("remove_activitypopup_label"), source, this.messages);
         this.confirmationPopup.getConfirmButton().setOnAction(e -> {
             this.removeActivity(activity);
@@ -143,7 +144,8 @@ public class ActivityController {
 
     private double getXCoordinate(Region rootPane) {
         Transform transform = rootPane.getLocalToSceneTransform();
-        return (rootPane.getWidth() / 2) - (CONFIRMATION_POPUP_PREF_WIDTH/2) - (transform.getTx());
+        logger.debug("transform.getTy() = " +transform.getTy());
+        return (rootPane.getWidth() / 2) - (CONFIRMATION_POPUP_PREF_WIDTH/2) - transform.getTx();
     }
 
     private static final double CONFIRMATION_POPUP_PREF_WIDTH = 150;

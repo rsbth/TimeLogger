@@ -121,6 +121,11 @@ public class SettingsController {
 
     private double getXCoordinate(Region popupSource) {
         Transform transform = popupSource.getLocalToSceneTransform();
-        return (this.rootPane.getWidth() / 2) - (SettingsPopup.WIDTH/2) - (transform.getTy() * 2);
+        double xOffset = (this.rootPane.getWidth() / 2) - (SettingsPopup.WIDTH/2) - (transform.getTx());
+        if(transform.getTx() == 0) {
+            xOffset = xOffset / 2;
+            logger.info("xOffset =" + xOffset);
+        }
+        return xOffset;
     }
 }
