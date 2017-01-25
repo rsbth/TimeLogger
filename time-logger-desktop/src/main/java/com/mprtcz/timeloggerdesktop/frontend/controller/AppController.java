@@ -359,6 +359,7 @@ public class AppController implements MainController {
         this.closeDialogIfExists();
         this.bottomDialog = new JFXDialog(this.bottomStackPane, DialogElementsConstructor.getTextLayout(value, type),
                 JFXDialog.DialogTransition.BOTTOM);
+        this.bottomDialog.setOnMouseEntered(event -> AppController.this.closeDialogIfExists());
         this.bottomDialog.show();
     }
 

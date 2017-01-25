@@ -75,6 +75,7 @@ public class SettingsController {
         return (WorkerStateEvent event) -> {
             SettingsController.this.confirmButtonHandler.setResult(this.appSettingsTask.getValue());
             SettingsController.this.confirmButtonHandler.handle(event);
+            SettingsController.this.settingsPopup.close();
         };
     }
 
@@ -120,6 +121,6 @@ public class SettingsController {
 
     private double getXCoordinate(Region popupSource) {
         Transform transform = popupSource.getLocalToSceneTransform();
-        return (this.rootPane.getWidth() / 2) - (SettingsPopup.WIDTH/2) - (transform.getTx());
+        return (this.rootPane.getWidth() / 2) - (SettingsPopup.WIDTH/2) - (transform.getTy() * 2);
     }
 }

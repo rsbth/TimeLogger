@@ -50,7 +50,8 @@ public class RecordController {
         });
         this.addRecordPopup.setSource(activityNamesList);
         Transform transform = activityNamesList.getLocalToSceneTransform();
-        double xOffset = (rootPane.getWidth() / 2) - (AddRecordPopup.WIDTH / 2) - (transform.getTx());
+        double xOffset = (rootPane.getWidth() / 2) - (AddRecordPopup.WIDTH/2) - (transform.getTy() * 2);
+        logger.info("xOffset =" + xOffset);
         this.addRecordPopup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, xOffset, 10);
     }
 
