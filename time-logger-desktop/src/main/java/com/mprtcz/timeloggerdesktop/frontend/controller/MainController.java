@@ -13,6 +13,8 @@ public interface MainController {
 
     void displayValidationResult(ValidationResult result);
 
+    void updateActivityList();
+
     void exportData();
 
     void openFileChooser();

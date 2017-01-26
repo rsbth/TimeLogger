@@ -305,7 +305,7 @@ public class AppController implements MainController {
     private void initializeServices() {
         try {
             CustomDao daoProvider = new DatabaseCustomDao();
-            this.activityService = new ActivityService(new ActivityValidator(), daoProvider);
+            this.activityService = new ActivityService(new ActivityValidator(), daoProvider, this);
             this.recordService = new RecordService(new RecordValidator(), this.activityService);
         } catch (Exception e) {
             e.printStackTrace();
@@ -351,6 +351,13 @@ public class AppController implements MainController {
             } else {
                 this.showAlertDialog(result.getEnumMessage());
             }
+        }
+    }
+
+    @Override
+    public void updateActivityList() {
+        if (AppController.this.activityListController != null) {
+            AppController.this.activityListController.populateListView();
         }
     }
 

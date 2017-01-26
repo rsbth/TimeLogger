@@ -79,6 +79,7 @@ public class Activity {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", uuId='" + uuId + '\'' +
                 ", color='" + color + '\'' +
                 ", active='" + active + '\'' +
                 ", lastModified='" + lastModified + '\'' +

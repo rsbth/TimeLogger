@@ -23,6 +23,7 @@ public class RetrofitUtil {
     private void createRetrofitInstance() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
+        gsonBuilder.registerTypeAdapter(Date.class, new DateSerializer());
         Gson gson = gsonBuilder.create();
         this.retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)

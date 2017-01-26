@@ -6,6 +6,7 @@ import com.mprtcz.timeloggerdesktop.backend.activity.model.HoursData;
 import com.mprtcz.timeloggerdesktop.backend.activity.validators.ActivityValidator;
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
+import com.mprtcz.timeloggerdesktop.frontend.controller.MainController;
 import com.mprtcz.timeloggerdesktop.web.activity.controller.ActivityWebController;
 import com.mprtcz.timeloggerdesktop.web.activity.model.ActivityDto;
 import com.mprtcz.timeloggerdesktop.web.activity.model.converter.ActivityConverter;
@@ -26,6 +27,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -36,25 +38,41 @@ public class ActivityService {
 
     private ActivityValidator activityValidator;
     private CustomDao customDao;
+    private MainController mainController;
 
     public ActivityService(ActivityValidator activityValidator,
-                           CustomDao customDao) {
+                           CustomDao customDao,
+                           MainController mainController) {
         this.customDao = customDao;
         this.activityValidator = activityValidator;
+        this.mainController = mainController;
     }
 
     public List<Activity> getActivities() throws Exception {
         List<Activity> activities = customDao.getAllActivities();
-        for (Activity a :
+        List<Activity> activeActivities = new ArrayList<>();
+        for (Activity activity :
                 activities) {
+            if (activity.isActive()) {
+                activeActivities.add(activity);
+            }
+        }
+        for (Activity a :
+                activeActivities) {
             if (a.getActivityRecords() == null) {
                 break;
             }
         }
-        return activities;
+        return activeActivities;
     }
 
     public void removeActivity(Activity activity) throws Exception {
+        activity.setActive(false);
+        this.activityWebController.deleteActivityOnServer(getDeleteCallback(activity), activity);
+        this.customDao.update(activity);
+    }
+
+    public void removeActivityLocally(Activity activity) throws Exception {
         activity.setActive(false);
         this.customDao.update(activity);
     }
@@ -71,11 +89,12 @@ public class ActivityService {
     }
 
     private ValidationResult validateNewActivityAndSave(Activity activity) throws Exception {
-        logger.info("validateNewActivityAndSave, activity= " +activity.toString());
+        logger.info("validateNewActivityAndSave, activity= " + activity.toString());
         ValidationResult validationResult = activityValidator.validateNewActivity(activity, getActivities());
         if (validationResult.isErrorFree()) {
             activity.setActive(true);
             customDao.save(activity);
+            this.activityWebController.postNewActivityToServer(getPostNewActivityCallback(activity), activity);
             return new ValidationResult(ValidationResult.CustomErrorEnum.RECORD_SAVED);
         } else {
             return validationResult;
@@ -84,10 +103,13 @@ public class ActivityService {
 
     private ValidationResult updateActivityWithServerData(Activity activity, ActivityDto activityDto)
             throws Exception {
+        logger.info("updateActivityWithServerData(Activity activity = {},\n ActivityDto activityDto = {})",
+                activity, activityDto);
         activity.setName(activityDto.getName());
         activity.setLastModified(activityDto.getLastModified());
         activity.setColor(activityDto.getColor());
         activity.setDescription(activityDto.getDescription());
+        activity.setUuId(activityDto.getId());
         return this.updateActivity(activity, UpdateType.SERVER);
     }
 
@@ -97,9 +119,11 @@ public class ActivityService {
         if (validationResult.isErrorFree()) {
             if (updateType == UpdateType.LOCAL) {
                 activity.setLastModified(new Date());
+                this.activityWebController.patchActivityOnServer(getPatchActivityCallback(), activity);
             }
             logger.info("Activity to update = " + activity.toString());
             this.customDao.update(activity);
+            this.mainController.updateActivityList();
             return new ValidationResult(ValidationResult.CustomErrorEnum.ACTIVITY_UPDATED);
         } else {
             return validationResult;
@@ -114,7 +138,8 @@ public class ActivityService {
             }
 
             @Override
-            public void onFailure(Call<List<ActivityDto>> call, Throwable throwable) {}
+            public void onFailure(Call<List<ActivityDto>> call, Throwable throwable) {
+            }
         };
     }
 
@@ -153,7 +178,7 @@ public class ActivityService {
                                     + serverActivity.getLastModified());
                         }
                     } else {
-                        logger.info("Activity is inactive in local db, activity = " +localActivity);
+                        logger.info("Activity is inactive in local db, activity = " + localActivity);
                         activitiesToSendToServer.add(localActivity);
                     }
                 } else {
@@ -166,9 +191,9 @@ public class ActivityService {
                 }
             } else {
                 logger.info("server activity is removed from server");
-                if (localActivity != null) {
+                if (localActivity != null && localActivity.isActive()) {
                     try {
-                        this.removeActivity(localActivity);
+                        this.removeActivityLocally(localActivity);
                     } catch (Exception e) {
                         logger.error("Error while removing server activity = " + e.toString());
                         e.printStackTrace();
@@ -192,7 +217,7 @@ public class ActivityService {
                 this.activityWebController.deleteActivityOnServer(getDeleteCallback(activity), activity);
                 continue;
             }
-            if(activity.getUuId() == null) {
+            if (activity.getUuId() == null) {
                 this.activityWebController.postNewActivityToServer(getPostNewActivityCallback(activity), activity);
             } else {
                 this.activityWebController.patchActivityOnServer(getPatchActivityCallback(), activity);
@@ -204,12 +229,12 @@ public class ActivityService {
         return new Callback<Object>() {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
-                logger.info("Deletion succesful, activity = " +activity);
+                logger.info("Deletion succesful, activity = " + activity);
             }
 
             @Override
             public void onFailure(Call<Object> call, Throwable throwable) {
-                logger.warn("Deleting unsuccessful, " +throwable.toString());
+                logger.warn("Deleting unsuccessful, " + throwable.toString());
                 throwable.printStackTrace();
             }
         };
@@ -220,17 +245,27 @@ public class ActivityService {
             @Override
             public void onResponse(Call<ActivityDto> call, Response<ActivityDto> response) {
                 ActivityDto activityDto = response.body();
-                try {
-                    updateActivityWithServerData(activity, activityDto);
-                } catch (Exception e) {
-                    logger.warn("Update unseccesful, exception = " +e.toString());
-                    e.printStackTrace();
+                logger.info("getPostNewActivityCallback, response.body() = {}", response.body());
+                if (response.isSuccessful()) {
+                    try {
+                        updateActivityWithServerData(activity, activityDto);
+                    } catch (Exception e) {
+                        logger.warn("Update unsuccesful, exception = {},\n response body = {}",
+                                e.toString(), response.code());
+                        e.printStackTrace();
+                    }
+                } else if (response.code() == 422) {
+                    try {
+                        logger.info("Response code 422, message = {}", response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<ActivityDto> call, Throwable throwable) {
-                logger.warn("Updating on server unsuccessful, " +throwable.toString());
+                logger.warn("Posting new activity on server unsuccessful, " + throwable.toString());
                 throwable.printStackTrace();
             }
         };
@@ -245,7 +280,7 @@ public class ActivityService {
 
             @Override
             public void onFailure(Call<ActivityDto> call, Throwable throwable) {
-                logger.warn("Updating on server unsuccessful, " +throwable.toString());
+                logger.warn("Updating on server unsuccessful, " + throwable.toString());
                 throwable.printStackTrace();
             }
         };
@@ -262,8 +297,12 @@ public class ActivityService {
 
     public void synchronizeActivities(ActivityWebController activityWebController) throws Exception {
         this.activityWebController = activityWebController;
-        List<Activity> localActivities = getActivities();
+        List<Activity> localActivities = getAllActivities();
         this.activityWebController.getActivitiesFromServer(getActivitySynchronizationCallback(localActivities));
+    }
+
+    private List<Activity> getAllActivities() throws Exception {
+        return this.customDao.getAllActivities();
     }
 
     private ActivityWebController activityWebController;

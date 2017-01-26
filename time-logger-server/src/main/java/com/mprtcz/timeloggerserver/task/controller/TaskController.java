@@ -64,7 +64,8 @@ public class TaskController {
     public ResponseEntity updateTask(@RequestBody TaskDto taskDto) {
         logger.info("Task to update = " +taskDto);
         this.taskService.updateTask(taskDto);
-        return new ResponseEntity(OK);
+        TaskDto updatedTask = this.taskService.getTaskDtoById(taskDto.getId());
+        return new ResponseEntity<>(updatedTask, OK);
     }
 
     @RequestMapping(value = "/{id}/delete", method = RequestMethod.DELETE)
