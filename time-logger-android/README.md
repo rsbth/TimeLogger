@@ -38,7 +38,7 @@ Every defined activity can have it's name, description and the color changed:
   
   The user can set visibility of data displayed on the graph via the slider setting how many days are displayed:
   
-  ![settings-canvas](https://media.giphy.com/media/26xBQlbDjuH9bjU9W/source.gif)
+  ![settings-canvas](https://media.giphy.com/media/l3q2U9MOwChXwHJAc/source.gif)
   
   If the application runs into any exception or malformed input data, it will display an alert at the bottom of the screen:
   
