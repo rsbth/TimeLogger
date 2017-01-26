@@ -5,7 +5,7 @@ An android application which logs time the user spent on various activities duri
 
 The app's main activity UI:
 
-![mainUI](https://dl2.pushbulletusercontent.com/W9B1F3TbSR8XjwCDW2C8QRusqXCyMdRJ/Screenshot_2017-01-26-19-38-41.png)
+![mainUI](https://drive.google.com/file/d/0BwZjY6PjC5KWQnU5bjB1NWRfN2M/view?usp=sharing)
 
 The application allows a user to define and store task records with an hourly accuracy. 
 
@@ -28,7 +28,7 @@ Every defined activity can have it's name, description and the color changed:
   When creating a new record for a given activity, the user must pass the data about the record's starting time 
   and ending time. The default time in appearing dialog will be set to the ending of the last record in the database.
   
-  ![addingrecord](https://media.giphy.com/media/26xBQSPMy64G4GKU8/source.gif)
+  ![addingrecord](https://media.giphy.com/media/l3q2ZxJAqDObN3htu/source.gif)
     
   
   The user can change the application's language at a runtime. Available languages are: Polish, English(default)
