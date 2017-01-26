@@ -6,10 +6,16 @@ import com.mprtcz.timeloggerdesktop.backend.activity.model.HoursData;
 import com.mprtcz.timeloggerdesktop.backend.activity.validators.ActivityValidator;
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
+import com.mprtcz.timeloggerdesktop.web.activity.controller.ActivityWebController;
+import com.mprtcz.timeloggerdesktop.web.activity.model.ActivityDto;
+import com.mprtcz.timeloggerdesktop.web.activity.model.converter.ActivityConverter;
 import lombok.Getter;
 import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -20,9 +26,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by mprtcz on 2017-01-02.
@@ -56,6 +60,7 @@ public class ActivityService {
 
     public ValidationResult addActivity(Activity activity) throws Exception {
         logger.info("new activity.toString() = {}", activity.toString());
+        activity.setLastModified(new Date());
         return validateNewActivityAndSave(activity);
     }
 
@@ -73,15 +78,111 @@ public class ActivityService {
         }
     }
 
-    public ValidationResult updateActivity(Activity activity) throws Exception {
+    private ValidationResult updateActivityWithServerData(Activity activity, ActivityDto activityDto)
+            throws Exception {
+        activity.setName(activityDto.getName());
+        activity.setLastModified(activityDto.getLastModified());
+        activity.setColor(activityDto.getColor());
+        activity.setDescription(activityDto.getDescription());
+        return this.updateActivity(activity, UpdateType.SERVER);
+    }
+
+    public ValidationResult updateActivity(Activity activity, UpdateType updateType) throws Exception {
         logger.info("updateActivity activity = {}", activity);
         ValidationResult validationResult = activityValidator.validateUpdatedActivity(activity);
         if (validationResult.isErrorFree()) {
+            if(updateType == UpdateType.LOCAL) {
+                activity.setLastModified(new Date());
+            }
+            logger.info("Activity to update = " +activity.toString());
             this.customDao.update(activity);
             return new ValidationResult(ValidationResult.CustomErrorEnum.ACTIVITY_UPDATED);
         } else {
             return validationResult;
         }
+    }
+
+    private Callback<List<ActivityDto>> getActivitySynchronizationCallback(List<Activity> localActivities) {
+        return new Callback<List<ActivityDto>>() {
+            @Override
+            public void onResponse(Call<List<ActivityDto>> call, Response<List<ActivityDto>> response) {
+                updateActivities(localActivities, response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<ActivityDto>> call, Throwable throwable) {
+
+            }
+        };
+    }
+
+    private void updateActivities(List<Activity> localActivities, List<ActivityDto> serverActivities) {
+        logger.info("ActivityService.updateActivities, server activities = " + serverActivities);
+        Map<Long, Activity> localActivitiesMap = getLocalActivitiesMap(localActivities);
+        List<Activity> activitiesToSendToServer = new ArrayList<>();
+        for (ActivityDto serverActivity :
+                serverActivities) {
+            Activity activity = localActivitiesMap.get(serverActivity.getId());
+            logger.info("server Activity  = " +serverActivity.toString());
+            logger.info("local matching Activity  = " +activity);
+            if (serverActivity.isActive()) { //server activity is not removed on server
+                logger.info("server activity is active");
+                if (activity != null) { //activity exists in local db
+                    if (activity.getLastModified().before(serverActivity.getLastModified())) {
+                        logger.info("activity has been modified on server:\nactivity.getLastModified() = "
+                        +activity.getLastModified() + " serverActivity.getLastModified() = " +serverActivity.getLastModified());
+                        try {
+                            this.updateActivityWithServerData(activity, serverActivity); //updating local activity
+                        } catch (Exception e) {
+                            logger.error("Error while updating activity with server data = " + e.toString());
+                            e.printStackTrace();
+                        }
+                    } else if (activity.getLastModified().after(serverActivity.getLastModified())) {
+                        logger.info("activity has been modified locally:\nactivity.getLastModified() = "
+                                +activity.getLastModified() + " serverActivity.getLastModified() = "
+                                +serverActivity.getLastModified());
+                        activitiesToSendToServer.add(activity);
+                    } else {
+                        logger.info("activity has the same modification date locally and on server:" +
+                                "\nactivity.getLastModified() = "
+                                +activity.getLastModified() + " serverActivity.getLastModified() = "
+                                +serverActivity.getLastModified());
+                    }
+                } else {
+                    try {
+                        this.validateNewActivityAndSave(ActivityConverter.toEntity(serverActivity));
+                    } catch (Exception e) {
+                        logger.error("Error while saving server activity = " + e.toString());
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                logger.info("server activity is removed from server");
+                if (activity != null) { //activity exists but is not active on server (removed)
+                    try {
+                        this.removeActivity(activity);
+                    } catch (Exception e) {
+                        logger.error("Error while removing server activity = " + e.toString());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        logger.info("activitiesToSendToServer = " + activitiesToSendToServer);
+    }
+
+    private Map<Long, Activity> getLocalActivitiesMap(List<Activity> activities) {
+        Map<Long, Activity> map = new HashMap<>();
+        for (Activity activity :
+                activities) {
+            map.put(activity.getUuId(), activity);
+        }
+        return map;
+    }
+
+    public void synchronizeActivities(ActivityWebController activityWebController) throws Exception {
+        List<Activity> localActivities = getActivities();
+        activityWebController.getActivitiesFromServer(getActivitySynchronizationCallback(localActivities));
     }
 
     public HoursData getHoursData() throws Exception {
@@ -109,7 +210,7 @@ public class ActivityService {
         for (Activity a :
                 activities.getActivities()) {
             Collection<Record> records = a.getActivityRecords();
-            if(records != null) {
+            if (records != null) {
                 for (Record record :
                         records) {
                     record.setActivity(a);
@@ -133,7 +234,7 @@ public class ActivityService {
         marshaller.marshal(activities, new File("./data.xml"));
     }
 
-    @XmlRootElement(name="Activities")
+    @XmlRootElement(name = "Activities")
     @XmlAccessorType(XmlAccessType.FIELD)
     @ToString
     @Getter
@@ -141,10 +242,17 @@ public class ActivityService {
         @XmlElement(name = "activity")
         List<Activity> activities = new ArrayList<>();
 
-        public Activities() {}
+        public Activities() {
+        }
 
         Activities(List<Activity> activities) {
             this.activities = activities;
         }
+    }
+
+    public enum UpdateType {
+        SERVER,
+        LOCAL,
+        RECORD_UPDATE
     }
 }

@@ -75,6 +75,9 @@ public class ActivityController {
         if (activity.getName().equals("") || activity.getName() == null) {
             return;
         }
+        if(activity.getDescription() == null) {
+            activity.setDescription("");
+        }
         if (activity.getDescription().equals("")) {
             this.activityToUpdate = activity;
             this.initEmptyDescriptionConfirmationPopup(ActivityMethodType.UPDATE);
@@ -95,7 +98,7 @@ public class ActivityController {
         this.updateActivityTask = new Task<ValidationResult>() {
             @Override
             protected ValidationResult call() throws Exception {
-                return ActivityController.this.activityService.updateActivity(activity);
+                return ActivityController.this.activityService.updateActivity(activity, ActivityService.UpdateType.LOCAL);
             }
         };
         updateActivityTask.setOnSucceeded(event ->

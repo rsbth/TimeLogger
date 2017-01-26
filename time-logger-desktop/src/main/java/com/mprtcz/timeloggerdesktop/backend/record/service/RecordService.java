@@ -31,7 +31,7 @@ public class RecordService {
             Activity rootActivity = this.activityService.findActivityById(record.getActivity().getId());
             rootActivity.addRecord(record);
             logger.info("rootActivity = {}", rootActivity.toString());
-            this.activityService.updateActivity(rootActivity);
+            this.activityService.updateActivity(rootActivity, ActivityService.UpdateType.RECORD_UPDATE);
         }
         return validationResult;
     }

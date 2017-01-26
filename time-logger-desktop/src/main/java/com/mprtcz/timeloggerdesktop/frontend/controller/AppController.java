@@ -22,6 +22,7 @@ import com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsCons
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.StyleSetter;
 import com.mprtcz.timeloggerdesktop.frontend.utils.MessageType;
 import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
+import com.mprtcz.timeloggerdesktop.web.activity.controller.ActivityWebController;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -88,6 +89,7 @@ public class AppController implements MainController {
     private SettingsController settingsController;
     private CanvasController canvasController;
     private SettingsService settingsService;
+    private ActivityWebController activityWebController;
 
     private JFXDialog bottomDialog;
     private ActivityService activityService;
@@ -118,6 +120,10 @@ public class AppController implements MainController {
         this.collectBottomButtons();
         this.getTableData();
         this.setAdditionalStyles();
+    }
+
+    private void postUILoadInitialize() {
+        this.initializeActivityWebController();
     }
 
     private void initializeExecutor() {
@@ -156,6 +162,13 @@ public class AppController implements MainController {
 
     private void initializeCanvasController() {
         this.canvasController = new CanvasController();
+    }
+
+    private void initializeActivityWebController() {
+        logger.info("initializeActivityWebController");
+        this.activityWebController = new ActivityWebController();
+        logger.info("Thread = " + Thread.currentThread().toString());
+        this.processActivitySynchronization();
     }
 
     @FXML
@@ -253,6 +266,7 @@ public class AppController implements MainController {
             if (isInitializing && !isFirstRun) {
                 logger.info("(isInitializing && !isFirstRun) = {}", (isInitializing && !isFirstRun));
                 logger.info("breaking the loop");
+                this.postUILoadInitialize();
                 this.setOnClose();
                 return; //breaking the language initialization loop
             }
@@ -470,6 +484,20 @@ public class AppController implements MainController {
             @Override
             protected Object call() throws Exception {
                 AppController.this.activityService.importDataFromFile(file);
+                return null;
+            }
+        };
+        task.setOnSucceeded(event -> this.updateGUI());
+        task.setOnFailed(event -> getOnFailedTaskEventHandler());
+        this.addTaskExceptionListener(task);
+        this.executorService.execute(task);
+    }
+
+    private void processActivitySynchronization() {
+        Task task = new Task() {
+            @Override
+            protected Object call() throws Exception {
+                AppController.this.activityService.synchronizeActivities(activityWebController);
                 return null;
             }
         };

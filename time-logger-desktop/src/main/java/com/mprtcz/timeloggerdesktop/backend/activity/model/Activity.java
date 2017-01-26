@@ -7,9 +7,13 @@ import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * Created by mprtcz on 2017-01-03.
@@ -24,6 +28,9 @@ public class Activity {
     @DatabaseField(generatedId = true)
     private Long id;
 
+    @DatabaseField
+    private Long uuId;
+
     @DatabaseField(canBeNull = false)
     private String name;
 
@@ -32,6 +39,9 @@ public class Activity {
 
     @DatabaseField(canBeNull = false)
     private String color;
+
+    @DatabaseField(canBeNull = false)
+    private Date lastModified;
 
     @ForeignCollectionField(eager = true)
     @XmlElement(name="activityRecord")
@@ -67,6 +77,7 @@ public class Activity {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", color='" + color + '\'' +
+                ", lastModified='" + lastModified + '\'' +
                 ", activityRecords=" + activityRecords +
                 '}';
     }
