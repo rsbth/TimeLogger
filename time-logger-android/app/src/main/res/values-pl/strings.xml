@@ -2,13 +2,13 @@
 <resources>
     <string name="app_name">TimeLogger</string>
     <string name="activitiesListToolbarText">Czynności</string>
-    <string name="addColorTextView">Wybierz kolor:</string>
+    <string name="addColorTextView">Wybierz kolor</string>
     <string name="addRecordButtonText">Dodaj</string>
     <string name="addRecordCancelButtonText">Anuluj</string>
     <string name="addRecordConfirmButtonText">Dodaj rekord</string>
     <string name="addRecordHeaderText">Dodaj nowy rekord</string>
     <string name="addTaskButtonText">Dodaj czynność</string>
-    <string name="add_task_description">Opis czynności:</string>
+    <string name="add_task_description">Opis czynności</string>
     <string name="cancelTaskAddButtonText">Anuluj</string>
     <string name="chooseTaskFirstToast">Najpierw wybierz czynność</string>
     <string name="colorPickerText">Wybierz kolor</string>

@@ -1,129 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_add_task"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:columnCount="2"
-    tools:context="timelogger.mprtcz.com.timelogger.activities.AddTaskActivity">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/addActivityTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_columnSpan="2"
-        android:layout_column="0"
-        android:layout_row="0"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="30dp"
-        android:text="@string/newTaskDataLabel" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/buttonBottomBar"
+        android:isScrollContainer="false"
+        android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/addActivityNameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_columnWeight="1"
-        android:layout_marginBottom="20dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_gravity="end"
-        android:layout_row="1"
-        android:text="@string/taskNameLabel" />
+        <GridLayout
+            android:id="@+id/activity_add_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            tools:context="timelogger.mprtcz.com.timelogger.activities.AddTaskActivity">
 
-    <EditText
-        android:id="@+id/taskNameEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_columnWeight="1"
-        android:layout_gravity="fill_horizontal"
-        android:layout_marginBottom="20dp"
-        android:layout_marginEnd="5dp"
-        android:layout_row="1"
-        android:hint="@string/taskName" />
+            <TextView
+                android:id="@+id/addActivityTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_columnSpan="3"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20sp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="30dp"
+                android:layout_row="0"
+                android:text="@string/newTaskDataLabel" />
 
-    <TextView
-        android:id="@+id/addActivityDescriptionTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_marginBottom="20dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_gravity="end"
-        android:layout_row="2"
-        android:text="@string/taskDescriptionLabel" />
+            <TextView
+                android:layout_columnWeight="1"
+                android:layout_column="2"/>
 
-    <EditText
-        android:id="@+id/taskDescriptionEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_gravity="fill_horizontal"
-        android:layout_marginBottom="20dp"
-        android:layout_marginEnd="50dp"
-        android:layout_row="2"
-        android:hint="@string/add_task_description"
-        android:maxWidth="150dp" />
+            <TextView
+                android:layout_columnWeight="1"
+                android:layout_column="0"/>
 
-    <TextView
-        android:id="@+id/addActivityColorTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_marginBottom="20dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_gravity="end"
-        android:layout_row="3"
-        android:text="@string/addColorTextView" />
+            <EditText
+                android:id="@+id/taskNameEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_columnWeight="3"
+                android:layout_gravity="fill_horizontal"
+                android:layout_marginBottom="20dp"
+                android:layout_marginEnd="5dp"
+                android:layout_row="1"
+                android:hint="@string/taskName" />
 
-    <Button
-        android:text="@string/colorButtonText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_row="3"
-        android:paddingBottom="20dp"
-        android:paddingTop="20dp"
-        android:layout_marginEnd="5dp"
-        android:id="@+id/pickColorButton"
-        android:textColor="#ffffff"
-        android:onClick="onPickColorButtonClicked"/>
+
+            <EditText
+                android:id="@+id/taskDescriptionEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_gravity="fill_horizontal"
+                android:layout_marginBottom="20dp"
+                android:layout_marginEnd="5dp"
+                android:layout_row="2"
+                android:hint="@string/add_task_description"
+                android:maxWidth="150dp" />
+
+
+            <timelogger.mprtcz.com.timelogger.utils.ColorButton
+                android:id="@+id/pickColorButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_columnWeight="1"
+                android:layout_marginEnd="5dp"
+                android:layout_row="3"
+                android:textAllCaps="false"
+                android:onClick="onPickColorButtonClicked"
+                android:text="@string/addColorTextView"
+                android:paddingBottom="20dp"
+                android:gravity="start"
+                android:paddingTop="20dp"
+                android:textColor="#ffffff" />
+        </GridLayout>
+
+    </ScrollView>
 
     <LinearLayout
+        android:id="@+id/buttonBottomBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="6"
-        android:layout_columnSpan="2"
-        android:gravity="center_horizontal"
         android:background="@color/colorPrimary"
-        android:orientation="horizontal">
-        <Button
-            android:text="@string/addTaskButtonText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            android:layout_marginEnd="5dp"
-            android:id="@+id/addTaskConfButton"
-            android:textColor="#ffffff"
-            style="?android:attr/borderlessButtonStyle"
-            android:onClick="onAddTaskButtonClicked"/>
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:weightSum="4">
 
         <Button
-            android:text="@string/cancelTaskAddButtonText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            android:layout_marginStart="5dp"
-            android:id="@+id/cancelAddTaskButton"
-            android:textColor="#ffffff"
+            android:id="@+id/addTaskConfButton"
             style="?android:attr/borderlessButtonStyle"
-            android:onClick="onCancelAddTaskButtonClicked" />
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:onClick="onAddTaskButtonClicked"
+            android:paddingBottom="30dp"
+            android:paddingTop="30dp"
+            android:text="@string/addTaskButtonText"
+            android:textColor="#ffffff" />
+
+        <Button
+            android:id="@+id/cancelAddTaskButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:onClick="onCancelAddTaskButtonClicked"
+            android:paddingBottom="30dp"
+            android:paddingTop="30dp"
+            android:text="@string/cancelTaskAddButtonText"
+            android:textColor="#ffffff" />
     </LinearLayout>
-</GridLayout>
+</RelativeLayout>

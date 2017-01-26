@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:listSelector="@drawable/list_selector"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_above="@+id/footer" />
 
     <LinearLayout
         android:id="@+id/footer"
@@ -23,6 +24,7 @@
         android:layout_alignParentBottom="true"
         android:background="@color/colorPrimary"
         android:gravity="center"
+        android:weightSum="10"
         android:orientation="horizontal">
 
         <Button
@@ -30,6 +32,7 @@
             style="@style/FooterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:drawableTop="@drawable/ic_add_white_24dp"
@@ -41,6 +44,7 @@
             style="@style/FooterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:drawableTop="@drawable/ic_create_white_24dp"
@@ -52,6 +56,7 @@
             style="@style/FooterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:drawableTop="@drawable/ic_clear_white_24dp"
@@ -63,6 +68,7 @@
             style="@style/FooterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:drawableTop="@drawable/ic_insert_photo_white_24dp"
@@ -74,6 +80,7 @@
             style="@style/FooterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:drawableTop="@drawable/ic_settings_white_24dp"

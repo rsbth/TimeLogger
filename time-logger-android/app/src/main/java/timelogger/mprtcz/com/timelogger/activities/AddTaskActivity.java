@@ -9,13 +9,14 @@ import android.widget.EditText;
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.task.controllers.AddTaskController;
 import timelogger.mprtcz.com.timelogger.task.controllers.EditTaskController;
+import timelogger.mprtcz.com.timelogger.utils.ColorButton;
 import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 
 
 public class AddTaskActivity extends Activity {
     EditText nameEditText;
     EditText descriptionEditText;
-    Button pickColorButton;
+    ColorButton pickColorButton;
     public static final String EDITED_TASK_ID = "EDITED_TASK_ID";
     AddTaskController addTaskController;
 
@@ -26,7 +27,7 @@ public class AddTaskActivity extends Activity {
         setContentView(R.layout.activity_add_task);
         UiUtils.loadLanguage(this);
         this.nameEditText = (EditText) findViewById(R.id.taskNameEditText);
-        this.pickColorButton = (Button) findViewById(R.id.pickColorButton);
+        this.pickColorButton = (ColorButton) findViewById(R.id.pickColorButton);
         this.descriptionEditText = (EditText) findViewById(R.id.taskDescriptionEditText);
         if (getIntent().getExtras() != null) {
             this.addTaskController = new EditTaskController(this.nameEditText,
@@ -54,4 +55,5 @@ public class AddTaskActivity extends Activity {
     public void onPickColorButtonClicked(View view) {
         this.addTaskController.onPickColorButtonClicked();
     }
+
 }

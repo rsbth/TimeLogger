@@ -11,9 +11,11 @@
     <ListView
         android:id="@+id/activitiesList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:listSelector="@drawable/list_selector"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/footer" />
 
     <LinearLayout
         android:id="@+id/footer"
@@ -28,8 +30,9 @@
         <Button
             android:id="@+id/addRecordButton"
             style="@style/FooterButton"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:drawableTop="@drawable/ic_add_white_24dp"
             android:onClick="onAddRecordButtonClicked"
             android:text="@string/addRecordButtonText"/>
@@ -37,7 +40,8 @@
         <Button
             android:id="@+id/editTaskButton"
             style="@style/FooterButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_create_white_24dp"
             android:onClick="onEditTaskButtonClicked"
@@ -46,7 +50,8 @@
         <Button
             android:id="@+id/removeTaskButton"
             style="@style/FooterButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_clear_white_24dp"
             android:onClick="onRemoveTaskButtonClicked"
@@ -55,7 +60,8 @@
         <Button
             android:id="@+id/displayGraphicButton"
             style="@style/FooterButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_insert_photo_white_24dp"
             android:onClick="onGraphicButtonClicked"
@@ -64,7 +70,8 @@
         <Button
             android:id="@+id/settingsButton"
             style="@style/FooterButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/ic_settings_white_24dp"
             android:onClick="onSettingsButtonClicked"

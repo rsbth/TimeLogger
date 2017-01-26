@@ -12,9 +12,9 @@
     <string name="taskName">Task name</string>
     <string name="add_task_description">Task description</string>
     <string name="colorPickerText">Choose color</string>
-    <string name="taskNameLabel">Task name:</string>
-    <string name="taskDescriptionLabel">Task Description:</string>
-    <string name="addColorTextView">Choose color:</string>
+    <string name="taskNameLabel">Task name</string>
+    <string name="taskDescriptionLabel">Task Description</string>
+    <string name="addColorTextView">Choose color</string>
     <string name="addTaskButtonText">Add Task</string>
     <string name="cancelTaskAddButtonText">Cancel</string>
     <string name="colorButtonText" translatable="false" />

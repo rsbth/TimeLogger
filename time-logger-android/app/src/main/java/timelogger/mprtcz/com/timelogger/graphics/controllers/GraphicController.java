@@ -26,6 +26,7 @@ public class GraphicController {
 
     @Setter
     private int visibleDays = 10;
+    private int maxDays;
     private int basicCellHeight = 10;
     private int headerHeight = 0;
     private int cellWidth = 0;
@@ -38,7 +39,13 @@ public class GraphicController {
 
     public GraphicController(HoursDataService.Hour[][] hoursArray) {
         this.hoursArray = hoursArray;
+        this.maxDays = hoursArray.length;
         this.paint = new Paint();
+    }
+
+    public int getMaxDays() {
+        Log.d(TAG, "maxDays = " +maxDays);
+        return this.maxDays;
     }
 
     public void drawArrayOnCanvas(Canvas canvas) {
