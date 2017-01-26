@@ -5,7 +5,7 @@ An android application which logs time the user spent on various activities duri
 
 The app's main activity UI:
 
-![mainUI](https://lh4.googleusercontent.com/fPjDx-Y27kmJrX4ZOz2msFzrjHxNcHOmqZZw5e6vZ9qzWSVMR5Wn8y-mKm6j3zZIb126gM0a-GkB1YU=w1440-h770)
+![mainUI](http://i.imgur.com/oKP5AXb.png)
 
 The application allows a user to define and store task records with an hourly accuracy. 
 
