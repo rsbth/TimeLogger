@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 /**
@@ -30,6 +31,12 @@ public class Task {
 
     @Column(name = "COLOR", nullable = false)
     private String color;
+
+    @Column(name = "LAST_MODIFIED", nullable = false)
+    private LocalDateTime lastModified;
+
+    @Column(name = "IS_ACTIVE", nullable = false)
+    private boolean active;
 
     @OneToMany(mappedBy = "task")
     Collection<Record> activityRecords;

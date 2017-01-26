@@ -4,13 +4,12 @@ import com.mprtcz.timeloggerserver.record.model.Record;
 import com.mprtcz.timeloggerserver.record.model.RecordDto;
 import com.mprtcz.timeloggerserver.task.model.Task;
 import com.mprtcz.timeloggerserver.task.service.TaskService;
+import com.mprtcz.timeloggerserver.utils.DateTimeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,7 +17,6 @@ import java.util.List;
  */
 @Component
 public class RecordEntityDtoConverterImpl implements RecordEntityDtoConverter {
-
 
     private final
     TaskService taskService;
@@ -32,10 +30,10 @@ public class RecordEntityDtoConverterImpl implements RecordEntityDtoConverter {
     public Record toEntity(RecordDto recordDto, Task task) {
         Record record = new Record();
         record.setTask(task);
-        record.setEndDateTime(toLocalDateTimeWithZeroMinutes(recordDto.getEndDateTime()));
-        record.setStartDateTime(toLocalDateTimeWithZeroMinutes(recordDto.getStartDateTime()));
+        record.setEndDateTime(DateTimeConverter.toLocalDateTimeWithZeroMinutes(recordDto.getEndDateTime()));
+        record.setStartDateTime(DateTimeConverter.toLocalDateTimeWithZeroMinutes(recordDto.getStartDateTime()));
         if(recordDto.getCreationDate() != null) {
-            record.setCreationDate(toLocalDateTimeWithZeroMinutes(recordDto.getCreationDate()));
+            record.setCreationDate(DateTimeConverter.toLocalDateTimeWithZeroMinutes(recordDto.getCreationDate()));
         }
         record.setSynchronizationDate(LocalDateTime.now());
         return record;
@@ -45,10 +43,10 @@ public class RecordEntityDtoConverterImpl implements RecordEntityDtoConverter {
     public RecordDto toDto(Record record) {
         RecordDto recordDto = new RecordDto();
         recordDto.setTaskID(record.getTask().getId());
-        recordDto.setCreationDate(toDate(record.getCreationDate()));
-        recordDto.setStartDateTime(toDate(record.getStartDateTime()));
-        recordDto.setEndDateTime(toDate(record.getEndDateTime()));
-        recordDto.setSynchronizationDate(toDate(record.getSynchronizationDate()));
+        recordDto.setCreationDate(DateTimeConverter.toDate(record.getCreationDate()));
+        recordDto.setStartDateTime(DateTimeConverter.toDate(record.getStartDateTime()));
+        recordDto.setEndDateTime(DateTimeConverter.toDate(record.getEndDateTime()));
+        recordDto.setSynchronizationDate(DateTimeConverter.toDate(record.getSynchronizationDate()));
         return recordDto;
     }
 
@@ -62,11 +60,5 @@ public class RecordEntityDtoConverterImpl implements RecordEntityDtoConverter {
         return recordDtos;
     }
 
-    private static LocalDateTime toLocalDateTimeWithZeroMinutes(Date date) {
-        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).withMinute(0).withSecond(0).withNano(0);
-    }
-
-    private static Date toDate(LocalDateTime localDateTime) {
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-    }
+    
 }

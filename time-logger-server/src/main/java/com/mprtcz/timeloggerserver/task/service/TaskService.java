@@ -7,14 +7,19 @@ import com.mprtcz.timeloggerserver.task.model.converter.TaskEntityDtoConverter;
 import com.mprtcz.timeloggerserver.task.repository.TaskRepository;
 import com.mprtcz.timeloggerserver.task.validator.TaskValidator;
 import com.mprtcz.timeloggerserver.utils.exceptions.TaskNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 /**
  * Created by mprtcz on 2017-01-23.
  */
 @Service
 public class TaskService {
+    private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
     private TaskRepository taskRepository;
     private final TaskEntityDtoConverter taskEntityDtoConverter;
@@ -32,11 +37,15 @@ public class TaskService {
     public void saveTask(TaskDto taskDto) {
         Task task = this.taskEntityDtoConverter.toEntity(taskDto);
         TaskValidator.validateNewTask(task, this.getAllTasks());
+        task.setLastModified(LocalDateTime.now());
         this.taskRepository.save(task);
     }
 
     public Iterable<Task> getAllTasks() {
-        return this.taskRepository.findAll();
+        Iterable<Task> allTasks = this.taskRepository.findAll();
+        logger.info("All tasks = " + allTasks);
+        System.out.println("allTasks = " + allTasks);
+        return allTasks;
     }
 
     public Iterable<TaskDto> getAllTaskDtos() {
@@ -88,6 +97,7 @@ public class TaskService {
         task.setName(convertedDto.getName());
         task.setColor(convertedDto.getColor());
         task.setDescription(convertedDto.getDescription());
+        task.setLastModified(LocalDateTime.now());
         this.taskRepository.save(task);
     }
 }

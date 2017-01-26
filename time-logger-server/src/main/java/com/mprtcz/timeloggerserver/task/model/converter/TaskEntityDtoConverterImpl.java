@@ -2,6 +2,9 @@ package com.mprtcz.timeloggerserver.task.model.converter;
 
 import com.mprtcz.timeloggerserver.task.model.Task;
 import com.mprtcz.timeloggerserver.task.model.TaskDto;
+import com.mprtcz.timeloggerserver.utils.DateTimeConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ import java.util.List;
  */
 @Component
 public class TaskEntityDtoConverterImpl implements TaskEntityDtoConverter {
+    private static final Logger logger = LoggerFactory.getLogger(TaskEntityDtoConverterImpl.class);
 
     @Override
     public Task toEntity(TaskDto taskDto) {
@@ -19,6 +23,8 @@ public class TaskEntityDtoConverterImpl implements TaskEntityDtoConverter {
         task.setName(taskDto.getName());
         task.setDescription(taskDto.getDescription());
         task.setColor(taskDto.getColor());
+        task.setLastModified(DateTimeConverter.toLocalDateTime(taskDto.getLastModified()));
+        task.setActive(taskDto.isActive());
         return task;
     }
 
@@ -29,6 +35,9 @@ public class TaskEntityDtoConverterImpl implements TaskEntityDtoConverter {
         taskDto.setColor(task.getColor());
         taskDto.setDescription(task.getDescription());
         taskDto.setId(task.getId());
+        taskDto.setLastModified(DateTimeConverter.toDate(task.getLastModified()));
+        logger.info("taskDto.getLastModified() = " + taskDto.getLastModified());
+        taskDto.setActive(task.isActive());
         return taskDto;
     }
 
