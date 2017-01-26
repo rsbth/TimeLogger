@@ -38,6 +38,7 @@ public class TaskService {
         Task task = this.taskEntityDtoConverter.toEntity(taskDto);
         TaskValidator.validateNewTask(task, this.getAllTasks());
         task.setLastModified(LocalDateTime.now());
+        task.setActive(true);
         this.taskRepository.save(task);
     }
 
@@ -75,7 +76,10 @@ public class TaskService {
 
     public void deleteTask(Long id) {
         checkIfTaskWithIdExists(id);
-        this.taskRepository.delete(id);
+        Task task = getTaskById(id);
+        task.setLastModified(LocalDateTime.now());
+        task.setActive(false);
+        this.taskRepository.save(task);
     }
 
     public void checkIfTaskWithIdExists(Long id) {

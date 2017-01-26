@@ -43,6 +43,9 @@ public class Activity {
     @DatabaseField(canBeNull = false)
     private Date lastModified;
 
+    @DatabaseField(canBeNull = false)
+    private boolean active;
+
     @ForeignCollectionField(eager = true)
     @XmlElement(name="activityRecord")
     Collection<Record> activityRecords;
@@ -77,6 +80,7 @@ public class Activity {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", color='" + color + '\'' +
+                ", active='" + active + '\'' +
                 ", lastModified='" + lastModified + '\'' +
                 ", activityRecords=" + activityRecords +
                 '}';

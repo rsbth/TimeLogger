@@ -4,6 +4,8 @@ import com.mprtcz.timeloggerserver.record.model.RecordDto;
 import com.mprtcz.timeloggerserver.record.service.RecordService;
 import com.mprtcz.timeloggerserver.task.model.TaskDto;
 import com.mprtcz.timeloggerserver.task.service.TaskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/task/")
 public class TaskController {
+    private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
 
     private final
     TaskService taskService;
@@ -46,7 +49,8 @@ public class TaskController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public ResponseEntity addNewTask(@RequestBody TaskDto taskDto) {
         this.taskService.saveTask(taskDto);
-        return new ResponseEntity(OK);
+        TaskDto savedTaskDto = this.taskService.getTaskDtoByName(taskDto.getName());
+        return new ResponseEntity<>(savedTaskDto, OK);
     }
 
     @RequestMapping(value = "/{taskId}/records")
@@ -58,12 +62,14 @@ public class TaskController {
 
     @RequestMapping(value = "/update", method = RequestMethod.PATCH)
     public ResponseEntity updateTask(@RequestBody TaskDto taskDto) {
+        logger.info("Task to update = " +taskDto);
         this.taskService.updateTask(taskDto);
         return new ResponseEntity(OK);
     }
 
     @RequestMapping(value = "/{id}/delete", method = RequestMethod.DELETE)
     public ResponseEntity deleteTask(@PathVariable Long id) {
+        logger.info("Task ID to delete = " +id);
         this.taskService.deleteTask(id);
         return new ResponseEntity(OK);
     }

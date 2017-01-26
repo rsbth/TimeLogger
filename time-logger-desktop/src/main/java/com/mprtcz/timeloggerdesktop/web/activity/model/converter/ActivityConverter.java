@@ -17,4 +17,14 @@ public class ActivityConverter {
         activity.setUuId(activityDto.getId());
         return activity;
     }
+
+    public static ActivityDto toDto(Activity activity) {
+        ActivityDto activityDto = new ActivityDto();
+        activityDto.setName(activity.getName());
+        activityDto.setColor(activity.getColor());
+        activityDto.setDescription(activity.getDescription());
+        activityDto.setLastModified(activity.getLastModified());
+        activityDto.setId(activity.getUuId());
+        return activityDto;
+    }
 }
