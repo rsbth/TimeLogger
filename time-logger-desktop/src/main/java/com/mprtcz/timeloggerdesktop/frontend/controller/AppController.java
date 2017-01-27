@@ -349,6 +349,7 @@ public class AppController implements MainController {
                 this.showInfoDialog(result.getCustomErrorEnum().getValue());
                 this.updateGUI();
             } else {
+                logger.info("displayValidationResult(ValidationResult result = {} )", result);
                 this.showAlertDialog(result.getEnumMessage());
             }
         }
@@ -380,7 +381,7 @@ public class AppController implements MainController {
         this.closeDialogIfExists();
         this.bottomDialog = new JFXDialog(this.bottomStackPane, DialogElementsConstructor.getTextLayout(value, type),
                 JFXDialog.DialogTransition.BOTTOM);
-        this.bottomDialog.setOnMouseEntered(event -> AppController.this.closeDialogIfExists());
+        this.bottomDialog.setOnMouseExited(event -> AppController.this.closeDialogIfExists());
         this.bottomDialog.show();
     }
 

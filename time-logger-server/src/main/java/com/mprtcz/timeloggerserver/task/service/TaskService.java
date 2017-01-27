@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.mprtcz.timeloggerserver.utils.DateTimeConverter.toLocalDateTime;
 
 /**
  * Created by mprtcz on 2017-01-23.
@@ -36,8 +40,8 @@ public class TaskService {
 
     public void saveTask(TaskDto taskDto) {
         Task task = this.taskEntityDtoConverter.toEntity(taskDto);
-        TaskValidator.validateNewTask(task, this.getAllTasks());
-        task.setLastModified(LocalDateTime.now());
+        TaskValidator.validateNewTask(task, this.getAllActiveTasks());
+        task.setLastModified(toLocalDateTime(taskDto.getLastModified()));
         task.setActive(true);
         this.taskRepository.save(task);
     }
@@ -47,6 +51,18 @@ public class TaskService {
         logger.info("All tasks = " + allTasks);
         System.out.println("allTasks = " + allTasks);
         return allTasks;
+    }
+
+    public Iterable<Task> getAllActiveTasks() {
+        List<Task> allActiveTasks = new ArrayList<>();
+        Iterable<Task> tasks = getAllTasks();
+        for (Task task :
+                tasks) {
+            if (task.isActive()) {
+                allActiveTasks.add(task);
+            }
+        }
+        return allActiveTasks;
     }
 
     public Iterable<TaskDto> getAllTaskDtos() {
@@ -83,14 +99,13 @@ public class TaskService {
     }
 
     public void checkIfTaskWithIdExists(Long id) {
-        if(!this.taskRepository.exists(id)) {
+        if (!this.taskRepository.exists(id)) {
             throw new TaskNotFoundException("Task with this id does not exist");
         }
     }
 
-
     private void taskNullCheck(Task task) {
-        if(task == null) {
+        if (task == null) {
             throw new TaskNotFoundException("Task with this id does not exist");
         }
     }

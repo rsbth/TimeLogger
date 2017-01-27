@@ -40,7 +40,7 @@ public class ActivityValidator {
     private void checkIfActivityNameExists(String name, List<Activity> activities) {
         for (Activity activity :
                 activities) {
-            if (activity.getName().equals(name)) {
+            if (activity.getName().toLowerCase().equals(name.toLowerCase())) {
                 this.validationResult.getNewErrorEnum(ValidationResult.CustomErrorEnum.ACTIVITY_EXISTS);
                 break;
             }

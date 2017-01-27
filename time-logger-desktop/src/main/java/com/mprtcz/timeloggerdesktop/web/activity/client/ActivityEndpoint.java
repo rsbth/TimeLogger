@@ -21,5 +21,5 @@ public interface ActivityEndpoint {
     Call<ActivityDto> patchActivityOnServer(@Body ActivityDto activityDto);
 
     @DELETE("/task/{id}/delete")
-    Call<Object> deleteActivityOnServer(@Path("id") Long id);
+    Call<Void> deleteActivityOnServer(@Path("id") Long id);
 }

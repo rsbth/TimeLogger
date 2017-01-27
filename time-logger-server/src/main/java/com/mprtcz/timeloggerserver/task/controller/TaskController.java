@@ -62,7 +62,7 @@ public class TaskController {
 
     @RequestMapping(value = "/update", method = RequestMethod.PATCH)
     public ResponseEntity updateTask(@RequestBody TaskDto taskDto) {
-        logger.info("Task to update = " +taskDto);
+        logger.info("Task to update = " + taskDto);
         this.taskService.updateTask(taskDto);
         TaskDto updatedTask = this.taskService.getTaskDtoById(taskDto.getId());
         return new ResponseEntity<>(updatedTask, OK);
@@ -70,8 +70,8 @@ public class TaskController {
 
     @RequestMapping(value = "/{id}/delete", method = RequestMethod.DELETE)
     public ResponseEntity deleteTask(@PathVariable Long id) {
-        logger.info("Task ID to delete = " +id);
+        logger.info("Task ID to delete = " + id);
         this.taskService.deleteTask(id);
-        return new ResponseEntity(OK);
+        return new ResponseEntity<>(OK);
     }
 }

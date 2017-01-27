@@ -117,9 +117,13 @@ public class ActivityService {
         logger.info("updateActivity activity = {}", activity);
         ValidationResult validationResult = activityValidator.validateUpdatedActivity(activity);
         if (validationResult.isErrorFree()) {
-            if (updateType == UpdateType.LOCAL) {
-                activity.setLastModified(new Date());
-                this.activityWebController.patchActivityOnServer(getPatchActivityCallback(), activity);
+            if (activity.getUuId() == null) {
+                this.activityWebController.postNewActivityToServer(getPostNewActivityCallback(activity), activity);
+            } else {
+                if (updateType == UpdateType.LOCAL) {
+                    activity.setLastModified(new Date());
+                    this.activityWebController.patchActivityOnServer(getPatchActivityCallback(), activity);
+                }
             }
             logger.info("Activity to update = " + activity.toString());
             this.customDao.update(activity);
@@ -159,7 +163,8 @@ public class ActivityService {
                         logger.info("activity is active in local db");
                         if (localActivity.getLastModified().before(serverActivity.getLastModified())) {
                             logger.info("activity has been modified on server:\nactivity.getLastModified() = "
-                                    + localActivity.getLastModified() + " serverActivity.getLastModified() = " + serverActivity.getLastModified());
+                                    + localActivity.getLastModified() + " serverActivity.getLastModified() = "
+                                    + serverActivity.getLastModified());
                             try {
                                 this.updateActivityWithServerData(localActivity, serverActivity);
                             } catch (Exception e) {
@@ -213,7 +218,7 @@ public class ActivityService {
     private void sendLocalChangesToServer(List<Activity> activitiesToSendToServer) {
         for (Activity activity :
                 activitiesToSendToServer) {
-            if (!activity.isActive()) {
+            if (!activity.isActive() && activity.getUuId() != null) {
                 this.activityWebController.deleteActivityOnServer(getDeleteCallback(activity), activity);
                 continue;
             }
@@ -225,15 +230,15 @@ public class ActivityService {
         }
     }
 
-    private Callback<Object> getDeleteCallback(Activity activity) {
-        return new Callback<Object>() {
+    private Callback<Void> getDeleteCallback(Activity activity) {
+        return new Callback<Void>() {
             @Override
-            public void onResponse(Call<Object> call, Response<Object> response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
                 logger.info("Deletion succesful, activity = " + activity);
             }
 
             @Override
-            public void onFailure(Call<Object> call, Throwable throwable) {
+            public void onFailure(Call<Void> call, Throwable throwable) {
                 logger.warn("Deleting unsuccessful, " + throwable.toString());
                 throwable.printStackTrace();
             }

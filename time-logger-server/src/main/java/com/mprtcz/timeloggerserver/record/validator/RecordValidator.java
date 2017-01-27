@@ -15,9 +15,9 @@ public class RecordValidator {
     private List<Record> records = new ArrayList<>();
     private List<ValidationViolation> violations = new ArrayList<>();
 
-    public RecordValidator(Record record, Iterable<Record> recordsIter) {
+    public RecordValidator(Record record, Iterable<Record> recordsIterable) {
         this.record = record;
-        recordsIter.forEach(records::add);
+        recordsIterable.forEach(records::add);
         this.validateNewRecord();
     }
 

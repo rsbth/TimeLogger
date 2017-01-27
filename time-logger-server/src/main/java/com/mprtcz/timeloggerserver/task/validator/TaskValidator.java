@@ -10,10 +10,9 @@ public class TaskValidator {
     public static void validateNewTask(Task task, Iterable<Task> allTasks) {
         for (Task t :
                 allTasks) {
-            if (t.getName().equals(task.getName())) {
+            if (t.getName().toLowerCase().equals(task.getName().toLowerCase())) {
                 throw new IllegalArgumentException("Task with this name already exists");
             }
         }
-
     }
 }
