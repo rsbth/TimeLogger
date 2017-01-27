@@ -64,7 +64,7 @@ public class GraphicController {
 
         if (areHeadersEnabled) {
             this.cellWidth = canvas.getWidth() / 27;
-            xOffset = 1;
+            xOffset = 2;
             yOffset = 1;
             leftLegendWidth = xOffset * cellWidth;
             headerHeight = yOffset * BASIC_CELL_HEIGHT;

@@ -25,7 +25,6 @@ public class GraphicDataActivity extends AppCompatActivity {
         UiUtils.loadLanguage(this);
         this.graphicView = (GraphicView) findViewById(R.id.graphicViewElement);
         this.sliderTitleTextView = (TextView) findViewById(R.id.sliderTitleTextView);
-        setSeekBarListener();
         this.graphicView.setGraphicController(new GraphicController(getHoursArrayAsync(this)));
         this.maxDays = this.graphicView.getGraphicController().getMaxDays();
         if (maxDays > 5) {
@@ -33,6 +32,7 @@ public class GraphicDataActivity extends AppCompatActivity {
         } else {
             visibleDays = maxDays;
         }
+        setSeekBarListener();
         graphicView.getGraphicController().setVisibleDays(visibleDays);
         String basicSliderText = getResources().getString(R.string.sliderTitleText) + ": " + visibleDays;
         this.sliderTitleTextView.setText(basicSliderText);
@@ -41,6 +41,7 @@ public class GraphicDataActivity extends AppCompatActivity {
 
     private void setSeekBarListener() {
         SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
+        seekBar.setMax(this.maxDays);
         seekBar.setProgress(this.visibleDays);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
