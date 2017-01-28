@@ -38,6 +38,9 @@ public class Task {
     @Column(name = "IS_ACTIVE", nullable = false)
     private boolean active;
 
+    @Column(name = "UUID", nullable = false)
+    private String uuID;
+
     @OneToMany(mappedBy = "task")
     Collection<Record> activityRecords;
 

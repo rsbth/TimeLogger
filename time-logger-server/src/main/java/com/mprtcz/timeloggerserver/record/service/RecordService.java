@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,8 +65,23 @@ public class RecordService {
         return this.recordRepository.findAll();
     }
 
-    public List<RecordDto> getRecordsByTaskId(Long taskId) {
-        this.taskService.checkIfTaskWithIdExists(taskId);
-        return this.recordEntityDtoConverter.toDtos(this.customRecordRepository.getRecordsByTaskId(taskId));
+    public List<RecordDto> getRecordsByTaskUuId(String taskUuId) {
+        this.taskService.checkIfTaskWithUuIdExists(taskUuId);
+        Task task = this.taskService.getTaskByUuId(taskUuId);
+        return this.recordEntityDtoConverter.toDtos(
+                this.customRecordRepository.getRecordsByTaskId(task.getId()));
+    }
+
+    public List<RecordDto> getAllRecordsAfterSyncDate(Long dateMilis) {
+        Iterable<RecordDto> records = getAllRecordDtos();
+        List<RecordDto> recordsAfterDate = new ArrayList<>();
+        Date date = new Date(dateMilis);
+        for (RecordDto recordDto:
+             records) {
+            if(recordDto.getSynchronizationDate().after(date)) {
+                recordsAfterDate.add(recordDto);
+            }
+        }
+        return recordsAfterDate;
     }
 }

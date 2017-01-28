@@ -53,10 +53,10 @@ public class TaskController {
         return new ResponseEntity<>(savedTaskDto, OK);
     }
 
-    @RequestMapping(value = "/{taskId}/records")
-    public ResponseEntity getRecordsOfTask(@PathVariable Long taskId) {
-        this.taskService.checkIfTaskWithIdExists(taskId);
-        List<RecordDto> recordsByTaskId = this.recordService.getRecordsByTaskId(taskId);
+    @RequestMapping(value = "/{taskUuId}/records")
+    public ResponseEntity getRecordsOfTask(@PathVariable String taskUuId) {
+        this.taskService.checkIfTaskWithUuIdExists(taskUuId);
+        List<RecordDto> recordsByTaskId = this.recordService.getRecordsByTaskUuId(taskUuId);
         return new ResponseEntity<>(recordsByTaskId, OK);
     }
 
@@ -64,14 +64,14 @@ public class TaskController {
     public ResponseEntity updateTask(@RequestBody TaskDto taskDto) {
         logger.info("Task to update = " + taskDto);
         this.taskService.updateTask(taskDto);
-        TaskDto updatedTask = this.taskService.getTaskDtoById(taskDto.getId());
+        TaskDto updatedTask = this.taskService.getTaskDtoByUuid(taskDto.getUuID());
         return new ResponseEntity<>(updatedTask, OK);
     }
 
-    @RequestMapping(value = "/{id}/delete", method = RequestMethod.DELETE)
-    public ResponseEntity deleteTask(@PathVariable Long id) {
-        logger.info("Task ID to delete = " + id);
-        this.taskService.deleteTask(id);
+    @RequestMapping(value = "/{uuId}/delete", method = RequestMethod.DELETE)
+    public ResponseEntity deleteTask(@PathVariable String uuId) {
+        logger.info("Task ID to delete = " + uuId);
+        this.taskService.deleteTask(uuId);
         return new ResponseEntity<>(OK);
     }
 }

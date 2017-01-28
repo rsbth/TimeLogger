@@ -6,10 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -33,6 +32,12 @@ public class RecordController {
     public ResponseEntity getAllRecords() {
         Iterable<RecordDto> allRecords = this.recordService.getAllRecordDtos();
         return new ResponseEntity<>(allRecords, OK);
+    }
+
+    @RequestMapping("/all/after/{date}")
+    public ResponseEntity getRecordsAfterSyncDate(@PathVariable Long date) {
+        List<RecordDto> recordsAfterDate = this.recordService.getAllRecordsAfterSyncDate(date);
+        return new ResponseEntity<>(recordsAfterDate, OK);
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)

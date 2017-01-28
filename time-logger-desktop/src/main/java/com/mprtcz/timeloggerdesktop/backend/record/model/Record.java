@@ -44,6 +44,14 @@ public class Record {
     @XmlJavaTypeAdapter(DateAdapter.class)
     private Date endDateTime;
 
+    @DatabaseField
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    private Date creationDate;
+
+    @DatabaseField
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    private Date synchronizationDate;
+
     public Record(LocalTime startTime,
                   LocalTime endTime,
                   LocalDate startDate,

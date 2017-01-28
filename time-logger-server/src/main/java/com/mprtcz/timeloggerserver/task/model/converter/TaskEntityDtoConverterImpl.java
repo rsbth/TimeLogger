@@ -34,7 +34,7 @@ public class TaskEntityDtoConverterImpl implements TaskEntityDtoConverter {
         taskDto.setName(task.getName());
         taskDto.setColor(task.getColor());
         taskDto.setDescription(task.getDescription());
-        taskDto.setId(task.getId());
+        taskDto.setUuID(task.getUuID());
         taskDto.setLastModified(DateTimeConverter.toDate(task.getLastModified()));
         logger.info("taskDto.getLastModified() = " + taskDto.getLastModified());
         taskDto.setActive(task.isActive());

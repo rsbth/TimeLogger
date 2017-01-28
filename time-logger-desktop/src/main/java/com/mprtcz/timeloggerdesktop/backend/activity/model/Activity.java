@@ -29,7 +29,7 @@ public class Activity {
     private Long id;
 
     @DatabaseField
-    private Long uuId;
+    private String uuId;
 
     @DatabaseField(canBeNull = false)
     private String name;

@@ -3,6 +3,7 @@ package com.mprtcz.timeloggerdesktop.web.webstatic;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mprtcz.timeloggerdesktop.web.activity.client.ActivityEndpoint;
+import com.mprtcz.timeloggerdesktop.web.record.webclient.RecordEndpoint;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -45,5 +46,10 @@ public class RetrofitUtil {
     public static ActivityEndpoint getActivityEndpointRetrofit() {
         Retrofit retrofit = getRetrofitInstance();
         return retrofit.create(ActivityEndpoint.class);
+    }
+
+    public static RecordEndpoint getRecordEndpointRetrofit() {
+        Retrofit retrofit = getRetrofitInstance();
+        return retrofit.create(RecordEndpoint.class);
     }
 }

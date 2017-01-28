@@ -10,6 +10,7 @@ import com.mprtcz.timeloggerdesktop.frontend.controller.MainController;
 import com.mprtcz.timeloggerdesktop.web.activity.controller.ActivityWebController;
 import com.mprtcz.timeloggerdesktop.web.activity.model.ActivityDto;
 import com.mprtcz.timeloggerdesktop.web.activity.model.converter.ActivityConverter;
+import com.mprtcz.timeloggerdesktop.web.webstatic.WebHandler;
 import lombok.Getter;
 import lombok.ToString;
 import org.slf4j.Logger;
@@ -27,7 +28,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -94,7 +94,9 @@ public class ActivityService {
         if (validationResult.isErrorFree()) {
             activity.setActive(true);
             customDao.save(activity);
-            this.activityWebController.postNewActivityToServer(getPostNewActivityCallback(activity), activity);
+            if (activity.getUuId() == null) {
+                this.activityWebController.postNewActivityToServer(getPostNewActivityCallback(activity), activity);
+            }
             return new ValidationResult(ValidationResult.CustomErrorEnum.RECORD_SAVED);
         } else {
             return validationResult;
@@ -109,7 +111,7 @@ public class ActivityService {
         activity.setLastModified(activityDto.getLastModified());
         activity.setColor(activityDto.getColor());
         activity.setDescription(activityDto.getDescription());
-        activity.setUuId(activityDto.getId());
+        activity.setUuId(activityDto.getUuID());
         return this.updateActivity(activity, UpdateType.SERVER);
     }
 
@@ -138,21 +140,29 @@ public class ActivityService {
         return new Callback<List<ActivityDto>>() {
             @Override
             public void onResponse(Call<List<ActivityDto>> call, Response<List<ActivityDto>> response) {
-                synchronizeLocalActivitiesWithServer(localActivities, response.body());
+                if (response.isSuccessful()) {
+                    synchronizeLocalActivitiesWithServer(localActivities, response.body());
+                } else {
+                    WebHandler.handleBadCodeResponse(call, response);
+                }
             }
 
             @Override
             public void onFailure(Call<List<ActivityDto>> call, Throwable throwable) {
+                logger.error("getActivitySynchronizationCallback error, " + throwable.toString());
             }
         };
     }
 
     private void synchronizeLocalActivitiesWithServer(List<Activity> localActivities, List<ActivityDto> serverActivities) {
         logger.info("ActivityService.synchronizeLocalActivitiesWithServer, server activities = " + serverActivities);
-        Map<Long, Activity> localActivitiesMap = getLocalActivitiesMap(localActivities);
+        Map<String, Activity> localActivitiesMap = getLocalActivitiesMap(localActivities);
+        if (serverActivities == null) {
+            return;
+        }
         List<Activity> activitiesToSendToServer = new ArrayList<>();
         for (ActivityDto serverActivity : serverActivities) {
-            Activity localActivity = localActivitiesMap.get(serverActivity.getId());
+            Activity localActivity = localActivitiesMap.get(serverActivity.getUuID());
             logger.info("server Activity  = " + serverActivity.toString());
             logger.info("local matching Activity  = " + localActivity);
             if (serverActivity.isActive()) {
@@ -213,6 +223,7 @@ public class ActivityService {
         }
         sendLocalChangesToServer(activitiesToSendToServer);
         logger.info("activitiesToSendToServer = " + activitiesToSendToServer);
+        this.mainController.updateActivityList();
     }
 
     private void sendLocalChangesToServer(List<Activity> activitiesToSendToServer) {
@@ -234,7 +245,11 @@ public class ActivityService {
         return new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                logger.info("Deletion succesful, activity = " + activity);
+                if (response.isSuccessful()) {
+                    logger.info("Deletion succesful, activity = " + activity);
+                } else {
+                    WebHandler.handleBadCodeResponse(call, response);
+                }
             }
 
             @Override
@@ -259,12 +274,8 @@ public class ActivityService {
                                 e.toString(), response.code());
                         e.printStackTrace();
                     }
-                } else if (response.code() == 422) {
-                    try {
-                        logger.info("Response code 422, message = {}", response.errorBody().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                } else {
+                    WebHandler.handleBadCodeResponse(call, response);
                 }
             }
 
@@ -280,7 +291,11 @@ public class ActivityService {
         return new Callback<ActivityDto>() {
             @Override
             public void onResponse(Call<ActivityDto> call, Response<ActivityDto> response) {
-                logger.info("Patching succesful");
+                if (response.isSuccessful()) {
+                    logger.info("Patching succesful");
+                } else {
+                    WebHandler.handleBadCodeResponse(call, response);
+                }
             }
 
             @Override
@@ -291,8 +306,8 @@ public class ActivityService {
         };
     }
 
-    private Map<Long, Activity> getLocalActivitiesMap(List<Activity> activities) {
-        Map<Long, Activity> map = new HashMap<>();
+    private Map<String, Activity> getLocalActivitiesMap(List<Activity> activities) {
+        Map<String, Activity> map = new HashMap<>();
         for (Activity activity :
                 activities) {
             map.put(activity.getUuId(), activity);

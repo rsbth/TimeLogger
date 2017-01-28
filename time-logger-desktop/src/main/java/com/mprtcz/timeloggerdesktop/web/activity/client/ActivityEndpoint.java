@@ -20,6 +20,6 @@ public interface ActivityEndpoint {
     @PATCH("/task/update")
     Call<ActivityDto> patchActivityOnServer(@Body ActivityDto activityDto);
 
-    @DELETE("/task/{id}/delete")
-    Call<Void> deleteActivityOnServer(@Path("id") Long id);
+    @DELETE("/task/{uuId}/delete")
+    Call<Void> deleteActivityOnServer(@Path("uuId") String id);
 }

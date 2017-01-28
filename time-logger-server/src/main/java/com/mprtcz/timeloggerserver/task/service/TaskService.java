@@ -1,9 +1,9 @@
 package com.mprtcz.timeloggerserver.task.service;
 
-import com.mprtcz.timeloggerserver.record.repository.CustomRecordRepository;
 import com.mprtcz.timeloggerserver.task.model.Task;
 import com.mprtcz.timeloggerserver.task.model.TaskDto;
 import com.mprtcz.timeloggerserver.task.model.converter.TaskEntityDtoConverter;
+import com.mprtcz.timeloggerserver.task.repository.CustomTaskRepository;
 import com.mprtcz.timeloggerserver.task.repository.TaskRepository;
 import com.mprtcz.timeloggerserver.task.validator.TaskValidator;
 import com.mprtcz.timeloggerserver.utils.exceptions.TaskNotFoundException;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.mprtcz.timeloggerserver.utils.DateTimeConverter.toLocalDateTime;
 
@@ -28,14 +29,14 @@ public class TaskService {
     private TaskRepository taskRepository;
     private final TaskEntityDtoConverter taskEntityDtoConverter;
     private final
-    CustomRecordRepository customRecordRepository;
+    CustomTaskRepository customTaskRepository;
 
     @Autowired
     public TaskService(TaskRepository taskRepository,
-                       TaskEntityDtoConverter taskEntityDtoConverter, CustomRecordRepository customRecordRepository) {
+                       TaskEntityDtoConverter taskEntityDtoConverter, CustomTaskRepository customTaskRepository) {
         this.taskRepository = taskRepository;
         this.taskEntityDtoConverter = taskEntityDtoConverter;
-        this.customRecordRepository = customRecordRepository;
+        this.customTaskRepository = customTaskRepository;
     }
 
     public void saveTask(TaskDto taskDto) {
@@ -43,6 +44,7 @@ public class TaskService {
         TaskValidator.validateNewTask(task, this.getAllActiveTasks());
         task.setLastModified(toLocalDateTime(taskDto.getLastModified()));
         task.setActive(true);
+        task.setUuID(UUID.randomUUID().toString());
         this.taskRepository.save(task);
     }
 
@@ -85,14 +87,19 @@ public class TaskService {
         return taskDto;
     }
 
+    public TaskDto getTaskDtoByUuid(String uuId) {
+        TaskDto taskDto = this.taskEntityDtoConverter.toDto(this.customTaskRepository.getTaskByUuid(uuId));
+        logger.info("getTaskDtoByUuid(String uuId = {}) = {}", uuId, taskDto.toString());
+        return taskDto;
+    }
+
     public Task getTaskById(Long id) {
         checkIfTaskWithIdExists(id);
         return this.taskRepository.findOne(id);
     }
 
-    public void deleteTask(Long id) {
-        checkIfTaskWithIdExists(id);
-        Task task = getTaskById(id);
+    public void deleteTask(String uuId) {
+        Task task = getTaskByUuId(uuId);
         task.setLastModified(LocalDateTime.now());
         task.setActive(false);
         this.taskRepository.save(task);
@@ -104,6 +111,12 @@ public class TaskService {
         }
     }
 
+    public void checkIfTaskWithUuIdExists(String uuId) {
+        if (this.customTaskRepository.getTaskByUuid(uuId) == null) {
+            throw new TaskNotFoundException("Task with this uuId does not exist");
+        }
+    }
+
     private void taskNullCheck(Task task) {
         if (task == null) {
             throw new TaskNotFoundException("Task with this id does not exist");
@@ -111,12 +124,19 @@ public class TaskService {
     }
 
     public void updateTask(TaskDto taskDto) {
-        Task task = this.taskRepository.findOne(taskDto.getId());
+        Task task = this.customTaskRepository.getTaskByUuid(taskDto.getUuID());
+        taskNullCheck(task);
         Task convertedDto = this.taskEntityDtoConverter.toEntity(taskDto);
         task.setName(convertedDto.getName());
         task.setColor(convertedDto.getColor());
         task.setDescription(convertedDto.getDescription());
         task.setLastModified(LocalDateTime.now());
         this.taskRepository.save(task);
+    }
+
+    public Task getTaskByUuId(String uuId) {
+        Task task = this.customTaskRepository.getTaskByUuid(uuId);
+        taskNullCheck(task);
+        return task;
     }
 }
