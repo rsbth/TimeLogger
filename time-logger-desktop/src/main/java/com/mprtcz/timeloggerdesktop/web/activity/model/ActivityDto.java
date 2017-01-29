@@ -14,7 +14,7 @@ import java.util.Date;
 @ToString
 public class ActivityDto {
 
-    private String uuID;
+    private Long serverId;
 
     private String name;
 

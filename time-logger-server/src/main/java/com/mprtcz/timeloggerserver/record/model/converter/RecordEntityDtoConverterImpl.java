@@ -34,7 +34,6 @@ public class RecordEntityDtoConverterImpl implements RecordEntityDtoConverter {
     @Override
     public RecordDto toDto(Record record) {
         RecordDto recordDto = new RecordDto();
-        recordDto.setTaskUuId(record.getTask().getUuID());
         recordDto.setCreationDate(DateTimeConverter.toDate(record.getCreationDate()));
         recordDto.setStartDateTime(DateTimeConverter.toDate(record.getStartDateTime()));
         recordDto.setEndDateTime(DateTimeConverter.toDate(record.getEndDateTime()));

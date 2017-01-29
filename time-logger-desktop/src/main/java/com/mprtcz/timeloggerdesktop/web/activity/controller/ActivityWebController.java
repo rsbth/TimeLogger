@@ -40,7 +40,7 @@ public class ActivityWebController {
 
     public void deleteActivityOnServer(Callback<Void> activityDtoCallback, Activity activity) {
         ActivityEndpoint activityEndpoint = RetrofitUtil.getActivityEndpointRetrofit();
-        Call<Void> postNewActivityCall = activityEndpoint.deleteActivityOnServer(activity.getUuId());
+        Call<Void> postNewActivityCall = activityEndpoint.deleteActivityOnServer(activity.getServerId());
         postNewActivityCall.enqueue(activityDtoCallback);
     }
 }

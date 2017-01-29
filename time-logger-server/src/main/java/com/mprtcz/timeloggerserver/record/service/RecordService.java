@@ -58,13 +58,13 @@ public class RecordService {
         recordValidator.validateNewRecord();
         record.setActive(true);
         logger.info("Record to save : {}", record);
-        if(record.getSynchronizationDate() != null) {
+        if (record.getSynchronizationDate() != null) {
             throw new IllegalArgumentException(
                     "Attempting to save a record which already has a synchronization date");
         }
         record.setSynchronizationDate(LocalDateTime.now());
         this.recordRepository.save(record);
-        logger.info("Saved record = " +record.toString());
+        logger.info("Saved record = " + record.toString());
         return this.recordEntityDtoConverter.toDto(record);
     }
 
@@ -83,13 +83,20 @@ public class RecordService {
                 this.customRecordRepository.getRecordsByTaskId(task.getId()));
     }
 
+    public List<RecordDto> getRecordsByTaskId(Long taskId) {
+        this.taskService.checkIfTaskWithIdExists(taskId);
+        Task task = this.taskService.getTaskById(taskId);
+        return this.recordEntityDtoConverter.toDtos(
+                this.customRecordRepository.getRecordsByTaskId(taskId));
+    }
+
     public List<RecordDto> getAllRecordsAfterSyncDate(Long dateMilis) {
         Iterable<RecordDto> records = getAllRecordDtos();
         List<RecordDto> recordsAfterDate = new ArrayList<>();
         Date date = new Date(dateMilis);
-        for (RecordDto recordDto:
-             records) {
-            if(recordDto.getSynchronizationDate().after(date)) {
+        for (RecordDto recordDto :
+                records) {
+            if (recordDto.getSynchronizationDate().after(date)) {
                 recordsAfterDate.add(recordDto);
             }
         }

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static com.mprtcz.timeloggerserver.utils.DateTimeConverter.toLocalDateTime;
 
@@ -44,7 +43,6 @@ public class TaskService {
         TaskValidator.validateNewTask(task, this.getAllActiveTasks());
         task.setLastModified(toLocalDateTime(taskDto.getLastModified()));
         task.setActive(true);
-        task.setUuID(UUID.randomUUID().toString());
         this.taskRepository.save(task);
     }
 
@@ -98,8 +96,8 @@ public class TaskService {
         return this.taskRepository.findOne(id);
     }
 
-    public void deleteTask(String uuId) {
-        Task task = getTaskByUuId(uuId);
+    public void deleteTask(Long taskId) {
+        Task task = getTaskById(taskId);
         task.setLastModified(LocalDateTime.now());
         task.setActive(false);
         this.taskRepository.save(task);
@@ -124,12 +122,12 @@ public class TaskService {
     }
 
     public void updateTask(TaskDto taskDto) {
-        Task task = this.customTaskRepository.getTaskByUuid(taskDto.getUuID());
+        Task task = this.taskRepository.findOne(taskDto.getId());
         taskNullCheck(task);
         Task convertedDto = this.taskEntityDtoConverter.toEntity(taskDto);
-        task.setName(convertedDto.getName());
-        task.setColor(convertedDto.getColor());
-        task.setDescription(convertedDto.getDescription());
+        task.setName(taskDto.getName());
+        task.setColor(taskDto.getColor());
+        task.setDescription(taskDto.getDescription());
         task.setLastModified(LocalDateTime.now());
         this.taskRepository.save(task);
     }

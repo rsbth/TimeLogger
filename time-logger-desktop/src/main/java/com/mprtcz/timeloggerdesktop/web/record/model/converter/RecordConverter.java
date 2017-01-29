@@ -14,7 +14,7 @@ public class RecordConverter {
 
     public static Record toEntity(RecordDto recordDto, Activity activity) {
         Record record = new Record();
-        if (Objects.equals(activity.getUuId(), recordDto.getTaskUuId())) {
+        if (Objects.equals(activity.getServerId(), recordDto.getTaskServerId())) {
             record.setActivity(activity);
         }
         record.setStartDateTime(recordDto.getStartDateTime());
@@ -28,7 +28,7 @@ public class RecordConverter {
 
     public static RecordDto toDto(Record record) {
         RecordDto recordDto = new RecordDto();
-        recordDto.setTaskUuId(record.getActivity().getUuId()); //translating id to global uuid
+        recordDto.setTaskServerId(record.getActivity().getServerId()); //translating id to global uuid
         recordDto.setStartDateTime(record.getStartDateTime());
         recordDto.setEndDateTime(record.getEndDateTime());
         recordDto.setCreationDate(record.getCreationDate());

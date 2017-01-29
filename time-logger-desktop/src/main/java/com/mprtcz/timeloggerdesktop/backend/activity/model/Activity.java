@@ -33,7 +33,7 @@ public class Activity {
     private Long id;
 
     @DatabaseField
-    private String uuId;
+    private Long serverId;
 
     @DatabaseField(canBeNull = false)
     private String name;
@@ -94,35 +94,24 @@ public class Activity {
         Activity activity = (Activity) o;
 
         if (active != activity.active) return false;
-        if (uuId != null ? !uuId.equals(activity.uuId) : activity.uuId != null) return false;
+        if (id != null ? !id.equals(activity.id) : activity.id != null) return false;
+        if (serverId != null ? !serverId.equals(activity.serverId) : activity.serverId != null) return false;
         if (name != null ? !name.equals(activity.name) : activity.name != null) return false;
         if (description != null ? !description.equals(activity.description) : activity.description != null)
             return false;
-        return color != null ? color.equals(activity.color) : activity.color == null;
-
+        if (color != null ? !color.equals(activity.color) : activity.color != null) return false;
+        return lastModified != null ? lastModified.equals(activity.lastModified) : activity.lastModified == null;
     }
 
     @Override
     public int hashCode() {
-        int result = uuId != null ? uuId.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (serverId != null ? serverId.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (color != null ? color.hashCode() : 0);
+        result = 31 * result + (lastModified != null ? lastModified.hashCode() : 0);
         result = 31 * result + (active ? 1 : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "\nActivity{\n" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", uuId='" + uuId + '\'' +
-                ", color='" + color + '\'' +
-                ", active='" + active + '\'' +
-                ", lastModified='" + lastModified + '\'' +
-                ", activityRecords=" + activityRecords +
-                '}';
     }
 }

@@ -12,7 +12,7 @@ import java.util.Date;
 @Setter
 public class TaskDto {
 
-    private String uuID;
+    private Long id;
 
     private String name;
 

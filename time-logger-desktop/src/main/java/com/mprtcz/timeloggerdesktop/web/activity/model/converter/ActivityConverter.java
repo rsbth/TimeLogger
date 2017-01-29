@@ -14,7 +14,7 @@ public class ActivityConverter {
         activity.setColor(activityDto.getColor());
         activity.setDescription(activityDto.getDescription());
         activity.setLastModified(activityDto.getLastModified());
-        activity.setUuId(activityDto.getUuID());
+        activity.setServerId(activityDto.getServerId());
         return activity;
     }
 
@@ -24,7 +24,7 @@ public class ActivityConverter {
         activityDto.setColor(activity.getColor());
         activityDto.setDescription(activity.getDescription());
         activityDto.setLastModified(activity.getLastModified());
-        activityDto.setUuID(activity.getUuId());
+        activityDto.setServerId(activity.getServerId());
         return activityDto;
     }
 }

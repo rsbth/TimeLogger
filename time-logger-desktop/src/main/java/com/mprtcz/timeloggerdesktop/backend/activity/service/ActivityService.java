@@ -88,11 +88,11 @@ public class ActivityService {
         return this.customDao.findActivityById(id);
     }
 
-    public Activity findActivityByUuId(String uuId) throws Exception {
+    public Activity findActivityByUuId(Long serverId) throws Exception {
         List<Activity> activities = getActivities();
         for (Activity activity :
                 activities) {
-            if(Objects.equals(activity.getUuId(), uuId)) {
+            if(Objects.equals(activity.getServerId(), serverId)) {
                 return activity;
             }
         }
@@ -105,7 +105,7 @@ public class ActivityService {
         if (validationResult.isErrorFree()) {
             activity.setActive(true);
             customDao.save(activity);
-            if (activity.getUuId() == null) {
+            if (activity.getServerId() == null) {
                 this.activityWebController.postNewActivityToServer(getPostNewActivityCallback(activity), activity);
             }
             return new ValidationResult(ValidationResult.CustomErrorEnum.RECORD_SAVED);
@@ -122,7 +122,7 @@ public class ActivityService {
         activity.setLastModified(activityDto.getLastModified());
         activity.setColor(activityDto.getColor());
         activity.setDescription(activityDto.getDescription());
-        activity.setUuId(activityDto.getUuID());
+        activity.setServerId(activityDto.getServerId());
         return this.updateActivity(activity, UpdateType.SERVER);
     }
 
@@ -130,7 +130,7 @@ public class ActivityService {
         logger.info("updateActivity activity = {}", activity);
         ValidationResult validationResult = activityValidator.validateUpdatedActivity(activity);
         if (validationResult.isErrorFree()) {
-            if (activity.getUuId() == null) {
+            if (activity.getServerId() == null) {
                 this.activityWebController.postNewActivityToServer(getPostNewActivityCallback(activity), activity);
             } else {
                 if (updateType == UpdateType.LOCAL) {
@@ -173,13 +173,13 @@ public class ActivityService {
 
     private void synchronizeLocalActivitiesWithServer(List<Activity> localActivities, List<ActivityDto> serverActivities) {
         logger.info("ActivityService.synchronizeLocalActivitiesWithServer, server activities = " + serverActivities);
-        Map<String, Activity> localActivitiesMap = getLocalActivitiesMap(localActivities);
+        Map<Long, Activity> localActivitiesMap = getLocalActivitiesMap(localActivities);
         if (serverActivities == null) {
             return;
         }
         List<Activity> activitiesToSendToServer = new ArrayList<>();
         for (ActivityDto serverActivity : serverActivities) {
-            Activity localActivity = localActivitiesMap.get(serverActivity.getUuID());
+            Activity localActivity = localActivitiesMap.get(serverActivity.getServerId());
             logger.info("server Activity  = " + serverActivity.toString());
             logger.info("local matching Activity  = " + localActivity);
             if (serverActivity.isActive()) {
@@ -234,7 +234,7 @@ public class ActivityService {
             }
         }
         for (Activity localActivity : localActivities) {
-            if (localActivity.getUuId() == null) {
+            if (localActivity.getServerId() == null) {
                 activitiesToSendToServer.add(localActivity);
             }
         }
@@ -246,11 +246,11 @@ public class ActivityService {
     private void sendLocalChangesToServer(List<Activity> activitiesToSendToServer) {
         for (Activity activity :
                 activitiesToSendToServer) {
-            if (!activity.isActive() && activity.getUuId() != null) {
+            if (!activity.isActive() && activity.getServerId() != null) {
                 this.activityWebController.deleteActivityOnServer(getDeleteCallback(activity), activity);
                 continue;
             }
-            if (activity.getUuId() == null) {
+            if (activity.getServerId() == null) {
                 this.activityWebController.postNewActivityToServer(getPostNewActivityCallback(activity), activity);
             } else {
                 this.activityWebController.patchActivityOnServer(getPatchActivityCallback(), activity);
@@ -323,12 +323,12 @@ public class ActivityService {
         };
     }
 
-    private Map<String, Activity> getLocalActivitiesMap(List<Activity> activities) {
-        Map<String, Activity> map = new HashMap<>();
+    private Map<Long, Activity> getLocalActivitiesMap(List<Activity> activities) {
+        Map<Long, Activity> map = new HashMap<>();
         for (Activity activity :
                 activities) {
-            if (activity.getUuId() != null) {
-                map.put(activity.getUuId(), activity);
+            if (activity.getServerId() != null) {
+                map.put(activity.getServerId(), activity);
             }
         }
         return map;

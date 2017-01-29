@@ -60,7 +60,6 @@ public class RecordService {
         return validationResult;
     }
 
-
     public void synchronizeRecords(RecordWebController recordWebController) throws Exception {
         this.recordWebController = recordWebController;
         List<Record> localRecords = getAllRecords();
@@ -127,6 +126,10 @@ public class RecordService {
                 if (!localRecord.isActive()) {
                     if (serverRecord.isActive()) {
                         removeRecordFromServer(localRecord);
+                    }
+                } else {
+                    if(!serverRecord.isActive()) {
+                        removeLocalRecord(localRecord);
                     }
                 }
             }
@@ -198,7 +201,7 @@ public class RecordService {
 
     public void addNewRecordFromServer(RecordDto recordDto) throws Exception {
         logger.info("RecordService.addNewRecordFromServer");
-        Activity activity = this.activityService.findActivityByUuId(recordDto.getTaskUuId());
+        Activity activity = this.activityService.findActivityByUuId(recordDto.getTaskServerId());
         Record record = toEntity(recordDto, activity);
         record.setActive(recordDto.isActive());
         Record recordEntity = findRecordByUuid(record.getUuId());
@@ -237,5 +240,10 @@ public class RecordService {
                 throwable.printStackTrace();
             }
         }, record);
+    }
+
+    private void removeLocalRecord(Record record) throws Exception {
+        record.setActive(false);
+        this.customDao.update(record);
     }
 }
