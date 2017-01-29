@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 /**
  * Created by mprtcz on 2017-01-10.
@@ -38,6 +39,7 @@ public class CanvasController {
 
     public void drawArrayOnCanvas(HoursData.Hour[][] hoursArray, Canvas canvas) {
         logger.info("areHeadersEnabled = {}", areHeadersEnabled);
+        logger.info("hours array = " + Arrays.deepToString(hoursArray));
         this.setCanvasTooltip(canvas);
         canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         int startingDayIndex = getDrawStartingDay(hoursArray.length);

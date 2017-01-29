@@ -8,11 +8,13 @@ import com.mprtcz.timeloggerserver.record.repository.RecordRepository;
 import com.mprtcz.timeloggerserver.record.validator.RecordValidator;
 import com.mprtcz.timeloggerserver.task.model.Task;
 import com.mprtcz.timeloggerserver.task.service.TaskService;
+import com.mprtcz.timeloggerserver.utils.exceptions.TaskNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,15 +48,24 @@ public class RecordService {
         this.taskService = taskService;
     }
 
-    public void saveRecord(RecordDto r) {
+    public RecordDto saveRecord(RecordDto r) {
         logger.info("RecordDTO to save : {}", r);
-        Task associatedTask = this.taskService.getTaskById(r.getTaskID());
+        Task associatedTask = this.taskService.getTaskByUuId(r.getTaskUuId());
         logger.info("associatedTask : {}", associatedTask);
         Record record = this.recordEntityDtoConverter.toEntity(r, associatedTask);
         logger.info("Record to save : {}", record);
         RecordValidator recordValidator = new RecordValidator(record, getAllRecords());
         recordValidator.validateNewRecord();
+        record.setActive(true);
+        logger.info("Record to save : {}", record);
+        if(record.getSynchronizationDate() != null) {
+            throw new IllegalArgumentException(
+                    "Attempting to save a record which already has a synchronization date");
+        }
+        record.setSynchronizationDate(LocalDateTime.now());
         this.recordRepository.save(record);
+        logger.info("Saved record = " +record.toString());
+        return this.recordEntityDtoConverter.toDto(record);
     }
 
     public Iterable<RecordDto> getAllRecordDtos() {
@@ -83,5 +94,18 @@ public class RecordService {
             }
         }
         return recordsAfterDate;
+    }
+
+    public void deleteRecord(String uuId) {
+        Record record = this.customRecordRepository.getRecordByUuId(uuId);
+        recordNullCheck(record);
+        record.setActive(false);
+        this.recordRepository.save(record);
+    }
+
+    private void recordNullCheck(Record record) {
+        if (record == null) {
+            throw new TaskNotFoundException("Task with this id does not exist");
+        }
     }
 }

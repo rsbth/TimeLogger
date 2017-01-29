@@ -28,17 +28,22 @@ public class DatabaseCustomDao implements CustomDao {
     public DatabaseCustomDao() throws SQLException {
         this.activityDao = DaoManager.createDao(connectionSource, Activity.class);
         this.recordDao = DaoManager.createDao(connectionSource, Record.class);
-        if(!this.activityDao.isTableExists()) {
+        if (!this.activityDao.isTableExists()) {
             TableUtils.createTable(connectionSource, Activity.class);
         }
-        if(!this.recordDao.isTableExists()) {
+        if (!this.recordDao.isTableExists()) {
             TableUtils.createTable(connectionSource, Record.class);
         }
     }
 
     @Override
     public void save(Activity activity) throws Exception {
-            activityDao.create(activity);
+        activityDao.create(activity);
+    }
+
+    @Override
+    public void update(Record record) throws Exception {
+        recordDao.update(record);
     }
 
     @Override
@@ -68,10 +73,10 @@ public class DatabaseCustomDao implements CustomDao {
 
     @Override
     public void replaceAllData(List<Activity> activitiesList) throws Exception {
-        if(this.activityDao.isTableExists()) {
+        if (this.activityDao.isTableExists()) {
             TableUtils.dropTable(activityDao, true);
         }
-        if(this.recordDao.isTableExists()) {
+        if (this.recordDao.isTableExists()) {
             TableUtils.dropTable(recordDao, true);
         }
         TableUtils.createTable(connectionSource, Activity.class);

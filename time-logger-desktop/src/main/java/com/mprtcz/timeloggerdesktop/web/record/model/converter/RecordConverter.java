@@ -19,6 +19,10 @@ public class RecordConverter {
         }
         record.setStartDateTime(recordDto.getStartDateTime());
         record.setEndDateTime(recordDto.getEndDateTime());
+        record.setSynchronizationDate(recordDto.getSynchronizationDate());
+        record.setCreationDate(recordDto.getCreationDate());
+        record.setActive(recordDto.isActive());
+        record.setUuId(recordDto.getUuId());
         return record;
     }
 
@@ -27,7 +31,14 @@ public class RecordConverter {
         recordDto.setTaskUuId(record.getActivity().getUuId()); //translating id to global uuid
         recordDto.setStartDateTime(record.getStartDateTime());
         recordDto.setEndDateTime(record.getEndDateTime());
-        recordDto.setCreationDate(new Date());
+        recordDto.setCreationDate(record.getCreationDate());
+        recordDto.setUuId(record.getUuId());
         return recordDto;
+    }
+
+    public static void main(String[] args) {
+        long longDate = 1485687120663L;
+        Date date  = new Date(longDate);
+        System.out.println("date = " + date);
     }
 }

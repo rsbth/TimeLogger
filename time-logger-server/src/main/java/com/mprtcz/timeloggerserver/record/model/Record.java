@@ -36,6 +36,12 @@ public class Record {
     @Column(name = "SYNCH_DATETIME", nullable = false)
     private LocalDateTime synchronizationDate;
 
+    @Column(name = "IS_ACTIVE", nullable = false)
+    private boolean active;
+
+    @Column(name = "UUID", nullable = false)
+    private String uuId;
+
     public Record() {}
 
     @Override
@@ -46,6 +52,8 @@ public class Record {
                 ", startDateTime=" + startDateTime +
                 ", endDateTime=" + endDateTime +
                 ", creationDate=" + creationDate +
+                ", active=" + active +
+                ", uuid=" + uuId +
                 ", synchronizationDate=" + synchronizationDate +
                 '}';
     }
@@ -57,17 +65,28 @@ public class Record {
 
         Record record = (Record) o;
 
-        if (!task.equals(record.task)) return false;
-        if (!startDateTime.equals(record.startDateTime)) return false;
-        return endDateTime.equals(record.endDateTime);
+        if (active != record.active) return false;
+        if (task != null ? !task.equals(record.task) : record.task != null) return false;
+        if (startDateTime != null ? !startDateTime.equals(record.startDateTime) : record.startDateTime != null)
+            return false;
+        if (endDateTime != null ? !endDateTime.equals(record.endDateTime) : record.endDateTime != null) return false;
+        if (creationDate != null ? !creationDate.equals(record.creationDate) : record.creationDate != null)
+            return false;
+        if (synchronizationDate != null ? !synchronizationDate.equals(record.synchronizationDate) : record.synchronizationDate != null)
+            return false;
+        return uuId != null ? uuId.equals(record.uuId) : record.uuId == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = task.hashCode();
-        result = 31 * result + startDateTime.hashCode();
-        result = 31 * result + endDateTime.hashCode();
+        int result = task != null ? task.hashCode() : 0;
+        result = 31 * result + (startDateTime != null ? startDateTime.hashCode() : 0);
+        result = 31 * result + (endDateTime != null ? endDateTime.hashCode() : 0);
+        result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
+        result = 31 * result + (synchronizationDate != null ? synchronizationDate.hashCode() : 0);
+        result = 31 * result + (active ? 1 : 0);
+        result = 31 * result + (uuId != null ? uuId.hashCode() : 0);
         return result;
     }
 }

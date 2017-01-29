@@ -23,6 +23,7 @@ import com.mprtcz.timeloggerdesktop.frontend.customfxelements.StyleSetter;
 import com.mprtcz.timeloggerdesktop.frontend.utils.MessageType;
 import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
 import com.mprtcz.timeloggerdesktop.web.activity.controller.ActivityWebController;
+import com.mprtcz.timeloggerdesktop.web.record.controller.RecordWebController;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -90,6 +91,7 @@ public class AppController implements MainController {
     private CanvasController canvasController;
     private SettingsService settingsService;
     private ActivityWebController activityWebController;
+    private RecordWebController recordWebController;
 
     private JFXDialog bottomDialog;
     private ActivityService activityService;
@@ -123,7 +125,7 @@ public class AppController implements MainController {
     }
 
     private void postUILoadInitialize() {
-        this.initializeActivityWebController();
+        this.initializeWebControllers();
     }
 
     private void initializeExecutor() {
@@ -164,11 +166,12 @@ public class AppController implements MainController {
         this.canvasController = new CanvasController();
     }
 
-    private void initializeActivityWebController() {
-        logger.info("initializeActivityWebController");
+    private void initializeWebControllers() {
+        logger.info("initializeWebControllers");
         this.activityWebController = new ActivityWebController();
+        this.recordWebController = new RecordWebController();
         logger.info("Thread = " + Thread.currentThread().toString());
-        this.processActivitySynchronization();
+        this.processServerSynchronization();
     }
 
     @FXML
@@ -306,7 +309,7 @@ public class AppController implements MainController {
         try {
             CustomDao daoProvider = new DatabaseCustomDao();
             this.activityService = new ActivityService(new ActivityValidator(), daoProvider, this);
-            this.recordService = new RecordService(new RecordValidator(), this.activityService);
+            this.recordService = new RecordService(new RecordValidator(), this.activityService, daoProvider);
         } catch (Exception e) {
             e.printStackTrace();
             displayException(e);
@@ -501,7 +504,7 @@ public class AppController implements MainController {
         this.executorService.execute(task);
     }
 
-    private void processActivitySynchronization() {
+    private void processServerSynchronization() {
         Task task = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -509,9 +512,27 @@ public class AppController implements MainController {
                 return null;
             }
         };
+        task.setOnSucceeded(event -> {
+            this.updateGUI();
+            this.processRecordSynchronization();
+        });
+        task.setOnFailed(event -> getOnFailedTaskEventHandler());
+        this.addTaskExceptionListener(task);
+        this.executorService.execute(task);
+    }
+
+    private void processRecordSynchronization() {
+        Task task = new Task() {
+            @Override
+            protected Object call() throws Exception {
+                AppController.this.recordService.synchronizeRecords(recordWebController);
+                return null;
+            }
+        };
         task.setOnSucceeded(event -> this.updateGUI());
         task.setOnFailed(event -> getOnFailedTaskEventHandler());
         this.addTaskExceptionListener(task);
         this.executorService.execute(task);
+
     }
 }

@@ -39,4 +39,10 @@ public class RecordWebController {
         Call<List<RecordDto>> recordsCall = recordEndpoint.getRecordsAfterDate(date.getTime());
         recordsCall.enqueue(latestSyncedRecordsCallback);
     }
+
+    public void removeRecordFromServer(Callback<Void> removeRecordCallback, Record record) {
+        RecordEndpoint recordEndpoint = RetrofitUtil.getRecordEndpointRetrofit();
+        Call<Void> removeRecordCall = recordEndpoint.deleteRecord(record.getUuId());
+        removeRecordCall.enqueue(removeRecordCallback);
+    }
 }

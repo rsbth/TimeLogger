@@ -43,7 +43,14 @@ public class RecordController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public ResponseEntity addRecords(@RequestBody RecordDto recordDto) {
         logger.info("Record to save : {}", recordDto);
-        this.recordService.saveRecord(recordDto);
+        RecordDto savedRecord = this.recordService.saveRecord(recordDto);
+        return new ResponseEntity<>(savedRecord, OK);
+    }
+
+    @RequestMapping(value = "/{uuId}/delete", method = RequestMethod.DELETE)
+    public ResponseEntity deleteRecord(@PathVariable String uuId) {
+        logger.info("Removed record's uuId: {}", uuId);
+        this.recordService.deleteRecord(uuId);
         return new ResponseEntity(OK);
     }
 }

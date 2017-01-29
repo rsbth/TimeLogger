@@ -23,4 +23,8 @@ public class RecordDto {
     private Date creationDate;
 
     private Date synchronizationDate;
+
+    private String uuId;
+
+    private boolean active;
 }

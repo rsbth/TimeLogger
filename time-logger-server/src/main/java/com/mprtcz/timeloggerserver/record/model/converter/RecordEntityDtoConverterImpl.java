@@ -3,12 +3,9 @@ package com.mprtcz.timeloggerserver.record.model.converter;
 import com.mprtcz.timeloggerserver.record.model.Record;
 import com.mprtcz.timeloggerserver.record.model.RecordDto;
 import com.mprtcz.timeloggerserver.task.model.Task;
-import com.mprtcz.timeloggerserver.task.service.TaskService;
 import com.mprtcz.timeloggerserver.utils.DateTimeConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,35 +15,32 @@ import java.util.List;
 @Component
 public class RecordEntityDtoConverterImpl implements RecordEntityDtoConverter {
 
-    private final
-    TaskService taskService;
-
-    @Autowired
-    public RecordEntityDtoConverterImpl(TaskService taskService) {
-        this.taskService = taskService;
-    }
-
     @Override
     public Record toEntity(RecordDto recordDto, Task task) {
         Record record = new Record();
         record.setTask(task);
         record.setEndDateTime(DateTimeConverter.toLocalDateTimeWithZeroMinutes(recordDto.getEndDateTime()));
         record.setStartDateTime(DateTimeConverter.toLocalDateTimeWithZeroMinutes(recordDto.getStartDateTime()));
-        if(recordDto.getCreationDate() != null) {
-            record.setCreationDate(DateTimeConverter.toLocalDateTimeWithZeroMinutes(recordDto.getCreationDate()));
+        if (recordDto.getCreationDate() != null) {
+            record.setCreationDate(DateTimeConverter.toLocalDateTime(recordDto.getCreationDate()));
         }
-        record.setSynchronizationDate(LocalDateTime.now());
+        if (recordDto.getSynchronizationDate() != null) {
+            record.setSynchronizationDate(DateTimeConverter.toLocalDateTime(recordDto.getSynchronizationDate()));
+        }
+        record.setUuId(recordDto.getUuId());
         return record;
     }
 
     @Override
     public RecordDto toDto(Record record) {
         RecordDto recordDto = new RecordDto();
-        recordDto.setTaskID(record.getTask().getId());
+        recordDto.setTaskUuId(record.getTask().getUuID());
         recordDto.setCreationDate(DateTimeConverter.toDate(record.getCreationDate()));
         recordDto.setStartDateTime(DateTimeConverter.toDate(record.getStartDateTime()));
         recordDto.setEndDateTime(DateTimeConverter.toDate(record.getEndDateTime()));
         recordDto.setSynchronizationDate(DateTimeConverter.toDate(record.getSynchronizationDate()));
+        recordDto.setActive(record.isActive());
+        recordDto.setUuId(record.getUuId());
         return recordDto;
     }
 
@@ -59,6 +53,4 @@ public class RecordEntityDtoConverterImpl implements RecordEntityDtoConverter {
         }
         return recordDtos;
     }
-
-    
 }

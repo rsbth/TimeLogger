@@ -88,6 +88,17 @@ public class ActivityService {
         return this.customDao.findActivityById(id);
     }
 
+    public Activity findActivityByUuId(String uuId) throws Exception {
+        List<Activity> activities = getActivities();
+        for (Activity activity :
+                activities) {
+            if(Objects.equals(activity.getUuId(), uuId)) {
+                return activity;
+            }
+        }
+        return null;
+    }
+
     private ValidationResult validateNewActivityAndSave(Activity activity) throws Exception {
         logger.info("validateNewActivityAndSave, activity= " + activity.toString());
         ValidationResult validationResult = activityValidator.validateNewActivity(activity, getActivities());
@@ -134,6 +145,12 @@ public class ActivityService {
         } else {
             return validationResult;
         }
+    }
+
+    public void updateActivityWithNewRecord(Activity activity) throws Exception {
+        logger.info("updateActivityWithNewRecord, activity = {}", activity);
+        this.customDao.update(activity);
+        this.mainController.updateActivityList();
     }
 
     private Callback<List<ActivityDto>> getActivitySynchronizationCallback(List<Activity> localActivities) {
@@ -310,7 +327,9 @@ public class ActivityService {
         Map<String, Activity> map = new HashMap<>();
         for (Activity activity :
                 activities) {
-            map.put(activity.getUuId(), activity);
+            if (activity.getUuId() != null) {
+                map.put(activity.getUuId(), activity);
+            }
         }
         return map;
     }

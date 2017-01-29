@@ -14,7 +14,7 @@ import java.util.Date;
 @ToString
 public class RecordDto {
 
-    private Long taskID;
+    private String taskUuId;
 
     private Date startDateTime;
 
@@ -23,4 +23,8 @@ public class RecordDto {
     private Date creationDate;
 
     private Date synchronizationDate;
+
+    private boolean active;
+
+    private String uuId;
 }

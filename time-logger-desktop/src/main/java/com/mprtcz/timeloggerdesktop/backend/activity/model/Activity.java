@@ -6,6 +6,8 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,16 +16,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by mprtcz on 2017-01-03.
  */
 @Getter
 @Setter
-@XmlRootElement(name="Activity")
+@XmlRootElement(name = "Activity")
 @XmlAccessorType(XmlAccessType.FIELD)
 @DatabaseTable(tableName = "activities")
 public class Activity {
+    private Logger logger = LoggerFactory.getLogger(Activity.class);
 
     @DatabaseField(generatedId = true)
     private Long id;
@@ -47,10 +51,11 @@ public class Activity {
     private boolean active;
 
     @ForeignCollectionField(eager = true)
-    @XmlElement(name="activityRecord")
+    @XmlElement(name = "activityRecord")
     Collection<Record> activityRecords;
 
-    public Activity() {}
+    public Activity() {
+    }
 
     public Activity(String name, String description, String color) {
         this.name = name;
@@ -67,10 +72,44 @@ public class Activity {
     }
 
     public void addRecord(Record record) {
-        if(this.activityRecords == null) {
+        if (this.activityRecords == null) {
             this.activityRecords = new ArrayList<>();
         }
-        this.activityRecords.add(record);
+        List<Record> records = new ArrayList<>(this.activityRecords);
+        int recordPosition = records.indexOf(record);
+        if (recordPosition != -1) {
+            logger.info("Record exists at {}, replacing: {}", recordPosition, record);
+            records.set(recordPosition, record);
+            this.activityRecords = records;
+        } else {
+            this.activityRecords.add(record);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Activity activity = (Activity) o;
+
+        if (active != activity.active) return false;
+        if (uuId != null ? !uuId.equals(activity.uuId) : activity.uuId != null) return false;
+        if (name != null ? !name.equals(activity.name) : activity.name != null) return false;
+        if (description != null ? !description.equals(activity.description) : activity.description != null)
+            return false;
+        return color != null ? color.equals(activity.color) : activity.color == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = uuId != null ? uuId.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (color != null ? color.hashCode() : 0);
+        result = 31 * result + (active ? 1 : 0);
+        return result;
     }
 
     @Override

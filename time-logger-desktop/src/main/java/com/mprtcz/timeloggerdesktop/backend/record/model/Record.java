@@ -52,26 +52,59 @@ public class Record {
     @XmlJavaTypeAdapter(DateAdapter.class)
     private Date synchronizationDate;
 
+    @DatabaseField
+    private String uuId;
+
+    @DatabaseField(canBeNull = false)
+    private boolean active;
+
     public Record(LocalTime startTime,
                   LocalTime endTime,
                   LocalDate startDate,
                   LocalDate endDate,
                   Activity activity) {
         this.activity = activity;
-        this.startDateTime = Date.from(LocalDateTime.of(startDate, startTime).atZone(ZoneId.systemDefault()).toInstant());
-        this.endDateTime = Date.from(LocalDateTime.of(endDate, endTime).atZone(ZoneId.systemDefault()).toInstant());
+        this.startDateTime = Date.from(
+                LocalDateTime.of(startDate, startTime).atZone(ZoneId.systemDefault()).toInstant());
+        this.endDateTime = Date.from(
+                LocalDateTime.of(endDate, endTime).atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public Record() {}
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Record record = (Record) o;
+
+        if (active != record.active) return false;
+        if (activity != null ? !activity.equals(record.activity) : record.activity != null) return false;
+        return uuId != null ? uuId.equals(record.uuId) : record.uuId == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = activity != null ? activity.hashCode() : 0;
+        result = 31 * result + (uuId != null ? uuId.hashCode() : 0);
+        result = 31 * result + (active ? 1 : 0);
+        return result;
+    }
 
     @Override
     public String toString() {
         return "Record{" +
                 "id=" + id +
-                ", activityName=" + activity.getName() +
+                ", activity.getName=" + activity.getName() +
                 ", startDateTime=" + startDateTime +
                 ", endDateTime=" + endDateTime +
+                ", creationDate=" + creationDate +
+                ", synchronizationDate=" + synchronizationDate +
+                ", active=" + active +
+                ", uuId=" + uuId +
                 '}';
     }
-
 }

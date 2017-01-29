@@ -11,6 +11,8 @@ import java.util.List;
 public interface CustomDao {
     void save(Activity activity) throws Exception;
 
+    void update(Record record) throws Exception;
+
     void update(Activity activity) throws Exception;
 
     void remove(Activity activity) throws Exception;

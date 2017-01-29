@@ -2,10 +2,7 @@ package com.mprtcz.timeloggerdesktop.web.record.webclient;
 
 import com.mprtcz.timeloggerdesktop.web.record.model.RecordDto;
 import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
+import retrofit2.http.*;
 
 import java.util.List;
 
@@ -22,4 +19,7 @@ public interface RecordEndpoint {
 
     @GET("/record/all/after/{date}")
     Call<List<RecordDto>> getRecordsAfterDate(@Path("date") Long date);
+
+    @DELETE("/record/{uuid}/delete")
+    Call<Void> deleteRecord(@Path("uuid") String uuId);
 }

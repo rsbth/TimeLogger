@@ -11,11 +11,11 @@ import java.util.List;
  */
 public interface ActivityEndpoint {
 
-    @GET("/task/all")
-    Call<List<ActivityDto>> getAllActivities();
-
     @POST("/task/add")
     Call<ActivityDto> postNewActivity(@Body ActivityDto activityDto);
+
+    @GET("/task/all")
+    Call<List<ActivityDto>> getAllActivities();
 
     @PATCH("/task/update")
     Call<ActivityDto> patchActivityOnServer(@Body ActivityDto activityDto);

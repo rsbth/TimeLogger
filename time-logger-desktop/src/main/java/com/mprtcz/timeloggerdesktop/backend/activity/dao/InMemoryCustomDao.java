@@ -37,6 +37,14 @@ public class InMemoryCustomDao implements CustomDao {
     }
 
     @Override
+    public void update(Record record) throws Exception {
+        int index = records.indexOf(record);
+        if(index >= 0) {
+            records.set(index, record);
+        }
+    }
+
+    @Override
     public void update(Activity activity) throws Exception {
         int id = activities.indexOf(activity);
         if(id != -1) {

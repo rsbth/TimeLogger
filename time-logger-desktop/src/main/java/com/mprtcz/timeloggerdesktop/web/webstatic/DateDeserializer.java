@@ -31,9 +31,4 @@ public class DateDeserializer implements JsonDeserializer<Date> {
             return null;
         }
     }
-
-    public static void main(String[] args) {
-        long timestamp = 1485430818000L;
-        System.out.println(new Date(timestamp));
-    }
 }
