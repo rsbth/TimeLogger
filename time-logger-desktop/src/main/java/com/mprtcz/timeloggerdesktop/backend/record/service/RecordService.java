@@ -6,6 +6,7 @@ import com.mprtcz.timeloggerdesktop.backend.activity.service.ActivityService;
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import com.mprtcz.timeloggerdesktop.backend.record.validators.RecordValidator;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
+import com.mprtcz.timeloggerdesktop.frontend.controller.MainController;
 import com.mprtcz.timeloggerdesktop.web.record.controller.RecordWebController;
 import com.mprtcz.timeloggerdesktop.web.record.model.RecordDto;
 import com.mprtcz.timeloggerdesktop.web.webstatic.WebHandler;
@@ -29,13 +30,16 @@ public class RecordService {
     private ActivityService activityService;
     private RecordWebController recordWebController;
     private CustomDao customDao;
+    private MainController mainController;
 
     public RecordService(RecordValidator recordValidator,
                          ActivityService activityService,
-                         CustomDao customDao) {
+                         CustomDao customDao,
+                         MainController mainController) {
         this.recordValidator = recordValidator;
         this.activityService = activityService;
         this.customDao = customDao;
+        this.mainController = mainController;
     }
 
     public ValidationResult addNewRecord(RecordValidator.ValidationObject object) throws Exception {
@@ -149,6 +153,7 @@ public class RecordService {
             logger.error("Exception while getting records from database = " + e.toString());
             e.printStackTrace();
         }
+        this.mainController.updateGUI();
     }
 
     private void sendLocalRecordsToServer(List<Record> unsyncLocalRecords) {

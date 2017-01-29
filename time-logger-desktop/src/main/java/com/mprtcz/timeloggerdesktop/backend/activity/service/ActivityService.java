@@ -241,6 +241,7 @@ public class ActivityService {
         sendLocalChangesToServer(activitiesToSendToServer);
         logger.info("activitiesToSendToServer = " + activitiesToSendToServer);
         this.mainController.updateActivityList();
+        this.mainController.processRecordSynchronization();
     }
 
     private void sendLocalChangesToServer(List<Activity> activitiesToSendToServer) {

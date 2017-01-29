@@ -19,6 +19,10 @@ public interface MainController {
 
     void openFileChooser();
 
+    void processRecordSynchronization();
+
+    void updateGUI();
+
     ChangeListener<Throwable> getTaskExceptionListener();
 
     ChangeListener<Activity> getListViewChangeListener();

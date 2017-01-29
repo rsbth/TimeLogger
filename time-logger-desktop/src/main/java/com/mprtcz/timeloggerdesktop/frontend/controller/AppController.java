@@ -171,7 +171,7 @@ public class AppController implements MainController {
         this.activityWebController = new ActivityWebController();
         this.recordWebController = new RecordWebController();
         logger.info("Thread = " + Thread.currentThread().toString());
-        this.processServerSynchronization();
+        this.processActivitySynchronization();
     }
 
     @FXML
@@ -309,7 +309,8 @@ public class AppController implements MainController {
         try {
             CustomDao daoProvider = new DatabaseCustomDao();
             this.activityService = new ActivityService(new ActivityValidator(), daoProvider, this);
-            this.recordService = new RecordService(new RecordValidator(), this.activityService, daoProvider);
+            this.recordService = new RecordService(new RecordValidator(),
+                    this.activityService, daoProvider, this);
         } catch (Exception e) {
             e.printStackTrace();
             displayException(e);
@@ -415,7 +416,7 @@ public class AppController implements MainController {
         });
     }
 
-    private void updateGUI() {
+    public void updateGUI() {
         this.getTableData();
         this.activityListController.populateListView();
     }
@@ -504,7 +505,7 @@ public class AppController implements MainController {
         this.executorService.execute(task);
     }
 
-    private void processServerSynchronization() {
+    private void processActivitySynchronization() {
         Task task = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -513,6 +514,7 @@ public class AppController implements MainController {
             }
         };
         task.setOnSucceeded(event -> {
+            logger.info("activity server sync done");
             this.updateGUI();
             this.processRecordSynchronization();
         });
@@ -521,7 +523,7 @@ public class AppController implements MainController {
         this.executorService.execute(task);
     }
 
-    private void processRecordSynchronization() {
+    public void processRecordSynchronization() {
         Task task = new Task() {
             @Override
             protected Object call() throws Exception {
@@ -529,7 +531,7 @@ public class AppController implements MainController {
                 return null;
             }
         };
-        task.setOnSucceeded(event -> this.updateGUI());
+        task.setOnSucceeded(event -> logger.info("record sync thread completed"));
         task.setOnFailed(event -> getOnFailedTaskEventHandler());
         this.addTaskExceptionListener(task);
         this.executorService.execute(task);

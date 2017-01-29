@@ -40,6 +40,7 @@ public class RecordEntityDtoConverterImpl implements RecordEntityDtoConverter {
         recordDto.setSynchronizationDate(DateTimeConverter.toDate(record.getSynchronizationDate()));
         recordDto.setActive(record.isActive());
         recordDto.setUuId(record.getUuId());
+        recordDto.setTaskServerId(record.getTask().getId());
         return recordDto;
     }
 

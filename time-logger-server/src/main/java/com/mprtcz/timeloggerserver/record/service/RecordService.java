@@ -50,7 +50,7 @@ public class RecordService {
 
     public RecordDto saveRecord(RecordDto r) {
         logger.info("RecordDTO to save : {}", r);
-        Task associatedTask = this.taskService.getTaskByUuId(r.getTaskUuId());
+        Task associatedTask = this.taskService.getTaskById(r.getTaskServerId());
         logger.info("associatedTask : {}", associatedTask);
         Record record = this.recordEntityDtoConverter.toEntity(r, associatedTask);
         logger.info("Record to save : {}", record);
@@ -112,7 +112,7 @@ public class RecordService {
 
     private void recordNullCheck(Record record) {
         if (record == null) {
-            throw new TaskNotFoundException("Task with this id does not exist");
+            throw new TaskNotFoundException("Task with this serverId does not exist");
         }
     }
 }

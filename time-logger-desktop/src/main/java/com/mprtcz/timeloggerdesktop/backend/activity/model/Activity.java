@@ -114,4 +114,17 @@ public class Activity {
         result = 31 * result + (active ? 1 : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Activity{" +
+                "id=" + id +
+                ", taskServerId=" + serverId +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", color='" + color + '\'' +
+                ", lastModified=" + lastModified +
+                ", active=" + active +
+                '}';
+    }
 }

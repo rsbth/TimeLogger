@@ -14,7 +14,7 @@ import java.util.Date;
 @ToString
 public class RecordDto {
 
-    private String taskUuId;
+    private Long taskServerId;
 
     private Date startDateTime;
 

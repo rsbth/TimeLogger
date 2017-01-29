@@ -23,7 +23,7 @@ public class CustomRecordRepository {
 
     public List<Record> getRecordsByTaskId(Long id) {
         Criteria criteria = this.sessionFactory.getCurrentSession().createCriteria(Record.class)
-                .add(Restrictions.eq("task.id", id)); //HQL uses class name instead of table name, and property names instead of column name.
+                .add(Restrictions.eq("task.serverId", id)); //HQL uses class name instead of table name, and property names instead of column name.
         return criteria.list();
     }
 

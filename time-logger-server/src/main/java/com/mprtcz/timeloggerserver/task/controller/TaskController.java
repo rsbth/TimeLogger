@@ -64,7 +64,7 @@ public class TaskController {
     public ResponseEntity updateTask(@RequestBody TaskDto taskDto) {
         logger.info("Task to update = " + taskDto);
         this.taskService.updateTask(taskDto);
-        TaskDto updatedTask = this.taskService.getTaskDtoById(taskDto.getId());
+        TaskDto updatedTask = this.taskService.getTaskDtoById(taskDto.getServerId());
         return new ResponseEntity<>(updatedTask, OK);
     }
 

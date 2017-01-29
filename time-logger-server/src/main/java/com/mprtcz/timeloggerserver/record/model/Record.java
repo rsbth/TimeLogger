@@ -47,7 +47,7 @@ public class Record {
     @Override
     public String toString() {
         return "Record{" +
-                "id=" + id +
+                "serverId=" + id +
                 ", taskID=" + task.getId() +
                 ", startDateTime=" + startDateTime +
                 ", endDateTime=" + endDateTime +

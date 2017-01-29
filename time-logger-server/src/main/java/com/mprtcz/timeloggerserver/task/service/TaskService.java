@@ -105,7 +105,7 @@ public class TaskService {
 
     public void checkIfTaskWithIdExists(Long id) {
         if (!this.taskRepository.exists(id)) {
-            throw new TaskNotFoundException("Task with this id does not exist");
+            throw new TaskNotFoundException("Task with this serverId does not exist");
         }
     }
 
@@ -117,12 +117,12 @@ public class TaskService {
 
     private void taskNullCheck(Task task) {
         if (task == null) {
-            throw new TaskNotFoundException("Task with this id does not exist");
+            throw new TaskNotFoundException("Task with this serverId does not exist");
         }
     }
 
     public void updateTask(TaskDto taskDto) {
-        Task task = this.taskRepository.findOne(taskDto.getId());
+        Task task = this.taskRepository.findOne(taskDto.getServerId());
         taskNullCheck(task);
         Task convertedDto = this.taskEntityDtoConverter.toEntity(taskDto);
         task.setName(taskDto.getName());
