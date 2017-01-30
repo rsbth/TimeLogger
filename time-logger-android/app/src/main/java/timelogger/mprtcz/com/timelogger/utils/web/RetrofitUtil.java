@@ -44,7 +44,7 @@ public class RetrofitUtil {
         return retrofitUtil.getRetrofit();
     }
 
-    public static TaskEndpoint getActivityEndpointRetrofit() {
+    public static TaskEndpoint getTaskEndpointRetrofit() {
         Retrofit retrofit = getRetrofitInstance();
         return retrofit.create(TaskEndpoint.class);
     }

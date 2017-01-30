@@ -18,14 +18,14 @@ import timelogger.mprtcz.com.timelogger.task.model.TaskDto;
 public interface TaskEndpoint {
 
     @POST("/task/add")
-    Call<TaskDto> postNewActivity(@Body TaskDto activityDto);
+    Call<TaskDto> postNewTask(@Body TaskDto taskDto);
 
     @GET("/task/all")
-    Call<List<TaskDto>> getAllActivities();
+    Call<List<TaskDto>> getAllTasks();
 
     @PATCH("/task/update")
-    Call<TaskDto> patchActivityOnServer(@Body TaskDto activityDto);
+    Call<TaskDto> patchTaskOnServer(@Body TaskDto taskDto);
 
     @DELETE("/task/{id}/delete")
-    Call<Void> deleteActivityOnServer(@Path("id") Long serverId);
+    Call<Void> deleteTaskOnServer(@Path("id") Long serverId);
 }
