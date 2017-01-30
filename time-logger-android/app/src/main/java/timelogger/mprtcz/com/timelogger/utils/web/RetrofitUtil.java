@@ -1,13 +1,14 @@
-package com.mprtcz.timeloggerdesktop.web.webstatic;
+package timelogger.mprtcz.com.timelogger.utils.web;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mprtcz.timeloggerdesktop.web.activity.client.ActivityEndpoint;
-import com.mprtcz.timeloggerdesktop.web.record.webclient.RecordEndpoint;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.util.Date;
+
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import timelogger.mprtcz.com.timelogger.record.dao.RecordEndpoint;
+import timelogger.mprtcz.com.timelogger.task.dao.TaskEndpoint;
 
 /**
  * Created by mprtcz on 2017-01-26.
@@ -43,9 +44,9 @@ public class RetrofitUtil {
         return retrofitUtil.getRetrofit();
     }
 
-    public static ActivityEndpoint getActivityEndpointRetrofit() {
+    public static TaskEndpoint getActivityEndpointRetrofit() {
         Retrofit retrofit = getRetrofitInstance();
-        return retrofit.create(ActivityEndpoint.class);
+        return retrofit.create(TaskEndpoint.class);
     }
 
     public static RecordEndpoint getRecordEndpointRetrofit() {

@@ -1,4 +1,4 @@
-package com.mprtcz.timeloggerdesktop.web.webstatic;
+package timelogger.mprtcz.com.timelogger.utils.web;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;

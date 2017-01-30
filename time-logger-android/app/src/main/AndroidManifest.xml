@@ -9,7 +9,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity" />
-        <activity android:name=".activities.TasksListActivity"
+        <activity
+            android:name=".activities.TasksListActivity"
             android:configChanges="layoutDirection|locale">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,8 +30,10 @@
 
         <activity android:name=".activities.DateTimePickActivity" />
         <activity android:name=".activities.GraphicDataActivity" />
-        <activity android:name=".activities.SettingsListActivity"
-            android:configChanges="layoutDirection|locale"/>
+        <activity
+            android:name=".activities.SettingsListActivity"
+            android:configChanges="layoutDirection|locale" />
+        <activity android:name=".activities.SyncingActivity"></activity>
     </application>
 
 </manifest>

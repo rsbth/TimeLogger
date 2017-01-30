@@ -29,6 +29,18 @@ public class Record {
     @DatabaseField
     private Date endDateTime;
 
+    @DatabaseField
+    private Date creationDate;
+
+    @DatabaseField
+    private Date synchronizationDate;
+
+    @DatabaseField
+    private String uuId;
+
+    @DatabaseField(canBeNull = false)
+    private boolean active;
+
     public Record() {
     }
 
@@ -44,9 +56,13 @@ public class Record {
     public String toString() {
         return "Record{" +
                 "id=" + id +
-                ", activityName=" + task.getName() +
+                ", task name=" + task.getName() +
                 ", startDateTime=" + startDateTime +
                 ", endDateTime=" + endDateTime +
+                ", creationDate=" + creationDate +
+                ", synchronizationDate=" + synchronizationDate +
+                ", uuId='" + uuId + '\'' +
+                ", active=" + active +
                 '}';
     }
 }

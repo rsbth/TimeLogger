@@ -24,9 +24,13 @@ import timelogger.mprtcz.com.timelogger.record.model.Record;
 @ToString
 @DatabaseTable(tableName = "tasks")
 public class Task {
+    private static final String TAG = "Task";
 
     @DatabaseField(generatedId = true)
     private Long id;
+
+    @DatabaseField
+    private Long serverId;
 
     @DatabaseField(canBeNull = false)
     private String name;
@@ -36,6 +40,12 @@ public class Task {
 
     @DatabaseField(canBeNull = false)
     private String color;
+
+    @DatabaseField(canBeNull = false)
+    private Date lastModified;
+
+    @DatabaseField(canBeNull = false)
+    private boolean active;
 
     @ForeignCollectionField(eager = true)
     Collection<Record> taskRecords;
@@ -57,11 +67,18 @@ public class Task {
     }
 
     public void addRecord(Record record) {
-        Log.d("Task.addRecordAsync", "record added = " +record.toString());
-        if(this.taskRecords == null) {
+        if (this.taskRecords == null) {
             this.taskRecords = new ArrayList<>();
         }
-        this.taskRecords.add(record);
+        List<Record> records = new ArrayList<>(this.taskRecords);
+        int recordPosition = records.indexOf(record);
+        if (recordPosition != -1) {
+            Log.i(TAG, "Record exists at " +recordPosition +" replacing: " + record);
+            records.set(recordPosition, record);
+            this.taskRecords = records;
+        } else {
+            this.taskRecords.add(record);
+        }
     }
 
     public static List<Task> tasks = new ArrayList<>();
