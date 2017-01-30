@@ -1,4 +1,4 @@
-package com.mprtcz.timeloggerdesktop.web.record;
+package com.mprtcz.timeloggerdesktop.web.record.service;
 
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;

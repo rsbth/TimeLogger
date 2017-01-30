@@ -7,7 +7,7 @@ import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import com.mprtcz.timeloggerdesktop.backend.record.validators.RecordValidator;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.frontend.controller.MainController;
-import com.mprtcz.timeloggerdesktop.web.record.RecordSyncService;
+import com.mprtcz.timeloggerdesktop.web.record.service.RecordSyncService;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;

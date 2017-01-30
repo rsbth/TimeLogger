@@ -23,8 +23,9 @@ import com.mprtcz.timeloggerdesktop.frontend.customfxelements.StyleSetter;
 import com.mprtcz.timeloggerdesktop.frontend.utils.MessageType;
 import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
 import com.mprtcz.timeloggerdesktop.web.activity.controller.ActivityWebController;
-import com.mprtcz.timeloggerdesktop.web.record.RecordSyncService;
+import com.mprtcz.timeloggerdesktop.web.activity.service.ActivitySyncService;
 import com.mprtcz.timeloggerdesktop.web.record.controller.RecordWebController;
+import com.mprtcz.timeloggerdesktop.web.record.service.RecordSyncService;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -96,6 +97,7 @@ public class AppController implements MainController {
 
     private JFXDialog bottomDialog;
     private ActivityService activityService;
+    private ActivitySyncService activitySyncService;
     private RecordService recordService;
     private RecordSyncService recordSyncService;
     private AddRecordPopup addRecordPopup;
@@ -173,7 +175,9 @@ public class AppController implements MainController {
         this.activityWebController = new ActivityWebController();
         this.recordWebController = new RecordWebController();
         this.recordSyncService = new RecordSyncService(this.recordService, this.recordWebController);
+        this.activitySyncService = new ActivitySyncService(this.activityWebController, this.activityService);
         this.recordService.setRecordSyncService(this.recordSyncService);
+        this.activityService.setActivitySyncService(this.activitySyncService);
         this.processActivitySynchronization();
     }
 
@@ -512,7 +516,7 @@ public class AppController implements MainController {
         Task task = new Task() {
             @Override
             protected Object call() throws Exception {
-                AppController.this.activityService.synchronizeActivities(activityWebController);
+                AppController.this.activitySyncService.synchronizeActivities(activityWebController);
                 return null;
             }
         };
