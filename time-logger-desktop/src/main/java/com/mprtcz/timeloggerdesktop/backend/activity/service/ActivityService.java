@@ -7,7 +7,6 @@ import com.mprtcz.timeloggerdesktop.backend.activity.validators.ActivityValidato
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.frontend.controller.MainController;
-import com.mprtcz.timeloggerdesktop.web.activity.service.ActivitySyncService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -204,8 +203,7 @@ public class ActivityService {
         @XmlElement(name = "activity")
         List<Activity> activities = new ArrayList<>();
 
-        public Activities() {
-        }
+        public Activities() {}
 
         Activities(List<Activity> activities) {
             this.activities = activities;

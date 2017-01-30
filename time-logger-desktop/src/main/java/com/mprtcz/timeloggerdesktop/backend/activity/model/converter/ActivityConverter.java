@@ -1,7 +1,7 @@
-package com.mprtcz.timeloggerdesktop.web.activity.model.converter;
+package com.mprtcz.timeloggerdesktop.backend.activity.model.converter;
 
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
-import com.mprtcz.timeloggerdesktop.web.activity.model.ActivityDto;
+import com.mprtcz.timeloggerdesktop.backend.activity.model.ActivityDto;
 
 /**
  * Created by mprtcz on 2017-01-26.

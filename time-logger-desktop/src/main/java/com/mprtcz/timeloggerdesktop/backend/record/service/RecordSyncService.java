@@ -1,11 +1,10 @@
-package com.mprtcz.timeloggerdesktop.web.record.service;
+package com.mprtcz.timeloggerdesktop.backend.record.service;
 
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
-import com.mprtcz.timeloggerdesktop.backend.record.service.RecordService;
-import com.mprtcz.timeloggerdesktop.web.record.controller.RecordWebController;
-import com.mprtcz.timeloggerdesktop.web.record.model.RecordDto;
-import com.mprtcz.timeloggerdesktop.web.webstatic.CustomWebCallback;
+import com.mprtcz.timeloggerdesktop.backend.record.controller.RecordWebController;
+import com.mprtcz.timeloggerdesktop.backend.record.model.RecordDto;
+import com.mprtcz.timeloggerdesktop.backend.utilities.webutils.CustomWebCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Callback;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.mprtcz.timeloggerdesktop.web.record.model.converter.RecordConverter.toEntity;
+import static com.mprtcz.timeloggerdesktop.backend.record.model.converter.RecordConverter.toEntity;
 
 /**
  * Created by mprtcz on 2017-01-30.

@@ -1,8 +1,8 @@
-package com.mprtcz.timeloggerdesktop.web.record.model.converter;
+package com.mprtcz.timeloggerdesktop.backend.record.model.converter;
 
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
-import com.mprtcz.timeloggerdesktop.web.record.model.RecordDto;
+import com.mprtcz.timeloggerdesktop.backend.record.model.RecordDto;
 
 import java.util.Date;
 import java.util.Objects;

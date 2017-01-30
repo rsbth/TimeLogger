@@ -1,4 +1,4 @@
-package com.mprtcz.timeloggerdesktop.web.activity.model;
+package com.mprtcz.timeloggerdesktop.backend.activity.model;
 
 import lombok.Getter;
 import lombok.Setter;

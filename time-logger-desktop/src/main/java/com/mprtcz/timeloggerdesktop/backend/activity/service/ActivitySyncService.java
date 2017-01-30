@@ -1,12 +1,11 @@
-package com.mprtcz.timeloggerdesktop.web.activity.service;
+package com.mprtcz.timeloggerdesktop.backend.activity.service;
 
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
-import com.mprtcz.timeloggerdesktop.backend.activity.service.ActivityService;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
-import com.mprtcz.timeloggerdesktop.web.activity.controller.ActivityWebController;
-import com.mprtcz.timeloggerdesktop.web.activity.model.ActivityDto;
-import com.mprtcz.timeloggerdesktop.web.activity.model.converter.ActivityConverter;
-import com.mprtcz.timeloggerdesktop.web.webstatic.CustomWebCallback;
+import com.mprtcz.timeloggerdesktop.backend.activity.controller.ActivityWebController;
+import com.mprtcz.timeloggerdesktop.backend.activity.model.ActivityDto;
+import com.mprtcz.timeloggerdesktop.backend.activity.model.converter.ActivityConverter;
+import com.mprtcz.timeloggerdesktop.backend.utilities.webutils.CustomWebCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Callback;

@@ -1,4 +1,4 @@
-package com.mprtcz.timeloggerdesktop.web.webstatic;
+package com.mprtcz.timeloggerdesktop.backend.utilities.webutils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,7 +6,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.mprtcz.timeloggerdesktop.web.webstatic.WebHandler.handleWebCallbackException;
+import static com.mprtcz.timeloggerdesktop.backend.utilities.webutils.WebHandler.handleWebCallbackException;
 
 /**
  * Created by mprtcz on 2017-01-30.

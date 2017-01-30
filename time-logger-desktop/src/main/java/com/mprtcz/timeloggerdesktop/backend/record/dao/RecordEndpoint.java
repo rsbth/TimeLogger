@@ -1,6 +1,6 @@
-package com.mprtcz.timeloggerdesktop.web.record.webclient;
+package com.mprtcz.timeloggerdesktop.backend.record.dao;
 
-import com.mprtcz.timeloggerdesktop.web.record.model.RecordDto;
+import com.mprtcz.timeloggerdesktop.backend.record.model.RecordDto;
 import retrofit2.Call;
 import retrofit2.http.*;
 

@@ -1,9 +1,9 @@
-package com.mprtcz.timeloggerdesktop.web.activity.controller;
+package com.mprtcz.timeloggerdesktop.backend.activity.controller;
 
 import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
-import com.mprtcz.timeloggerdesktop.web.activity.client.ActivityEndpoint;
-import com.mprtcz.timeloggerdesktop.web.activity.model.ActivityDto;
-import com.mprtcz.timeloggerdesktop.web.webstatic.RetrofitUtil;
+import com.mprtcz.timeloggerdesktop.backend.activity.dao.ActivityEndpoint;
+import com.mprtcz.timeloggerdesktop.backend.activity.model.ActivityDto;
+import com.mprtcz.timeloggerdesktop.backend.utilities.webutils.RetrofitUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Call;
@@ -11,7 +11,7 @@ import retrofit2.Callback;
 
 import java.util.List;
 
-import static com.mprtcz.timeloggerdesktop.web.activity.model.converter.ActivityConverter.toDto;
+import static com.mprtcz.timeloggerdesktop.backend.activity.model.converter.ActivityConverter.toDto;
 
 /**
  * Created by mprtcz on 2017-01-26.

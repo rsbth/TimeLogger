@@ -1,9 +1,9 @@
-package com.mprtcz.timeloggerdesktop.web.record.controller;
+package com.mprtcz.timeloggerdesktop.backend.record.controller;
 
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
-import com.mprtcz.timeloggerdesktop.web.record.model.RecordDto;
-import com.mprtcz.timeloggerdesktop.web.record.webclient.RecordEndpoint;
-import com.mprtcz.timeloggerdesktop.web.webstatic.RetrofitUtil;
+import com.mprtcz.timeloggerdesktop.backend.record.model.RecordDto;
+import com.mprtcz.timeloggerdesktop.backend.record.dao.RecordEndpoint;
+import com.mprtcz.timeloggerdesktop.backend.utilities.webutils.RetrofitUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Call;
@@ -12,7 +12,7 @@ import retrofit2.Callback;
 import java.util.Date;
 import java.util.List;
 
-import static com.mprtcz.timeloggerdesktop.web.record.model.converter.RecordConverter.toDto;
+import static com.mprtcz.timeloggerdesktop.backend.record.model.converter.RecordConverter.toDto;
 
 
 /**

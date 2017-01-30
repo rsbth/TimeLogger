@@ -22,10 +22,10 @@ import com.mprtcz.timeloggerdesktop.frontend.customfxelements.DialogElementsCons
 import com.mprtcz.timeloggerdesktop.frontend.customfxelements.StyleSetter;
 import com.mprtcz.timeloggerdesktop.frontend.utils.MessageType;
 import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
-import com.mprtcz.timeloggerdesktop.web.activity.controller.ActivityWebController;
-import com.mprtcz.timeloggerdesktop.web.activity.service.ActivitySyncService;
-import com.mprtcz.timeloggerdesktop.web.record.controller.RecordWebController;
-import com.mprtcz.timeloggerdesktop.web.record.service.RecordSyncService;
+import com.mprtcz.timeloggerdesktop.backend.activity.controller.ActivityWebController;
+import com.mprtcz.timeloggerdesktop.backend.activity.service.ActivitySyncService;
+import com.mprtcz.timeloggerdesktop.backend.record.controller.RecordWebController;
+import com.mprtcz.timeloggerdesktop.backend.record.service.RecordSyncService;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
