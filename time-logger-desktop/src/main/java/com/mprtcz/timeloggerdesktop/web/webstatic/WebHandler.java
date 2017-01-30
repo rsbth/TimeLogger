@@ -23,4 +23,9 @@ public class WebHandler {
             e.printStackTrace();
         }
     }
+
+    public static <T> void handleWebCallbackException(Call<T> call, Throwable throwable) {
+        logger.error("Exception while calling {}, exception = {} " ,call.request(), throwable.toString());
+        throwable.printStackTrace();
+    }
 }

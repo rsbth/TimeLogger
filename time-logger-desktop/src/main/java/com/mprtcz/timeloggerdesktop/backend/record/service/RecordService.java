@@ -7,18 +7,16 @@ import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
 import com.mprtcz.timeloggerdesktop.backend.record.validators.RecordValidator;
 import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.frontend.controller.MainController;
-import com.mprtcz.timeloggerdesktop.web.record.controller.RecordWebController;
-import com.mprtcz.timeloggerdesktop.web.record.model.RecordDto;
-import com.mprtcz.timeloggerdesktop.web.webstatic.WebHandler;
+import com.mprtcz.timeloggerdesktop.web.record.RecordSyncService;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-import java.util.*;
-
-import static com.mprtcz.timeloggerdesktop.web.record.model.converter.RecordConverter.toEntity;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by mprtcz on 2017-01-10.
@@ -27,10 +25,13 @@ public class RecordService {
     private Logger logger = LoggerFactory.getLogger(RecordService.class);
 
     private RecordValidator recordValidator;
+    @Getter
     private ActivityService activityService;
-    private RecordWebController recordWebController;
     private CustomDao customDao;
+    @Getter
     private MainController mainController;
+    @Setter
+    private RecordSyncService recordSyncService;
 
     public RecordService(RecordValidator recordValidator,
                          ActivityService activityService,
@@ -57,18 +58,14 @@ public class RecordService {
             logger.info("rootActivity = {}", rootActivity.toString());
             this.activityService.updateActivityWithNewRecord(rootActivity);
 
-            if (this.recordWebController != null) {
-                this.recordWebController.postRecordToServer(getPostNewRecordCallback(record), record);
+            if (this.recordSyncService != null) {
+                this.recordSyncService.postNewRecordToServer(record);
             }
         }
         return validationResult;
     }
 
-    public void synchronizeRecords(RecordWebController recordWebController) throws Exception {
-        this.recordWebController = recordWebController;
-        List<Record> localRecords = getAllRecords();
-        this.recordWebController.getAllRecordsFromServer(getRecordsSynchronizationCallback(localRecords));
-    }
+
 
     public List<Record> getAllRecords() throws Exception {
         logger.info("RecordService.getAllRecords");
@@ -90,134 +87,8 @@ public class RecordService {
         return lastDate;
     }
 
-    private Callback<List<RecordDto>> getRecordsSynchronizationCallback(List<Record> localRecords) {
-        logger.info("RecordService.getRecordsSynchronizationCallback");
-        return new Callback<List<RecordDto>>() {
-            @Override
-            public void onResponse(Call<List<RecordDto>> call, Response<List<RecordDto>> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        updateLocalDBWithServerData(localRecords, response.body());
-                    } catch (Exception e) {
-                        logger.error("Exception while updating local record database : " + e.toString());
-                        e.printStackTrace();
-                    }
-                } else {
-                    WebHandler.handleBadCodeResponse(call, response);
-                }
-            }
 
-            @Override
-            public void onFailure(Call<List<RecordDto>> call, Throwable throwable) {
-            }
-        };
-    }
-
-    private void updateLocalDBWithServerData(List<Record> localRecords, List<RecordDto> serverRecords)
-            throws Exception {
-        logger.info("RecordService.updateLocalDBWithServerData");
-        Map<Date, Record> localRecordsMap = getLocalRecordsMap(localRecords);
-        for (RecordDto serverRecord : serverRecords) {
-            Record localRecord = localRecordsMap.get(serverRecord.getSynchronizationDate());
-            logger.info("Server record = {}", serverRecord);
-            if (localRecord == null) {
-                if (serverRecord.isActive()) {
-                    logger.info("Server record active, ServerRecord = {}", serverRecord);
-                    addNewRecordFromServer(serverRecord);
-                }
-            } else {
-                logger.info("Local record exists, Record = {}", localRecord);
-                if (!localRecord.isActive()) {
-                    if (serverRecord.isActive()) {
-                        removeRecordFromServer(localRecord);
-                    }
-                } else {
-                    if(!serverRecord.isActive()) {
-                        removeLocalRecord(localRecord);
-                    }
-                }
-            }
-        }
-        try {
-            List<Record> localRecordsAfterServerUpdate = getAllRecords();
-            List<Record> unsyncLocalRecords = new ArrayList<>();
-            for (Record record : localRecordsAfterServerUpdate) {
-                if (record.getSynchronizationDate() == null) {
-                    unsyncLocalRecords.add(record);
-                }
-            }
-            if (unsyncLocalRecords.size() > 0) {
-                sendLocalRecordsToServer(unsyncLocalRecords);
-            }
-        } catch (Exception e) {
-            logger.error("Exception while getting records from database = " + e.toString());
-            e.printStackTrace();
-        }
-        this.mainController.updateGUI();
-    }
-
-    private void sendLocalRecordsToServer(List<Record> unsyncLocalRecords) {
-        logger.info("RecordService.sendLocalRecordsToServer");
-        for (Record record :
-                unsyncLocalRecords) {
-            this.recordWebController.postRecordToServer(getPostNewRecordCallback(record), record);
-        }
-    }
-
-    public Callback<RecordDto> getPostNewRecordCallback(Record record) {
-        return new Callback<RecordDto>() {
-            @Override
-            public void onResponse(Call<RecordDto> call, Response<RecordDto> response) {
-                if (response.isSuccessful()) {
-                    logger.info("Record post successful, Record = {}", record);
-                    RecordDto recordReturnedByServer = response.body();
-                    try {
-                        addNewRecordFromServer(recordReturnedByServer);
-                    } catch (Exception e) {
-                        logger.error(
-                                "Exception while posting new record to local DB, record = {}, exception = {}",
-                                record, e.toString());
-                        e.printStackTrace();
-                    }
-                } else {
-                    WebHandler.handleBadCodeResponse(call, response);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<RecordDto> call, Throwable throwable) {
-                logger.error("Exception while posting new record to server, record = {}, exception = {}",
-                        record, throwable.toString());
-            }
-        };
-    }
-
-    private Map<Date, Record> getLocalRecordsMap(List<Record> localRecords) {
-        logger.info("RecordService.getLocalRecordsMap");
-        Map<Date, Record> map = new HashMap<>();
-        for (Record record :
-                localRecords) {
-            if (record.getSynchronizationDate() != null) {
-                map.put(record.getSynchronizationDate(), record);
-            }
-        }
-        return map;
-    }
-
-    public void addNewRecordFromServer(RecordDto recordDto) throws Exception {
-        logger.info("RecordService.addNewRecordFromServer");
-        Activity activity = this.activityService.findActivityByUuId(recordDto.getTaskServerId());
-        Record record = toEntity(recordDto, activity);
-        record.setActive(recordDto.isActive());
-        Record recordEntity = findRecordByUuid(record.getUuId());
-        if(recordEntity != null) {
-            recordEntity.setSynchronizationDate(recordDto.getSynchronizationDate());
-            this.customDao.update(recordEntity);
-        }
-        activity.addRecord(record);
-    }
-
-    private Record findRecordByUuid(String uuId) throws Exception {
+    public Record findRecordByUuid(String uuId) throws Exception {
         List<Record> records = this.customDao.getAllRecords();
         for (Record record : records) {
             if (record.getUuId().equals(uuId)) {
@@ -227,28 +98,7 @@ public class RecordService {
         return null;
     }
 
-    private void removeRecordFromServer(Record record) {
-        logger.info("RecordService.removeRecordFromServer");
-        this.recordWebController.removeRecordFromServer(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    logger.info("Record {} deleted successfully", record);
-                } else {
-                    WebHandler.handleBadCodeResponse(call, response);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable throwable) {
-                logger.error("Error while deleting record");
-                throwable.printStackTrace();
-            }
-        }, record);
-    }
-
-    private void removeLocalRecord(Record record) throws Exception {
-        record.setActive(false);
+    public void updateRecord(Record record) throws Exception {
         this.customDao.update(record);
     }
 }

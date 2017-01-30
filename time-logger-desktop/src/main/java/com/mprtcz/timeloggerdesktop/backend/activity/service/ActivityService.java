@@ -10,12 +10,11 @@ import com.mprtcz.timeloggerdesktop.frontend.controller.MainController;
 import com.mprtcz.timeloggerdesktop.web.activity.controller.ActivityWebController;
 import com.mprtcz.timeloggerdesktop.web.activity.model.ActivityDto;
 import com.mprtcz.timeloggerdesktop.web.activity.model.converter.ActivityConverter;
-import com.mprtcz.timeloggerdesktop.web.webstatic.WebHandler;
+import com.mprtcz.timeloggerdesktop.web.webstatic.CustomWebCallback;
 import lombok.Getter;
 import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
@@ -92,7 +91,7 @@ public class ActivityService {
         List<Activity> activities = getActivities();
         for (Activity activity :
                 activities) {
-            if(Objects.equals(activity.getServerId(), serverId)) {
+            if (Objects.equals(activity.getServerId(), serverId)) {
                 return activity;
             }
         }
@@ -154,19 +153,10 @@ public class ActivityService {
     }
 
     private Callback<List<ActivityDto>> getActivitySynchronizationCallback(List<Activity> localActivities) {
-        return new Callback<List<ActivityDto>>() {
+        return new CustomWebCallback<List<ActivityDto>>() {
             @Override
-            public void onResponse(Call<List<ActivityDto>> call, Response<List<ActivityDto>> response) {
-                if (response.isSuccessful()) {
-                    synchronizeLocalActivitiesWithServer(localActivities, response.body());
-                } else {
-                    WebHandler.handleBadCodeResponse(call, response);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<ActivityDto>> call, Throwable throwable) {
-                logger.error("getActivitySynchronizationCallback error, " + throwable.toString());
+            public void onSuccessfulCall(Response<List<ActivityDto>> response) {
+                synchronizeLocalActivitiesWithServer(localActivities, response.body());
             }
         };
     }
@@ -260,78 +250,44 @@ public class ActivityService {
     }
 
     private Callback<Void> getDeleteCallback(Activity activity) {
-        return new Callback<Void>() {
+        return new CustomWebCallback<Void>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    logger.info("Deletion succesful, activity = " + activity);
-                } else {
-                    WebHandler.handleBadCodeResponse(call, response);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable throwable) {
-                logger.warn("Deleting unsuccessful, " + throwable.toString());
-                throwable.printStackTrace();
+            public void onSuccessfulCall(Response<Void> response) {
+                logger.info("Deletion succesful, activity = " + activity);
             }
         };
     }
 
     private Callback<ActivityDto> getPostNewActivityCallback(Activity activity) {
-        return new Callback<ActivityDto>() {
+        return new CustomWebCallback<ActivityDto>() {
             @Override
-            public void onResponse(Call<ActivityDto> call, Response<ActivityDto> response) {
+            public void onSuccessfulCall(Response<ActivityDto> response) {
                 ActivityDto activityDto = response.body();
-                logger.info("getPostNewActivityCallback, response.body() = {}", response.body());
-                if (response.isSuccessful()) {
-                    try {
-                        updateActivityWithServerData(activity, activityDto);
-                    } catch (Exception e) {
-                        logger.warn("Update unsuccesful, exception = {},\n response body = {}",
-                                e.toString(), response.code());
-                        e.printStackTrace();
-                    }
-                } else {
-                    WebHandler.handleBadCodeResponse(call, response);
+                try {
+                    updateActivityWithServerData(activity, activityDto);
+                } catch (Exception e) {
+                    logger.warn("Update unsuccesful, exception = {},\n response body = {}",
+                            e.toString(), response.code());
+                    e.printStackTrace();
                 }
-            }
-
-            @Override
-            public void onFailure(Call<ActivityDto> call, Throwable throwable) {
-                logger.warn("Posting new activity on server unsuccessful, " + throwable.toString());
-                throwable.printStackTrace();
             }
         };
     }
 
     private Callback<ActivityDto> getPatchActivityCallback() {
-        return new Callback<ActivityDto>() {
+        return new CustomWebCallback<ActivityDto>() {
             @Override
-            public void onResponse(Call<ActivityDto> call, Response<ActivityDto> response) {
-                if (response.isSuccessful()) {
-                    logger.info("Patching succesful");
-                } else {
-                    WebHandler.handleBadCodeResponse(call, response);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ActivityDto> call, Throwable throwable) {
-                logger.warn("Updating on server unsuccessful, " + throwable.toString());
-                throwable.printStackTrace();
+            public void onSuccessfulCall(Response<ActivityDto> response) {
+                logger.info("Patching succesful");
             }
         };
     }
 
     private Map<Long, Activity> getLocalActivitiesMap(List<Activity> activities) {
         Map<Long, Activity> map = new HashMap<>();
-        for (Activity activity :
-                activities) {
-            if (activity.getServerId() != null) {
-                map.put(activity.getServerId(), activity);
-            }
-        }
+        activities.stream().filter(activity -> activity.getServerId() != null).forEach(activity -> {
+            map.put(activity.getServerId(), activity);
+        });
         return map;
     }
 

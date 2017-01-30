@@ -23,6 +23,7 @@ import com.mprtcz.timeloggerdesktop.frontend.customfxelements.StyleSetter;
 import com.mprtcz.timeloggerdesktop.frontend.utils.MessageType;
 import com.mprtcz.timeloggerdesktop.frontend.utils.ResultEventHandler;
 import com.mprtcz.timeloggerdesktop.web.activity.controller.ActivityWebController;
+import com.mprtcz.timeloggerdesktop.web.record.RecordSyncService;
 import com.mprtcz.timeloggerdesktop.web.record.controller.RecordWebController;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
@@ -96,6 +97,7 @@ public class AppController implements MainController {
     private JFXDialog bottomDialog;
     private ActivityService activityService;
     private RecordService recordService;
+    private RecordSyncService recordSyncService;
     private AddRecordPopup addRecordPopup;
     private Map<BottomButton, JFXButton> bottomButtons;
     private LocalDateTime latestRecord;
@@ -170,7 +172,8 @@ public class AppController implements MainController {
         logger.info("initializeWebControllers");
         this.activityWebController = new ActivityWebController();
         this.recordWebController = new RecordWebController();
-        logger.info("Thread = " + Thread.currentThread().toString());
+        this.recordSyncService = new RecordSyncService(this.recordService, this.recordWebController);
+        this.recordService.setRecordSyncService(this.recordSyncService);
         this.processActivitySynchronization();
     }
 
@@ -516,7 +519,6 @@ public class AppController implements MainController {
         task.setOnSucceeded(event -> {
             logger.info("activity server sync done");
             this.updateGUI();
-            this.processRecordSynchronization();
         });
         task.setOnFailed(event -> getOnFailedTaskEventHandler());
         this.addTaskExceptionListener(task);
@@ -527,7 +529,7 @@ public class AppController implements MainController {
         Task task = new Task() {
             @Override
             protected Object call() throws Exception {
-                AppController.this.recordService.synchronizeRecords(recordWebController);
+                AppController.this.recordSyncService.synchronizeRecords();
                 return null;
             }
         };
@@ -535,6 +537,5 @@ public class AppController implements MainController {
         task.setOnFailed(event -> getOnFailedTaskEventHandler());
         this.addTaskExceptionListener(task);
         this.executorService.execute(task);
-
     }
 }
