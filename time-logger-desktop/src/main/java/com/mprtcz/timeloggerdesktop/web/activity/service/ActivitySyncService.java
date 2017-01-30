@@ -68,9 +68,8 @@ public class ActivitySyncService {
                     if (localActivity.isActive()) {
                         logger.info("activity is active in local db");
                         if (localActivity.getLastModified().before(serverActivity.getLastModified())) {
-                            logger.info("activity has been modified on server:\nactivity.getLastModified() = "
-                                    + localActivity.getLastModified() + " serverActivity.getLastModified() = "
-                                    + serverActivity.getLastModified());
+                            logModificationDates("activity has been modified on server:\n",
+                                    serverActivity, localActivity);
                             try {
                                 this.updateActivityWithServerData(localActivity, serverActivity);
                             } catch (Exception e) {
@@ -78,15 +77,13 @@ public class ActivitySyncService {
                                 e.printStackTrace();
                             }
                         } else if (localActivity.getLastModified().after(serverActivity.getLastModified())) {
-                            logger.info("activity has been modified locally:\nactivity.getLastModified() = "
-                                    + localActivity.getLastModified() + " serverActivity.getLastModified() = "
-                                    + serverActivity.getLastModified());
+                            logModificationDates("activity has been modified locally:\n",
+                                    serverActivity, localActivity);
                             activitiesToSendToServer.add(localActivity);
                         } else {
-                            logger.info("activity has the same modification date locally and on server:" +
-                                    "\nactivity.getLastModified() = "
-                                    + localActivity.getLastModified() + " serverActivity.getLastModified() = "
-                                    + serverActivity.getLastModified());
+                            logModificationDates(
+                                    "activity has the same modification date locally and on server:\n",
+                                    serverActivity, localActivity);
                         }
                     } else {
                         logger.info("Activity is inactive in local db, activity = " + localActivity);
@@ -125,9 +122,8 @@ public class ActivitySyncService {
 
     private Map<Long, Activity> getLocalActivitiesMap(List<Activity> activities) {
         Map<Long, Activity> map = new HashMap<>();
-        activities.stream().filter(activity -> activity.getServerId() != null).forEach(activity -> {
-            map.put(activity.getServerId(), activity);
-        });
+        activities.stream().filter(activity -> activity.getServerId() != null).forEach(
+                activity -> map.put(activity.getServerId(), activity));
         return map;
     }
 
@@ -151,7 +147,8 @@ public class ActivitySyncService {
                 continue;
             }
             if (activity.getServerId() == null) {
-                this.activityWebController.postNewActivityToServer(getPostNewActivityCallback(activity), activity);
+                this.activityWebController.postNewActivityToServer(
+                        getPostNewActivityCallback(activity), activity);
             } else {
                 this.activityWebController.patchActivityOnServer(getPatchActivityCallback(), activity);
             }
@@ -205,5 +202,11 @@ public class ActivitySyncService {
     public void deleteActivityOnServer(Activity activity) {
         this.activityWebController.deleteActivityOnServer(
                 getDeleteCallback(activity), activity);
+    }
+
+    private void logModificationDates(String message, ActivityDto serverActivity, Activity localActivity) {
+        logger.info(message + "activity.getLastModified() = "
+                + localActivity.getLastModified() + " serverActivity.getLastModified() = "
+                + serverActivity.getLastModified());
     }
 }
