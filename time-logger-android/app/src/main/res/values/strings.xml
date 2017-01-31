@@ -62,4 +62,5 @@
     <string name="recordStartTimeSummaryText">"Start: "</string>
     <string name="recordEndtimeSummaryText">"End: "</string>
     <string name="selectLanguageHeader">Select language</string>
+    <string name="dataLoadingTextView">Loading data from server</string>
 </resources>

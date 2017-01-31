@@ -55,4 +55,5 @@
     <string name="recordEndtimeSummaryText">Do: </string>
     <string name="recordStartTimeSummaryText">Od: </string>
     <string name="selectLanguageHeader">Wybierz język</string>
+    <string name="dataLoadingTextView">Pobieranie danych z serwera</string>
 </resources>
