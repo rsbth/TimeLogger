@@ -59,19 +59,19 @@ public class UiUtils {
         }
     }
 
-    public static List<Task> getAllTasksFromBackendAsync(Activity activity) {
+    public static List<Task> getActiveTasksFromBackendAsync(Activity activity) {
         final TaskService taskService = TaskService.getInstance(activity);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         List<Task> returnedTask = null;
         Future<List<Task>> result = executor.submit(new Callable<List<Task>>() {
             public List<Task> call() throws Exception {
                 Log.d("Task save", "saving task");
-                return taskService.getAllTasks();
+                return taskService.getActiveTasks();
             }
         });
         try {
             returnedTask = result.get();
-            Log.i(TAG, "getAllTasksFromBackendAsync, returned tasks = " + returnedTask.toString());
+            Log.i(TAG, "getActiveTasksFromBackendAsync, returned tasks = " + returnedTask.toString());
         } catch (Exception e) {
             e.printStackTrace();
             messageBox(activity, "Exception", e.toString());
@@ -101,7 +101,7 @@ public class UiUtils {
     }
 
     public static DateTime getRecordsLatestHourAsync(Activity activity) {
-        return HoursDataService.getLatestDateTime(getAllTasksFromBackendAsync(activity));
+        return HoursDataService.getLatestDateTime(getActiveTasksFromBackendAsync(activity));
     }
 
     public static ValidationResult saveTaskAsync(final Task newTask, Activity activity) {
@@ -133,7 +133,7 @@ public class UiUtils {
         result = executor.submit(new Callable<ValidationResult>() {
             public ValidationResult call() throws Exception {
                 Log.d("Task update", "updating task");
-                return taskService.updateTask(updatingTask);
+                return taskService.updateTask(updatingTask, TaskService.UpdateType.LOCAL);
             }
         });
         try {
@@ -176,7 +176,7 @@ public class UiUtils {
         final Future<HoursDataService.Hour[][]> result;
         result = executor.submit(new Callable<HoursDataService.Hour[][]>() {
             public HoursDataService.Hour[][] call() throws Exception {
-                HoursDataService hoursDataService = new HoursDataService(taskService.getAllTasks());
+                HoursDataService hoursDataService = new HoursDataService(taskService.getActiveTasks());
                 return hoursDataService.getHoursArray();
             }
         });

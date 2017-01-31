@@ -10,6 +10,7 @@ import java.util.Map;
 
 import retrofit2.Callback;
 import retrofit2.Response;
+import timelogger.mprtcz.com.timelogger.interfaces.Synchrotron;
 import timelogger.mprtcz.com.timelogger.task.controllers.WebTaskController;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.model.TaskDto;
@@ -25,6 +26,7 @@ public class TaskSyncService {
 
     private WebTaskController webTaskController;
     private TaskService taskService;
+    private Synchrotron synchrotron;
 
     public TaskSyncService(WebTaskController webTaskController,
                            TaskService taskService) {
@@ -32,14 +34,14 @@ public class TaskSyncService {
         this.taskService = taskService;
     }
 
-    public void synchronizeActivities(WebTaskController taskWebController) throws Exception {
-        this.webTaskController = taskWebController;
+    public void synchronizeActivities(Synchrotron synchrotron) throws Exception {
+        this.synchrotron = synchrotron;
         List<Task> localActivities = this.taskService.getAllTasks();
         this.webTaskController.getActivitiesFromServer(getTaskSynchronizationCallback(localActivities));
     }
 
     private Callback<List<TaskDto>> getTaskSynchronizationCallback(final List<Task> localTasks) {
-        return new CustomWebCallback<List<TaskDto>>() {
+        return new CustomWebCallback<List<TaskDto>>(this.synchrotron) {
             @Override
             public void onSuccessfulCall(Response<List<TaskDto>> response) {
                 synchronizeLocalActivitiesWithServer(localTasks, response.body());
@@ -117,8 +119,7 @@ public class TaskSyncService {
         }
         sendLocalChangesToServer(tasksToSendToServer);
         Log.i(TAG, "activitiesToSendToServer = " + tasksToSendToServer);
-//        this.taskService.getMainController().updateTaskList();
-//        this.taskService.getMainController().processRecordSynchronization();
+        this.synchrotron.synchronizeRecords();
     }
 
 
@@ -160,7 +161,7 @@ public class TaskSyncService {
     }
 
     private Callback<Void> getDeleteCallback(final Task task) {
-        return new CustomWebCallback<Void>() {
+        return new CustomWebCallback<Void>(this.synchrotron) {
             @Override
             public void onSuccessfulCall(Response<Void> response) {
                 Log.i(TAG, "Deletion successful, task = " + task);
@@ -169,7 +170,7 @@ public class TaskSyncService {
     }
 
     private Callback<TaskDto> getPostNewTaskCallback(final Task task) {
-        return new CustomWebCallback<TaskDto>() {
+        return new CustomWebCallback<TaskDto>(this.synchrotron) {
             @Override
             public void onSuccessfulCall(Response<TaskDto> response) {
                 TaskDto taskDto = response.body();
@@ -185,7 +186,7 @@ public class TaskSyncService {
     }
 
     private Callback<TaskDto> getPatchTaskCallback() {
-        return new CustomWebCallback<TaskDto>() {
+        return new CustomWebCallback<TaskDto>(this.synchrotron) {
             @Override
             public void onSuccessfulCall(Response<TaskDto> response) {
                 Log.i(TAG, "Patching successful");

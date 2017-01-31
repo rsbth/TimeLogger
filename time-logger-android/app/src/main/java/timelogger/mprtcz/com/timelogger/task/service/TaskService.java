@@ -6,7 +6,10 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
+import lombok.Getter;
+import timelogger.mprtcz.com.timelogger.task.controllers.WebTaskController;
 import timelogger.mprtcz.com.timelogger.task.dao.CustomDao;
 import timelogger.mprtcz.com.timelogger.task.dao.DatabaseDao;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
@@ -18,18 +21,22 @@ import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
  */
 
 public class TaskService {
+    private static final String TAG = "TaskService";
 
+    @Getter
     private CustomDao customDao;
+    @Getter
     private TaskSyncService taskSyncService;
 
-    private TaskService(CustomDao customDao) {
+    public TaskService(CustomDao customDao) {
         this.customDao = customDao;
+        this.taskSyncService = new TaskSyncService(new WebTaskController(), this);
     }
 
     public ValidationResult saveTask(Task task) throws Exception {
         System.out.println("TaskService.saveTask");
         TaskValidator taskValidator = new TaskValidator();
-        ValidationResult validationResult = taskValidator.validateNewTask(task, getAllTasks());
+        ValidationResult validationResult = taskValidator.validateNewTask(task, getActiveTasks());
         if (validationResult.isErrorFree()) {
             this.customDao.saveTask(task);
             if (task.getServerId() == null && this.taskSyncService != null) {
@@ -41,7 +48,7 @@ public class TaskService {
 
     public void removeTask(Task task) throws Exception {
         task.setActive(false);
-        if(this.taskSyncService != null) {
+        if (this.taskSyncService != null) {
             this.taskSyncService.deleteTaskOnServer(task);
         }
         this.customDao.updateTask(task);
@@ -78,7 +85,7 @@ public class TaskService {
     public List<Task> getActiveTasks() throws Exception {
         List<Task> activeTasks = new ArrayList<>();
         for (Task task : this.customDao.getAllTasks()) {
-            if(task.isActive()) {
+            if (task.isActive()) {
                 activeTasks.add(task);
             }
         }
@@ -95,8 +102,21 @@ public class TaskService {
         return true;
     }
 
+    public Task findTaskByServerID(Long serverId) throws Exception {
+        List<Task> tasks = getAllTasks();
+        for (Task task :
+                tasks) {
+            if (Objects.equals(task.getServerId(), serverId)) {
+                return task;
+            }
+        }
+        return null;
+    }
+
     public static TaskService getInstance(Activity activity) {
-        return new TaskService(new DatabaseDao(activity));
+        TaskService taskService = new TaskService(new DatabaseDao(activity));
+        Log.d(TAG, "getInstance() returned: " + taskService);
+        return taskService;
     }
 
     public void removeTaskLocally(Task task) throws Exception {

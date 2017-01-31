@@ -12,11 +12,6 @@
         <activity
             android:name=".activities.TasksListActivity"
             android:configChanges="layoutDirection|locale">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".activities.AddTaskActivity" />
         <activity android:name=".activities.AddRecordActivity" />
@@ -33,7 +28,13 @@
         <activity
             android:name=".activities.SettingsListActivity"
             android:configChanges="layoutDirection|locale" />
-        <activity android:name=".activities.SyncingActivity"></activity>
-    </application>
+        <activity android:name=".activities.SyncingActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

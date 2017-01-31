@@ -19,7 +19,7 @@ import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 
 import static timelogger.mprtcz.com.timelogger.activities.AddRecordActivity.ADD_TASK_ID;
 import static timelogger.mprtcz.com.timelogger.activities.AddTaskActivity.EDITED_TASK_ID;
-import static timelogger.mprtcz.com.timelogger.utils.UiUtils.getAllTasksFromBackendAsync;
+import static timelogger.mprtcz.com.timelogger.utils.UiUtils.getActiveTasksFromBackendAsync;
 
 public class TasksListActivity extends AppCompatActivity {
     public static final String TAG = "TasksListActivity";
@@ -44,7 +44,7 @@ public class TasksListActivity extends AppCompatActivity {
         super.onStart();
         Log.d(TAG, "onStart()");
         ListView listView = (ListView) findViewById(R.id.activitiesList);
-        adapter = new TasksAdapter(this, getAllTasksFromBackendAsync(this));
+        adapter = new TasksAdapter(this, getActiveTasksFromBackendAsync(this));
         listView.setAdapter(adapter);
         UiUtils.loadLanguage(this, locale);
         locale = Locale.getDefault();

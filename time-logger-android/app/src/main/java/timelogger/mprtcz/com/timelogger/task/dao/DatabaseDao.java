@@ -6,6 +6,7 @@ import android.util.Log;
 import java.sql.SQLException;
 import java.util.List;
 
+import timelogger.mprtcz.com.timelogger.record.model.Record;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.utils.DatabaseHelper;
 import timelogger.mprtcz.com.timelogger.utils.OrmBaseClass;
@@ -40,6 +41,17 @@ public class DatabaseDao implements CustomDao {
     @Override
     public Task findTaskById(Long id) throws SQLException {
         return this.databaseHelper.getTaskDao().queryForId(id);
+    }
+
+    @Override
+    public List<Record> getAllRecords() throws Exception {
+        return this.databaseHelper.getRecordDao().queryForAll();
+    }
+
+    @Override
+    public void update(Record record) throws Exception {
+        Log.d(TAG, "update() called with: record = [" + record + "]");
+        this.databaseHelper.getRecordDao().update(record);
     }
 
     @Override

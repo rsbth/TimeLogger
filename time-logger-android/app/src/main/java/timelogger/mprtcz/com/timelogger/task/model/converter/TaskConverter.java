@@ -15,6 +15,7 @@ public class TaskConverter {
         task.setDescription(taskDto.getDescription());
         task.setLastModified(taskDto.getLastModified());
         task.setServerId(taskDto.getServerId());
+        task.setActive(taskDto.isActive());
         return task;
     }
 
@@ -25,6 +26,7 @@ public class TaskConverter {
         taskDto.setDescription(task.getDescription());
         taskDto.setLastModified(task.getLastModified());
         taskDto.setServerId(task.getServerId());
+        taskDto.setActive(task.isActive());
         return taskDto;
     }
 }

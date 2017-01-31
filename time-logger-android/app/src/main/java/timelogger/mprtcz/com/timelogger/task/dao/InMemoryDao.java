@@ -5,6 +5,7 @@ import android.util.Log;
 import java.util.List;
 import java.util.Objects;
 
+import timelogger.mprtcz.com.timelogger.record.model.Record;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 
 /**
@@ -35,6 +36,14 @@ public class InMemoryDao implements CustomDao {
         }
         return null;
     }
+
+    @Override
+    public List<Record> getAllRecords() throws Exception {
+        return null;
+    }
+
+    @Override
+    public void update(Record record) throws Exception {}
 
     @Override
     public void removeTask(Task task) {

@@ -2,6 +2,7 @@ package timelogger.mprtcz.com.timelogger.task.dao;
 
 import java.util.List;
 
+import timelogger.mprtcz.com.timelogger.record.model.Record;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 
 /**
@@ -15,6 +16,10 @@ public interface CustomDao {
     List<Task> getAllTasks() throws Exception;
 
     Task findTaskById(Long id) throws Exception;
+
+    List<Record> getAllRecords() throws Exception;
+
+    void update(Record record) throws Exception;
 
     void removeTask(Task task) throws Exception;
 

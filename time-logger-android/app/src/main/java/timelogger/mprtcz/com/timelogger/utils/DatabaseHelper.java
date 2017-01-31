@@ -71,6 +71,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         return taskDao;
     }
 
+    public Dao<Record, Long> getRecordDao() throws  SQLException {
+        if(recordDao == null) {
+            recordDao = new RecordDao(getConnectionSource(), Record.class);
+        }
+        return recordDao;
+    }
+
     public RuntimeExceptionDao<Task, Integer> getRuntimeRxceptionDao() {
         if (taskRuntimeDao == null) {
             taskRuntimeDao = getRuntimeExceptionDao(Task.class);
@@ -88,6 +95,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private class TaskDao extends BaseDaoImpl<Task, Long> {
         TaskDao(ConnectionSource connectionSource, Class<Task> dataClass) throws SQLException {
+            super(connectionSource, dataClass);
+        }
+    }
+
+    private class RecordDao extends BaseDaoImpl<Record, Long> {
+        RecordDao(ConnectionSource connectionSource, Class<Record> dataClass) throws  SQLException {
             super(connectionSource, dataClass);
         }
     }
