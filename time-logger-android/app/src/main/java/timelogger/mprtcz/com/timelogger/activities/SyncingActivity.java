@@ -21,18 +21,39 @@ public class SyncingActivity extends AppCompatActivity implements Synchrotron {
         Log.d(TAG, "onCreate() called with: savedInstanceState = [" + savedInstanceState + "]");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_syncing);
-        this.synchronizeTasks();
+        Thread synchThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                synchronizeTasks();
+                completeSynchronization();
+            }
+        });
+        synchThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                UiUtils.messageBox(SyncingActivity.this,
+                        "uncaught exception while server syncing", e.toString());
+                completeSynchronization();
+            }
+        });
+        synchThread.start();
     }
 
     @Override
     public void synchronizeTasks() {
         TaskSyncService taskSyncService = TaskService.getInstance(this).getTaskSyncService();
         try {
-            taskSyncService.synchronizeActivities(this);
-        } catch (Exception e) {
+            taskSyncService.synchronizeTasks(this);
+        } catch (final Exception e) {
             Log.e(TAG, "exception during task sync");
             e.printStackTrace();
-            UiUtils.messageBox(this, "processSynchronization()", e.toString());
+            completeSynchronization();
+            SyncingActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    UiUtils.messageBox(SyncingActivity.this, "processSynchronization()", e.toString());
+                }
+            });
         }
     }
 
@@ -41,9 +62,15 @@ public class SyncingActivity extends AppCompatActivity implements Synchrotron {
         RecordSyncService recordSyncService = RecordService.getInstance(this).getRecordSyncService();
         try {
             recordSyncService.synchronizeRecords(this);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
-            UiUtils.messageBox(this, "processSynchronization()", e.toString());
+            completeSynchronization();
+            SyncingActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    UiUtils.messageBox(SyncingActivity.this, "processSynchronization()", e.toString());
+                }
+            });
         }
     }
 
@@ -52,4 +79,5 @@ public class SyncingActivity extends AppCompatActivity implements Synchrotron {
         Intent intent = new Intent(this, TasksListActivity.class);
         startActivity(intent);
     }
+
 }

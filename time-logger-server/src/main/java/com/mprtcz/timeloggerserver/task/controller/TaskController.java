@@ -40,7 +40,7 @@ public class TaskController {
         return new ResponseEntity<>(tasks, OK);
     }
 
-    @RequestMapping("/{taskName}")
+    @RequestMapping("/name/{taskName}")
     public ResponseEntity getTaskByName(@PathVariable String taskName) {
         TaskDto taskDto = this.taskService.getTaskDtoByName(taskName);
         return new ResponseEntity<>(taskDto, OK);

@@ -34,26 +34,28 @@ public class TaskSyncService {
         this.taskService = taskService;
     }
 
-    public void synchronizeActivities(Synchrotron synchrotron) throws Exception {
+    public void synchronizeTasks(Synchrotron synchrotron) throws Exception {
         this.synchrotron = synchrotron;
-        List<Task> localActivities = this.taskService.getAllTasks();
-        this.webTaskController.getActivitiesFromServer(getTaskSynchronizationCallback(localActivities));
+        List<Task> localTasks = this.taskService.getAllTasks();
+//        this.webTaskController.getTasksFromServerAsync(getTaskSynchronizationCallback(localTasks));
+        List<TaskDto> serverTasks = this.webTaskController.getTasksFromServer();
+        this.synchronizeLocalTasksWithServer(localTasks, serverTasks);
     }
 
     private Callback<List<TaskDto>> getTaskSynchronizationCallback(final List<Task> localTasks) {
         return new CustomWebCallback<List<TaskDto>>(this.synchrotron) {
             @Override
-            public void onSuccessfulCall(Response<List<TaskDto>> response) {
-                synchronizeLocalActivitiesWithServer(localTasks, response.body());
+            public void onSuccessfulCall(Response<List<TaskDto>> response) throws Exception {
+                synchronizeLocalTasksWithServer(localTasks, response.body());
             }
         };
     }
 
-    private void synchronizeLocalActivitiesWithServer(List<Task> localTasks,
-                                                      List<TaskDto> serverTasks) {
-        Log.i(TAG, "TaskService.synchronizeLocalActivitiesWithServer, server activities = "
+    private void synchronizeLocalTasksWithServer(List<Task> localTasks,
+                                                 List<TaskDto> serverTasks) throws Exception {
+        Log.i(TAG, "TaskService.synchronizeLocalTasksWithServer, server tasks = "
                 + serverTasks);
-        Map<Long, Task> localTasksMap = getLocalActivitiesMap(localTasks);
+        Map<Long, Task> localTasksMap = getLocalTasksMap(localTasks);
         if (serverTasks == null) {
             return;
         }
@@ -118,12 +120,12 @@ public class TaskSyncService {
             }
         }
         sendLocalChangesToServer(tasksToSendToServer);
-        Log.i(TAG, "activitiesToSendToServer = " + tasksToSendToServer);
+        Log.i(TAG, "tasksToSendToServer = " + tasksToSendToServer);
         this.synchrotron.synchronizeRecords();
     }
 
 
-    private Map<Long, Task> getLocalActivitiesMap(List<Task> tasks) {
+    private Map<Long, Task> getLocalTasksMap(List<Task> tasks) {
         Map<Long, Task> map = new HashMap<>();
         for (Task t : tasks) {
             if (t.getServerId() != null) {
@@ -135,7 +137,8 @@ public class TaskSyncService {
 
     private ValidationResult updateTaskWithServerData(Task task, TaskDto taskDto)
             throws Exception {
-        Log.d(TAG, "updateTaskWithServerData() called with: task = [" + task + "], taskDto = [" + taskDto + "]");
+        Log.d(TAG, "updateTaskWithServerData() called with: task = [" + task
+                + "], taskDto = [" + taskDto + "]");
         task.setName(taskDto.getName());
         task.setLastModified(taskDto.getLastModified());
         task.setColor(taskDto.getColor());
@@ -144,18 +147,30 @@ public class TaskSyncService {
         return this.taskService.updateTask(task, TaskService.UpdateType.SERVER);
     }
 
-    private void sendLocalChangesToServer(List<Task> activitiesToSendToServer) {
+    private void sendLocalChangesToServer(List<Task> tasksToSendToServer) throws Exception {
         for (Task task :
-                activitiesToSendToServer) {
+                tasksToSendToServer) {
             if (!task.isActive() && task.getServerId() != null) {
-                this.webTaskController.deleteTaskOnServer(getDeleteCallback(task), task);
+//                this.webTaskController.deleteTaskOnServerAsync(getDeleteCallback(task), task);
+                this.webTaskController.deleteTaskOnServer(task);
                 continue;
             }
             if (task.getServerId() == null) {
-                this.webTaskController.postNewTaskToServer(
-                        getPostNewTaskCallback(task), task);
+//                this.webTaskController.postNewTaskToServerAsync(getPostNewTaskCallback(task), task);
+                Response<TaskDto> response = this.webTaskController.postNewTaskToServer(task);
+                Log.i(TAG, "sendLocalChangesToServer: response when posting new task to server: "
+                        + response.toString());
+                if(!response.isSuccessful()) {
+                    if(response.errorBody().string().equals("Task with this name already exists")) {
+                        TaskDto taskDto = this.webTaskController.getTaskFromServerByName(task.getName());
+                        task.setServerId(taskDto.getServerId());
+                        updateTaskWithServerData(task, taskDto);
+                    }
+                }
+
             } else {
-                this.webTaskController.patchTaskOnServer(getPatchTaskCallback(), task);
+//                this.webTaskController.patchTaskOnServerAsync(getPatchTaskCallback(), task);
+                this.webTaskController.patchTaskOnServer(task);
             }
         }
     }
@@ -195,17 +210,17 @@ public class TaskSyncService {
     }
 
     public void postNewTaskToServer(Task task) {
-        this.webTaskController.postNewTaskToServer(
+        this.webTaskController.postNewTaskToServerAsync(
                 getPostNewTaskCallback(task), task);
     }
 
     public void patchTaskOnServer(Task task) {
-        this.webTaskController.patchTaskOnServer(
+        this.webTaskController.patchTaskOnServerAsync(
                 getPatchTaskCallback(), task);
     }
 
     public void deleteTaskOnServer(Task task) {
-        this.webTaskController.deleteTaskOnServer(
+        this.webTaskController.deleteTaskOnServerAsync(
                 getDeleteCallback(task), task);
     }
 

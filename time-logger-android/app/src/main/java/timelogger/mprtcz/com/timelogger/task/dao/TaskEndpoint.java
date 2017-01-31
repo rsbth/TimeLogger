@@ -28,4 +28,7 @@ public interface TaskEndpoint {
 
     @DELETE("/task/{id}/delete")
     Call<Void> deleteTaskOnServer(@Path("id") Long serverId);
+
+    @GET("/task/name/{name}")
+    Call<TaskDto> getTaskByName(@Path("name") String name);
 }

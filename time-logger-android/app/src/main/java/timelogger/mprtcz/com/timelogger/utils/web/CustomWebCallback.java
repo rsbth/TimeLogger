@@ -15,7 +15,7 @@ import static timelogger.mprtcz.com.timelogger.utils.web.WebHandler.handleWebCal
 public abstract class CustomWebCallback<T> implements Callback<T> {
     private static final String TAG = "CustomWebCallback";
 
-    public abstract void onSuccessfulCall(Response<T> response);
+    public abstract void onSuccessfulCall(Response<T> response) throws Exception;
 
     public CustomWebCallback() {}
 
@@ -28,7 +28,12 @@ public abstract class CustomWebCallback<T> implements Callback<T> {
     public void onResponse(Call<T> call, Response<T> response) {
         if (response.isSuccessful()) {
             Log.i(TAG, "Call successful, call = " +call);
-            onSuccessfulCall(response);
+            try {
+                onSuccessfulCall(response);
+            } catch (Exception e) {
+                e.printStackTrace();
+                handleWebCallbackException(call, e);
+            }
         } else {
             WebHandler.handleBadCodeResponse(call, response);
             this.synchrotron.completeSynchronization();

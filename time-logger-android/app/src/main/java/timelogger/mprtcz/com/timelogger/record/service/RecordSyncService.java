@@ -164,6 +164,11 @@ public class RecordSyncService {
         Log.i(TAG, "RecordService.addNewRecordFromServer");
         Task task = this.recordService.getTaskService()
                 .findTaskByServerID(recordDto.getTaskServerId());
+        if(task == null) {
+            Log.w(TAG, "addNewRecordFromServer: parent task null for serverID = "
+                    +recordDto.getTaskServerId());
+            return;
+        }
         Record record = toEntity(recordDto, task);
         record.setActive(recordDto.isActive());
         Record recordEntity = this.recordService.findRecordByUuid(record.getUuId());

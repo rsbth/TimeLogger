@@ -66,6 +66,8 @@ public class TaskService {
     }
 
     public Iterable<TaskDto> getAllTaskDtos() {
+        Iterable<TaskDto> allTasks = this.taskEntityDtoConverter.toDtos(this.taskRepository.findAll());
+        logger.info("getAllTaskDtos(), allTasks = " +allTasks.toString());
         return this.taskEntityDtoConverter.toDtos(this.taskRepository.findAll());
     }
 
@@ -82,6 +84,7 @@ public class TaskService {
     public TaskDto getTaskDtoById(Long id) {
         checkIfTaskWithIdExists(id);
         TaskDto taskDto = this.taskEntityDtoConverter.toDto(this.taskRepository.findOne(id));
+        logger.info("getTaskDtoById(Long {}), taskdto = {}", id, taskDto);
         return taskDto;
     }
 
