@@ -87,7 +87,7 @@ public class ActivityService {
         return this.customDao.findActivityById(id);
     }
 
-    public Activity findActivityByUuId(Long serverId) throws Exception {
+    public Activity findActivityByServerId(Long serverId) throws Exception {
         List<Activity> activities = getActivities();
         for (Activity activity :
                 activities) {

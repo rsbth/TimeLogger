@@ -152,7 +152,7 @@ public class RecordSyncService {
     private void addNewRecordFromServer(RecordDto recordDto) throws Exception {
         logger.info("RecordService.addNewRecordFromServer");
         Activity activity = this.recordService.getActivityService()
-                .findActivityByUuId(recordDto.getTaskServerId());
+                .findActivityByServerId(recordDto.getTaskServerId());
         Record record = toEntity(recordDto, activity);
         record.setActive(recordDto.isActive());
         Record recordEntity = this.recordService.findRecordByUuid(record.getUuId());
