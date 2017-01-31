@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 
+import java.util.Date;
+
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
@@ -174,6 +176,8 @@ public class AddTaskController {
     public ValidationResult getTaskValidationResult() {
         final Task newTask = new Task(this.name,
                 this.description, this.stringColor);
+        newTask.setLastModified(new Date());
+        newTask.setActive(true);
         return UiUtils.saveTaskAsync(newTask, baseActivity);
     }
 }

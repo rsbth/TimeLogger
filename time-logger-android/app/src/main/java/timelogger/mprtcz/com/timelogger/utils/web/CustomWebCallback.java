@@ -38,6 +38,8 @@ public abstract class CustomWebCallback<T> implements Callback<T> {
     @Override
     public void onFailure(Call<T> call, Throwable throwable) {
         handleWebCallbackException(call, throwable);
-        this.synchrotron.completeSynchronization();
+        if(this.synchrotron != null) {
+            this.synchrotron.completeSynchronization();
+        }
     }
 }

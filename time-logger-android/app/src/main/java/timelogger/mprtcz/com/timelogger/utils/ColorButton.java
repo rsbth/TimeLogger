@@ -11,6 +11,8 @@ import android.widget.Button;
  */
 
 public class ColorButton extends Button {
+    private static final String TAG = "ColorButton";
+
     public ColorButton(Context context) {
         super(context);
     }
@@ -26,17 +28,20 @@ public class ColorButton extends Button {
         this.changeTextColor(color);
     }
 
+    public static final int LUMINANCE_BORDER = 100;
+
     private void changeTextColor(int color) {
         System.out.println("Changing color");
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
-        double Y = 0.299 * red + 0.587 * green + 0.114 * blue;
-        Log.d("changeColorText", "Y = " + Y);
-        if(Y < 100) {
-            super.setTextColor(Color.WHITE);
+        double luminace = 0.299 * red + 0.587 * green + 0.114 * blue;
+        Log.d(TAG, "Luminace = " + luminace);
+        int invLuminace = 255 - (int) luminace;
+        if (invLuminace < LUMINANCE_BORDER) {
+            super.setTextColor(Color.argb(137, 0, 0, 0));
         } else {
-            super.setTextColor(Color.BLACK);
+            super.setTextColor(Color.argb(137, 255, 255, 255));
         }
     }
 }
