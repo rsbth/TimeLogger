@@ -4,15 +4,14 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.mprtcz.timeloggerdesktop.backend.record.model.Record;
+import com.mprtcz.timeloggerdesktop.backend.utilities.DateAdapter;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -27,6 +26,8 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @DatabaseTable(tableName = "activities")
 public class Activity {
+
+    @XmlTransient
     private Logger logger = LoggerFactory.getLogger(Activity.class);
 
     @DatabaseField(generatedId = true)
@@ -45,6 +46,7 @@ public class Activity {
     private String color;
 
     @DatabaseField(canBeNull = false)
+    @XmlJavaTypeAdapter(DateAdapter.class)
     private Date lastModified;
 
     @DatabaseField(canBeNull = false)

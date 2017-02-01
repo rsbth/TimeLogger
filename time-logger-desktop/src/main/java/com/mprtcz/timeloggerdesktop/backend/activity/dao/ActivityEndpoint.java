@@ -22,4 +22,7 @@ public interface ActivityEndpoint {
 
     @DELETE("/task/{id}/delete")
     Call<Void> deleteActivityOnServer(@Path("id") Long serverId);
+
+    @GET("/task/name/{name}")
+    Call<ActivityDto> getActivityByName(@Path("name") String name);
 }

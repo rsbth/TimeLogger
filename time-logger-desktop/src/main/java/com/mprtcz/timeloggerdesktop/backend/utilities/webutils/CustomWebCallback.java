@@ -14,13 +14,18 @@ import static com.mprtcz.timeloggerdesktop.backend.utilities.webutils.WebHandler
 public abstract class CustomWebCallback<T> implements Callback<T> {
     private static Logger logger = LoggerFactory.getLogger(CustomWebCallback.class);
 
-    public abstract void onSuccessfulCall(Response<T> response);
+    public abstract void onSuccessfulCall(Response<T> response) throws Exception;
 
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
         if (response.isSuccessful()) {
             logger.info("Call successful, call = {}", call);
-            onSuccessfulCall(response);
+            try {
+                onSuccessfulCall(response);
+            } catch (Exception e) {
+                e.printStackTrace();
+                handleWebCallbackException(call, e);
+            }
         } else {
             WebHandler.handleBadCodeResponse(call, response);
         }

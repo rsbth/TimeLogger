@@ -33,6 +33,7 @@ public class RecordConverter {
         recordDto.setEndDateTime(record.getEndDateTime());
         recordDto.setCreationDate(record.getCreationDate());
         recordDto.setUuId(record.getUuId());
+        recordDto.setActive(record.isActive());
         return recordDto;
     }
 

@@ -23,6 +23,7 @@ import timelogger.mprtcz.com.timelogger.utils.web.CustomWebCallback;
  */
 public class TaskSyncService {
     private static final String TAG = "TaskSyncService";
+    public static final String TASK_EXISTS_RESPONSE_BODY = "Task with this name already exists";
 
     private WebTaskController webTaskController;
     private TaskService taskService;
@@ -37,7 +38,6 @@ public class TaskSyncService {
     public void synchronizeTasks(Synchrotron synchrotron) throws Exception {
         this.synchrotron = synchrotron;
         List<Task> localTasks = this.taskService.getAllTasks();
-//        this.webTaskController.getTasksFromServerAsync(getTaskSynchronizationCallback(localTasks));
         List<TaskDto> serverTasks = this.webTaskController.getTasksFromServer();
         this.synchronizeLocalTasksWithServer(localTasks, serverTasks);
     }
@@ -151,17 +151,15 @@ public class TaskSyncService {
         for (Task task :
                 tasksToSendToServer) {
             if (!task.isActive() && task.getServerId() != null) {
-//                this.webTaskController.deleteTaskOnServerAsync(getDeleteCallback(task), task);
                 this.webTaskController.deleteTaskOnServer(task);
                 continue;
             }
             if (task.getServerId() == null) {
-//                this.webTaskController.postNewTaskToServerAsync(getPostNewTaskCallback(task), task);
                 Response<TaskDto> response = this.webTaskController.postNewTaskToServer(task);
                 Log.i(TAG, "sendLocalChangesToServer: response when posting new task to server: "
                         + response.toString());
                 if(!response.isSuccessful()) {
-                    if(response.errorBody().string().equals("Task with this name already exists")) {
+                    if(response.errorBody().string().equals(TASK_EXISTS_RESPONSE_BODY)) {
                         TaskDto taskDto = this.webTaskController.getTaskFromServerByName(task.getName());
                         task.setServerId(taskDto.getServerId());
                         updateTaskWithServerData(task, taskDto);
@@ -169,7 +167,6 @@ public class TaskSyncService {
                 }
 
             } else {
-//                this.webTaskController.patchTaskOnServerAsync(getPatchTaskCallback(), task);
                 this.webTaskController.patchTaskOnServer(task);
             }
         }

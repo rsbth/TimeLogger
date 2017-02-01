@@ -22,6 +22,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.*;
 
 /**
@@ -65,7 +68,7 @@ public class ActivityService {
 
     public void removeActivity(Activity activity) throws Exception {
         activity.setActive(false);
-        if(this.activitySyncService != null) {
+        if (this.activitySyncService != null) {
             this.activitySyncService.deleteActivityOnServer(activity);
         }
         this.customDao.update(activity);
@@ -122,7 +125,7 @@ public class ActivityService {
             } else {
                 if (updateType == UpdateType.LOCAL) {
                     activity.setLastModified(new Date());
-                    if(this.activitySyncService != null) {
+                    if (this.activitySyncService != null) {
                         this.activitySyncService.patchActivityOnServer(activity);
                     }
                 }
@@ -155,6 +158,10 @@ public class ActivityService {
     }
 
     public void importDataFromFile(File file) throws Exception {
+        InputStream inputStream = new FileInputStream(file);
+        StringBuilder sb = new StringBuilder();
+        Files.readAllLines(file.toPath()).forEach(sb::append);
+        logger.info("Imported file content = " + sb.toString());
         Activities activities = this.importAndUnmarshall(file);
         this.saveImportedActivities(activities);
 
@@ -183,6 +190,7 @@ public class ActivityService {
     private void saveImportedActivities(Activities activities) throws Exception {
         this.setActivitiesInRecords(activities);
         List<Activity> activitiesList = activities.getActivities();
+        this.addUUIDToImportedRecords(activitiesList);
         logger.info("Unmarshalled activities = {}", activities);
         this.customDao.replaceAllData(activitiesList);
     }
@@ -195,6 +203,19 @@ public class ActivityService {
         marshaller.marshal(activities, new File("./data.xml"));
     }
 
+    private void addUUIDToImportedRecords(List<Activity> activitiesList) {
+        for (Activity a : activitiesList) {
+            if (a.getActivityRecords() != null) {
+                for (Record r :
+                        a.getActivityRecords()) {
+                    if (r.getUuId() == null) {
+                        r.setUuId(UUID.randomUUID().toString());
+                    }
+                }
+            }
+        }
+    }
+
     @XmlRootElement(name = "Activities")
     @XmlAccessorType(XmlAccessType.FIELD)
     @ToString
@@ -203,7 +224,8 @@ public class ActivityService {
         @XmlElement(name = "activity")
         List<Activity> activities = new ArrayList<>();
 
-        public Activities() {}
+        public Activities() {
+        }
 
         Activities(List<Activity> activities) {
             this.activities = activities;

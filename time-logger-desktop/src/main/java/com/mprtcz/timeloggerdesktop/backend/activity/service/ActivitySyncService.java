@@ -1,10 +1,10 @@
 package com.mprtcz.timeloggerdesktop.backend.activity.service;
 
-import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
-import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.backend.activity.controller.ActivityWebController;
+import com.mprtcz.timeloggerdesktop.backend.activity.model.Activity;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.ActivityDto;
 import com.mprtcz.timeloggerdesktop.backend.activity.model.converter.ActivityConverter;
+import com.mprtcz.timeloggerdesktop.backend.utilities.ValidationResult;
 import com.mprtcz.timeloggerdesktop.backend.utilities.webutils.CustomWebCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  */
 public class ActivitySyncService {
     private Logger logger = LoggerFactory.getLogger(ActivitySyncService.class);
+    public static final String TASK_EXISTS_RESPONSE_BODY = "Task with this name already exists";
 
     private ActivityWebController activityWebController;
     private ActivityService activityService;
@@ -35,20 +36,22 @@ public class ActivitySyncService {
     public void synchronizeActivities(ActivityWebController activityWebController) throws Exception {
         this.activityWebController = activityWebController;
         List<Activity> localActivities = this.activityService.getAllActivities();
-        this.activityWebController.getActivitiesFromServer(getActivitySynchronizationCallback(localActivities));
+//        this.activityWebController.getActivitiesFromServerAsync(getActivitySynchronizationCallback(localActivities));
+        List<ActivityDto> serverActivities = this.activityWebController.getActivitiesFromServer();
+        this.synchronizeLocalActivitiesWithServer(localActivities, serverActivities);
     }
 
     private Callback<List<ActivityDto>> getActivitySynchronizationCallback(List<Activity> localActivities) {
         return new CustomWebCallback<List<ActivityDto>>() {
             @Override
-            public void onSuccessfulCall(Response<List<ActivityDto>> response) {
+            public void onSuccessfulCall(Response<List<ActivityDto>> response) throws Exception {
                 synchronizeLocalActivitiesWithServer(localActivities, response.body());
             }
         };
     }
 
     private void synchronizeLocalActivitiesWithServer(List<Activity> localActivities,
-                                                      List<ActivityDto> serverActivities) {
+                                                      List<ActivityDto> serverActivities) throws Exception {
         logger.info("ActivityService.synchronizeLocalActivitiesWithServer, server activities = "
                 + serverActivities);
         Map<Long, Activity> localActivitiesMap = getLocalActivitiesMap(localActivities);
@@ -138,18 +141,32 @@ public class ActivitySyncService {
         return this.activityService.updateActivity(activity, ActivityService.UpdateType.SERVER);
     }
 
-    private void sendLocalChangesToServer(List<Activity> activitiesToSendToServer) {
+    private void sendLocalChangesToServer(List<Activity> activitiesToSendToServer) throws Exception {
         for (Activity activity :
                 activitiesToSendToServer) {
             if (!activity.isActive() && activity.getServerId() != null) {
-                this.activityWebController.deleteActivityOnServer(getDeleteCallback(activity), activity);
+                this.activityWebController.deleteActivityOnServerAsync(getDeleteCallback(activity), activity);
                 continue;
             }
             if (activity.getServerId() == null) {
-                this.activityWebController.postNewActivityToServer(
-                        getPostNewActivityCallback(activity), activity);
+//                this.activityWebController.postNewActivityToServerAsync(getPostNewActivityCallback(activity), activity);
+                Response<ActivityDto> response = this.activityWebController.postNewActivityToServer(activity);
+                logger.info("ActivitySyncService.sendLocalChangesToServer response.isSuccessful() = "
+                        + response.isSuccessful());
+                if (!response.isSuccessful()) {
+                    String errorBody = response.errorBody().string();
+                    logger.info("response.errorBody().string().equals(TASK_EXISTS_RESPONSE_BODY) = "
+                            + errorBody.equals(TASK_EXISTS_RESPONSE_BODY));
+                    if (errorBody.equals(TASK_EXISTS_RESPONSE_BODY)) {
+                        ActivityDto activityDto = this.activityWebController
+                                .getActivityFromServerByName(activity.getName());
+                        activity.setServerId(activityDto.getServerId());
+                        logger.info("Returned activityDto from server = {}", activityDto.toString());
+                        updateActivityWithServerData(activity, activityDto);
+                    }
+                }
             } else {
-                this.activityWebController.patchActivityOnServer(getPatchActivityCallback(), activity);
+                this.activityWebController.patchActivityOnServer(activity);
             }
         }
     }
@@ -189,17 +206,17 @@ public class ActivitySyncService {
     }
 
     public void postNewActivityToServer(Activity activity) {
-        this.activityWebController.postNewActivityToServer(
+        this.activityWebController.postNewActivityToServerAsync(
                 getPostNewActivityCallback(activity), activity);
     }
 
     public void patchActivityOnServer(Activity activity) {
-        this.activityWebController.patchActivityOnServer(
+        this.activityWebController.patchActivityOnServerAsync(
                 getPatchActivityCallback(), activity);
     }
 
     public void deleteActivityOnServer(Activity activity) {
-        this.activityWebController.deleteActivityOnServer(
+        this.activityWebController.deleteActivityOnServerAsync(
                 getDeleteCallback(activity), activity);
     }
 

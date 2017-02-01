@@ -6,8 +6,6 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.util.Log;
 
-import java.util.Arrays;
-
 import lombok.Setter;
 import timelogger.mprtcz.com.timelogger.task.model.HoursDataService;
 
@@ -50,7 +48,7 @@ public class GraphicController {
 
     public void drawArrayOnCanvas(Canvas canvas) {
         Log.d(TAG, "drawArrayOnCanvas");
-        Log.d(TAG, "Hours array = " + Arrays.deepToString(this.hoursArray));
+        //Log.d(TAG, "Hours array = " + Arrays.deepToString(this.hoursArray));
 
         int xOffset = 0;
         int yOffset = 0;
@@ -105,7 +103,7 @@ public class GraphicController {
     }
 
     private void setTrimmedArray(HoursDataService.Hour[][] hourArray) {
-        Log.d(TAG, "hourArray = " + Arrays.deepToString(hourArray));
+        //Log.d(TAG, "hourArray = " + Arrays.deepToString(hourArray));
         this.trimmedHourArray = new HoursDataService.Hour[hourArray.length -
                 getDrawStartingDay(hourArray.length)][hourArray[0].length];
         int index = 0;
@@ -118,12 +116,12 @@ public class GraphicController {
     private void drawArrayCellOnCanvas(Canvas canvas, HoursDataService.Hour hour,
                                        int xCoordinate, int yCoordinate,
                                        int xOffset, int yOffset) {
-        Log.d(TAG, "drawArrayCellOnCanvas");
+        //Log.d(TAG, "drawArrayCellOnCanvas");
         String color = determineCellColor(hour);
 
         paint.setColor(Color.parseColor(color));
         DrawingCoordinates coords = new DrawingCoordinates(xCoordinate, xOffset, yCoordinate, yOffset, paint);
-        Log.d(TAG, "Coords to string = " + coords.toString());
+        //Log.d(TAG, "Coords to string = " + coords.toString());
 
         canvas.drawRect(coords.X0, coords.Y0, coords.width, coords.height, coords.paint);
         if (areHeadersEnabled && hour != null) {

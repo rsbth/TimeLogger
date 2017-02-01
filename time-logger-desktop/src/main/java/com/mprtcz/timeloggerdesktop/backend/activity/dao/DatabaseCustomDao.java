@@ -86,8 +86,10 @@ public class DatabaseCustomDao implements CustomDao {
             logger.info("activity = {}", activity);
             Activity databaseActivity = this.findActivityById(activity.getId());
             logger.info("databaseActivity = {}", databaseActivity);
-            for (Record record : activity.getActivityRecords()) {
-                databaseActivity.getActivityRecords().add(record);
+            if (activity.getActivityRecords() != null) {
+                for (Record record : activity.getActivityRecords()) {
+                    databaseActivity.getActivityRecords().add(record);
+                }
             }
             this.update(databaseActivity);
         }

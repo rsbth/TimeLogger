@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
@@ -42,7 +43,8 @@ public class TaskController {
 
     @RequestMapping("/name/{taskName}")
     public ResponseEntity getTaskByName(@PathVariable String taskName) {
-        TaskDto taskDto = this.taskService.getTaskDtoByName(taskName);
+        String decodedString = URLDecoder.decode(taskName);
+        TaskDto taskDto = this.taskService.getTaskDtoByName(decodedString);
         return new ResponseEntity<>(taskDto, OK);
     }
 
