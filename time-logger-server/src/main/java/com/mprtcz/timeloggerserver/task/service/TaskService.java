@@ -67,7 +67,7 @@ public class TaskService {
 
     public Iterable<TaskDto> getAllTaskDtos() {
         Iterable<TaskDto> allTasks = this.taskEntityDtoConverter.toDtos(this.taskRepository.findAll());
-        logger.info("getAllTaskDtos(), allTasks = " +allTasks.toString());
+        logger.info("getAllTaskDtos(), allTasks = " + allTasks.toString());
         return this.taskEntityDtoConverter.toDtos(this.taskRepository.findAll());
     }
 
