@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_graphic_data"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,17 +9,10 @@
     tools:context="timelogger.mprtcz.com.timelogger.activities.GraphicDataActivity"
     android:orientation="vertical">
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="20dp"
-    android:id="@+id/dataGraphicTextView"
-    android:text="@string/recordsRepresentationText"
-    />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp">
+        android:layout_margin="10dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,11 +24,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/seekBar" />
-
     </LinearLayout>
+    <com.google.android.flexbox.FlexboxLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:flexWrap="wrap"
+        android:orientation="horizontal"
+        android:id="@+id/tasksLegendLinearLayout">
+    </com.google.android.flexbox.FlexboxLayout>
     <timelogger.mprtcz.com.timelogger.graphics.views.GraphicView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_margin="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:id="@+id/graphicViewElement" />
+
 </LinearLayout>

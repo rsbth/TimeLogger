@@ -1,18 +1,28 @@
 package timelogger.mprtcz.com.timelogger.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.util.List;
+
 import timelogger.mprtcz.com.timelogger.R;
+import timelogger.mprtcz.com.timelogger.fragments.TaskFragment;
 import timelogger.mprtcz.com.timelogger.graphics.controllers.GraphicController;
 import timelogger.mprtcz.com.timelogger.graphics.views.GraphicView;
+import timelogger.mprtcz.com.timelogger.task.model.Task;
+import timelogger.mprtcz.com.timelogger.task.service.TaskService;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 
 import static timelogger.mprtcz.com.timelogger.utils.UiUtils.getHoursArrayAsync;
+import static timelogger.mprtcz.com.timelogger.utils.UiUtils.messageBox;
 
 public class GraphicDataActivity extends AppCompatActivity {
+    private static final String TAG = "GraphicDataActivity";
     GraphicView graphicView;
     TextView sliderTitleTextView;
     private int visibleDays = 5;
@@ -40,6 +50,9 @@ public class GraphicDataActivity extends AppCompatActivity {
         graphicView.getGraphicController().setVisibleDays(visibleDays);
         String basicSliderText = getResources().getString(R.string.sliderTitleText) + ": " + visibleDays;
         this.sliderTitleTextView.setText(basicSliderText);
+        if(savedInstanceState == null) {
+            composeLegend();
+        }
         this.graphicView.invalidate();
     }
 
@@ -67,5 +80,28 @@ public class GraphicDataActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
+    }
+
+    public void composeLegend() {
+        TaskService taskService = TaskService.getInstance(this);
+        LogWrapper.d(TAG, "composeLegend()");
+        try {
+            List<Task> tasks = taskService.getActiveTasks();
+            LogWrapper.d(TAG, "List<Task> tasks = " +tasks.toString());
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            for (Task task : tasks) {
+                TaskFragment taskFragment = new TaskFragment();
+                taskFragment.setColorAndName(task.getColor(), task.getName());
+                fragmentTransaction.add(R.id.tasksLegendLinearLayout, taskFragment, task.getName());
+            }
+            LogWrapper.d(TAG, "fragmentTransaction = " +fragmentTransaction.toString());
+            fragmentTransaction.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            messageBox(this, "Exception", e.toString());
+        }
+
     }
 }

@@ -15,7 +15,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_margin="5dp"
         android:layout_row="0"
-        android:text="@string/hello_blank_fragment" />
+        android:text="@string/dateTimeTextViewText" />
 
     <EditText
         android:id="@+id/hourEditText"

@@ -31,7 +31,6 @@ public class ValidationResult {
         END_START_EQUAL(R.string.startEndEqual, ValidationStatus.FAILED),
         END_DATE_BEFORE(R.string.endDateBeforeStart, ValidationStatus.FAILED);
 
-
         private int value;
         private ValidationStatus validationStatus;
 
@@ -59,6 +58,4 @@ public class ValidationResult {
     public boolean isErrorFree() {
         return this.customErrorEnum.getValidationStatus() == ValidationStatus.SUCCESSFUL;
     }
-
-
 }
