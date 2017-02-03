@@ -56,4 +56,6 @@
     <string name="recordStartTimeSummaryText">Od: </string>
     <string name="selectLanguageHeader">Wybierz język</string>
     <string name="dataLoadingTextView">Pobieranie danych z serwera</string>
+    <string name="taskSyncType">"Synchronizowanie czynności… "</string>
+    <string name="recordSyncType">"Synchronizowanie rekordów… "</string>
 </resources>
