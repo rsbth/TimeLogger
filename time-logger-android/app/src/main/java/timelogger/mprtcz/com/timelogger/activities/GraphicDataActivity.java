@@ -17,6 +17,7 @@ public class GraphicDataActivity extends AppCompatActivity {
     TextView sliderTitleTextView;
     private int visibleDays = 5;
     private int maxDays = 0;
+    public static final int MAXIMUM_DAYS = 31;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,9 @@ public class GraphicDataActivity extends AppCompatActivity {
             this.visibleDays = 5;
         } else {
             visibleDays = maxDays;
+        }
+        if(maxDays > MAXIMUM_DAYS) {
+            this.maxDays = MAXIMUM_DAYS;
         }
         setSeekBarListener();
         graphicView.getGraphicController().setVisibleDays(visibleDays);

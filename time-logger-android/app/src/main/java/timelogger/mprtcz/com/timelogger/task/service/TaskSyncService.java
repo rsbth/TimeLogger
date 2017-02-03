@@ -8,7 +8,8 @@ import java.util.Map;
 
 import retrofit2.Callback;
 import retrofit2.Response;
-import timelogger.mprtcz.com.timelogger.interfaces.Synchrotron;
+import timelogger.mprtcz.com.timelogger.activities.SyncingActivity;
+import timelogger.mprtcz.com.timelogger.interfaces.UiUpdater;
 import timelogger.mprtcz.com.timelogger.task.controllers.WebTaskController;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.model.TaskDto;
@@ -26,7 +27,7 @@ public class TaskSyncService {
 
     private WebTaskController webTaskController;
     private TaskService taskService;
-    private Synchrotron synchrotron;
+    private UiUpdater uiUpdater;
 
     public TaskSyncService(WebTaskController webTaskController,
                            TaskService taskService) {
@@ -34,16 +35,16 @@ public class TaskSyncService {
         this.taskService = taskService;
     }
 
-    public void synchronizeTasks(Synchrotron synchrotron) throws Exception {
+    public void synchronizeTasks(UiUpdater uiUpdater) throws Exception {
+        this.uiUpdater = uiUpdater;
         LogWrapper.d(TAG, "synchronizeTasks background thread: " + Thread.currentThread().toString());
-        this.synchrotron = synchrotron;
         List<Task> localTasks = this.taskService.getAllTasks();
         List<TaskDto> serverTasks = this.webTaskController.getTasksFromServer();
         this.synchronizeLocalTasksWithServer(localTasks, serverTasks);
     }
 
     private Callback<List<TaskDto>> getTaskSynchronizationCallback(final List<Task> localTasks) {
-        return new CustomWebCallback<List<TaskDto>>(this.synchrotron) {
+        return new CustomWebCallback<List<TaskDto>>() {
             @Override
             public void onSuccessfulCall(Response<List<TaskDto>> response) throws Exception {
                 synchronizeLocalTasksWithServer(localTasks, response.body());
@@ -60,7 +61,11 @@ public class TaskSyncService {
             return;
         }
         List<Task> tasksToSendToServer = new ArrayList<>();
+        int index = 1;
+        int serverTasksSize = serverTasks.size();
         for (TaskDto serverTask : serverTasks) {
+            this.uiUpdater.updateTextView(SyncingActivity.SyncType.RECORD,
+                    String.valueOf((index * 100) / serverTasksSize) + "%");
             Task localTask = localTasksMap.get(serverTask.getServerId());
             LogWrapper.i(TAG, "server Task  = " + serverTask.toString());
             LogWrapper.i(TAG, "local matching Task  = " + localTask);
@@ -112,6 +117,7 @@ public class TaskSyncService {
                     }
                 }
             }
+            index++;
         }
 
         for (Task task : localTasks) {
@@ -119,9 +125,9 @@ public class TaskSyncService {
                 tasksToSendToServer.add(task);
             }
         }
-        sendLocalChangesToServer(tasksToSendToServer);
         LogWrapper.i(TAG, "tasksToSendToServer = " + tasksToSendToServer);
-        this.synchrotron.synchronizeRecords();
+        sendLocalChangesToServer(tasksToSendToServer);
+        LogWrapper.i(TAG, "synchronizeLocalTasksWithServer() finishing");
     }
 
 
@@ -173,7 +179,7 @@ public class TaskSyncService {
     }
 
     private Callback<Void> getDeleteCallback(final Task task) {
-        return new CustomWebCallback<Void>(this.synchrotron) {
+        return new CustomWebCallback<Void>() {
             @Override
             public void onSuccessfulCall(Response<Void> response) {
                 LogWrapper.i(TAG, "Deletion successful, task = " + task);
@@ -182,7 +188,7 @@ public class TaskSyncService {
     }
 
     private Callback<TaskDto> getPostNewTaskCallback(final Task task) {
-        return new CustomWebCallback<TaskDto>(this.synchrotron) {
+        return new CustomWebCallback<TaskDto>() {
             @Override
             public void onSuccessfulCall(Response<TaskDto> response) {
                 TaskDto taskDto = response.body();
@@ -198,7 +204,7 @@ public class TaskSyncService {
     }
 
     private Callback<TaskDto> getPatchTaskCallback() {
-        return new CustomWebCallback<TaskDto>(this.synchrotron) {
+        return new CustomWebCallback<TaskDto>() {
             @Override
             public void onSuccessfulCall(Response<TaskDto> response) {
                 LogWrapper.i(TAG, "Patching successful");

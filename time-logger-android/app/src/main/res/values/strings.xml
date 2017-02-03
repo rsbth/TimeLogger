@@ -63,4 +63,6 @@
     <string name="recordEndtimeSummaryText">"End: "</string>
     <string name="selectLanguageHeader">Select language</string>
     <string name="dataLoadingTextView">Loading data from server</string>
+    <string name="taskSyncType">Synchronizing tasks...</string>
+    <string name="recordSyncType">Synchronizing records...</string>
 </resources>

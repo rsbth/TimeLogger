@@ -24,7 +24,6 @@ public class DateDeserializer implements JsonDeserializer<Date> {
         try {
             long timestamp = Long.parseLong(date);
             Date resultDate = new Date(timestamp);
-            LogWrapper.d(TAG, "Result date = " +resultDate);
             return resultDate;
         } catch (Exception exp) {
             LogWrapper.e(TAG, "Exception while parsing date: " + exp);

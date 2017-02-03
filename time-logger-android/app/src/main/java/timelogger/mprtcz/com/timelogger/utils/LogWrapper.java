@@ -5,6 +5,7 @@ import android.util.Log;
 import static android.util.Log.DEBUG;
 import static android.util.Log.ERROR;
 import static android.util.Log.INFO;
+import static android.util.Log.VERBOSE;
 import static android.util.Log.WARN;
 
 /**
@@ -12,7 +13,7 @@ import static android.util.Log.WARN;
  */
 
 public class LogWrapper {
-    private static final int LEVEL = WARN;
+    private static final int LEVEL = VERBOSE;
 
 /*
 ASSERT: Constant Value: 7 (0x00000007)

@@ -5,11 +5,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -181,7 +181,7 @@ public class UiUtils {
         });
         try {
             returnValue = result.get();
-//            LogWrapper.i(TAG, "return value = " + Arrays.deepToString(returnValue));
+            LogWrapper.i(TAG, "return value = " + Arrays.deepToString(returnValue));
         } catch (Exception e) {
             e.printStackTrace();
             messageBox(activity, "Exception", e.toString());

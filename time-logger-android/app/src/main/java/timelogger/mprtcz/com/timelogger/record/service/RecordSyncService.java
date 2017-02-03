@@ -9,7 +9,8 @@ import java.util.Map;
 
 import retrofit2.Callback;
 import retrofit2.Response;
-import timelogger.mprtcz.com.timelogger.interfaces.Synchrotron;
+import timelogger.mprtcz.com.timelogger.activities.SyncingActivity;
+import timelogger.mprtcz.com.timelogger.interfaces.UiUpdater;
 import timelogger.mprtcz.com.timelogger.record.controller.RecordWebController;
 import timelogger.mprtcz.com.timelogger.record.model.Record;
 import timelogger.mprtcz.com.timelogger.record.model.RecordDto;
@@ -27,7 +28,7 @@ public class RecordSyncService {
 
     private RecordService recordService;
     private RecordWebController recordWebController;
-    private Synchrotron synchrotron;
+    private UiUpdater uiUpdater;
 
     public RecordSyncService(RecordService recordService,
                              RecordWebController recordWebController) {
@@ -35,16 +36,17 @@ public class RecordSyncService {
         this.recordWebController = recordWebController;
     }
 
-    public void synchronizeRecords(Synchrotron backgroundSynchronizer) throws Exception {
+    public void synchronizeRecords(UiUpdater uiUpdater) throws Exception {
         LogWrapper.d(TAG, "synchronizeRecords background thread: " + Thread.currentThread().toString());
-        this.synchrotron = backgroundSynchronizer;
+        this.uiUpdater = uiUpdater;
         List<Record> localRecords = this.recordService.getAllRecords();
-        this.recordWebController.getAllRecordsFromServer(getRecordsSynchronizationCallback(localRecords));
+        List<RecordDto> serverRecords = this.recordWebController.getAllRecordsFromServer();
+        updateLocalDBWithServerData(localRecords, serverRecords);
     }
 
     private Callback<List<RecordDto>> getRecordsSynchronizationCallback(final List<Record> localRecords) {
         LogWrapper.i(TAG, "RecordService.getRecordsSynchronizationCallback");
-        return new CustomWebCallback<List<RecordDto>>(this.synchrotron) {
+        return new CustomWebCallback<List<RecordDto>>() {
             @Override
             public void onSuccessfulCall(Response<List<RecordDto>> response) {
                 try {
@@ -54,7 +56,6 @@ public class RecordSyncService {
                     e.printStackTrace();
                     LogWrapper.d(TAG, "onSuccessfulCall() in getRecordsSynchronizationCallback() " +
                             "called with: response = [" + response + "]");
-                    synchrotron.completeSynchronization();
                 }
             }
         };
@@ -64,12 +65,17 @@ public class RecordSyncService {
             throws Exception {
         LogWrapper.i(TAG, "RecordService.updateLocalDBWithServerData");
         Map<Date, Record> localRecordsMap = getLocalRecordsMap(localRecords);
+        int serverRecordsSize = serverRecords.size();
+        int index = 1;
         for (RecordDto serverRecord : serverRecords) {
+            LogWrapper.i(TAG, "ServerRecordsSize = " +serverRecordsSize +" index = " +index);
+            this.uiUpdater.updateTextView(SyncingActivity.SyncType.RECORD,
+                    String.valueOf((index * 100) / serverRecordsSize) + "%");
             Record localRecord = localRecordsMap.get(serverRecord.getSynchronizationDate());
-//            LogWrapper.i(TAG, "Server record = " + serverRecord);
+            LogWrapper.i(TAG, "Server record = " + serverRecord);
             if (localRecord == null) {
                 if (serverRecord.isActive()) {
-//                    LogWrapper.i(TAG, "Server record active, ServerRecord = " +serverRecord);
+                    LogWrapper.i(TAG, "Server record active, ServerRecord = " +serverRecord);
                     this.addNewRecordFromServer(serverRecord);
                 }
             } else {
@@ -84,11 +90,11 @@ public class RecordSyncService {
                     }
                 }
             }
+            index++;
         }
         this.updateServerWithUnsyncLocalData();
         LogWrapper.d(TAG, "this.synchrotron.completeSynchronization() from " +
                 "within updateLocalDBWithServerData() called");
-        this.synchrotron.completeSynchronization();
     }
 
     private void updateServerWithUnsyncLocalData() {
@@ -121,9 +127,9 @@ public class RecordSyncService {
     }
 
     private void removeRecordFromServer(final Record record) {
-        LogWrapper.i(TAG, "RecordService.removeRecordFromServer");
-        this.recordWebController.removeRecordFromServer(
-                new CustomWebCallback<Void>(this.synchrotron) {
+        LogWrapper.i(TAG, "RecordService.removeRecordFromServerAsync");
+        this.recordWebController.removeRecordFromServerAsync(
+                new CustomWebCallback<Void>() {
             @Override
             public void onSuccessfulCall(Response<Void> response) {
                 LogWrapper.i(TAG, "Record {} deleted successfully" +record);
@@ -140,13 +146,13 @@ public class RecordSyncService {
         LogWrapper.i(TAG, "RecordService.sendLocalRecordsToServer");
         for (Record record :
                 unsyncLocalRecords) {
-            this.recordWebController.postRecordToServer(
+            this.recordWebController.postRecordToServerAsync(
                     this.getPostNewRecordCallback(record), record);
         }
     }
 
     private Callback<RecordDto> getPostNewRecordCallback(final Record record) {
-        return new CustomWebCallback<RecordDto>(this.synchrotron) {
+        return new CustomWebCallback<RecordDto>() {
             @Override
             public void onSuccessfulCall(Response<RecordDto> response) {
                 LogWrapper.i(TAG, "Record post successful, Record = " +record);
@@ -164,7 +170,7 @@ public class RecordSyncService {
     }
 
     private void addNewRecordFromServer(RecordDto recordDto) throws Exception {
-//        LogWrapper.i(TAG, "RecordService.addNewRecordFromServer");
+        LogWrapper.i(TAG, "RecordService.addNewRecordFromServer");
         Task task = this.recordService.getTaskService()
                 .findTaskByServerID(recordDto.getTaskServerId());
         if(task == null) {
@@ -183,6 +189,6 @@ public class RecordSyncService {
     }
 
     public void postNewRecordToServer(Record record) {
-        this.recordWebController.postRecordToServer(getPostNewRecordCallback(record), record);
+        this.recordWebController.postRecordToServerAsync(getPostNewRecordCallback(record), record);
     }
 }
