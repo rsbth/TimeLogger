@@ -6,9 +6,9 @@ package timelogger.mprtcz.com.timelogger.interfaces;
 
 public interface Synchrotron {
 
-    public void synchronizeTasks();
+    void synchronizeTasks();
 
-    public void synchronizeRecords();
+    void synchronizeRecords();
 
-    public void completeSynchronization();
+    void completeSynchronization();
 }

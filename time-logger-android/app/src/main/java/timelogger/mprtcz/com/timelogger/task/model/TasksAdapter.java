@@ -13,12 +13,15 @@ import java.util.List;
 
 import lombok.Getter;
 import timelogger.mprtcz.com.timelogger.R;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 
 /**
  * Created by Azet on 2017-01-17.
  */
 
 public class TasksAdapter extends ArrayAdapter<Task> {
+    private static final String TAG = "TasksAdapter";
+
     public TasksAdapter(Context context, List<Task> objects) {
         super(context, R.layout.activities_row_view, objects);
     }
@@ -48,7 +51,7 @@ public class TasksAdapter extends ArrayAdapter<Task> {
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Task " + task.toString());
+                LogWrapper.i(TAG, "Task " + task.toString());
 
                 for(int a = 0; a < parent.getChildCount(); a++) {
                     parent.getChildAt(a).setBackgroundColor(Color.TRANSPARENT);

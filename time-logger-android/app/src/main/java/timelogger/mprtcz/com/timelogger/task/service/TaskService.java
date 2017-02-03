@@ -1,7 +1,6 @@
 package timelogger.mprtcz.com.timelogger.task.service;
 
 import android.app.Activity;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +13,7 @@ import timelogger.mprtcz.com.timelogger.task.dao.CustomDao;
 import timelogger.mprtcz.com.timelogger.task.dao.DatabaseDao;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.validator.TaskValidator;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 
 /**
@@ -34,7 +34,7 @@ public class TaskService {
     }
 
     public ValidationResult saveTask(Task task) throws Exception {
-        System.out.println("TaskService.saveTask");
+        LogWrapper.i(TAG, "TaskService.saveTask");
         TaskValidator taskValidator = new TaskValidator();
         ValidationResult validationResult = taskValidator.validateNewTask(task, getActiveTasks());
         if (validationResult.isErrorFree()) {
@@ -61,7 +61,7 @@ public class TaskService {
     public ValidationResult updateTask(Task task, UpdateType updateType) throws Exception {
         TaskValidator taskValidator = new TaskValidator();
         ValidationResult result = taskValidator.validateUpdatedTask(task);
-        Log.d("TaskService.updateTask", "update task validation result = " + result.toString());
+        LogWrapper.d("TaskService.updateTask", "update task validation result = " + result.toString());
         if (result.isErrorFree()) {
             if (task.getServerId() == null && this.taskSyncService != null) {
                 this.taskSyncService.postNewTaskToServer(task);
@@ -115,7 +115,7 @@ public class TaskService {
 
     public static TaskService getInstance(Activity activity) {
         TaskService taskService = new TaskService(new DatabaseDao(activity));
-        Log.d(TAG, "getInstance() returned: " + taskService);
+        LogWrapper.d(TAG, "getInstance() returned: " + taskService);
         return taskService;
     }
 

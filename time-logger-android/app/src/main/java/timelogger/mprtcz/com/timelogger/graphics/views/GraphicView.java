@@ -9,12 +9,14 @@ import android.view.View;
 import lombok.Getter;
 import lombok.Setter;
 import timelogger.mprtcz.com.timelogger.graphics.controllers.GraphicController;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 
 /**
  * Created by Azet on 2017-01-22.
  */
 
 public class GraphicView extends View {
+    private static final String TAG = "GraphicView";
 
     public GraphicView(Context context) {
         super(context);
@@ -36,7 +38,7 @@ public class GraphicView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        System.out.println("Drawing on canvas");
+        LogWrapper.i(TAG, "Drawing on canvas");
         graphicController.drawArrayOnCanvas(canvas);
     }
 }

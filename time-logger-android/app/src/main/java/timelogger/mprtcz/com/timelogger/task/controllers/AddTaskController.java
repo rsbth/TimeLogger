@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +16,7 @@ import java.util.Date;
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 
@@ -59,7 +59,7 @@ public class AddTaskController {
                             isNameUnique = taskService.isNameUnique(nameEditText.getText().toString());
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Log.e(TAG, "Exception while name uniqeness check: " +e.toString());
+                            LogWrapper.e(TAG, "Exception while name uniqeness check: " +e.toString());
                         }
                     }
                 });
@@ -103,7 +103,7 @@ public class AddTaskController {
             @Override
             public void onClick(View v) {
                 selectedColorRGB = cp.getColor();
-                System.out.println("selectedColorRGB = " + selectedColorRGB);
+                LogWrapper.i(TAG, "selectedColorRGB = " + selectedColorRGB);
 
                 Button colorButton = (Button) baseActivity.findViewById(R.id.pickColorButton);
 

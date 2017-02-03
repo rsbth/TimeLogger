@@ -1,7 +1,5 @@
 package timelogger.mprtcz.com.timelogger.task.model;
 
-import android.util.Log;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -15,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import timelogger.mprtcz.com.timelogger.record.model.Record;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 
 /**
  * Created by Azet on 2017-01-17.
@@ -73,7 +72,7 @@ public class Task {
         List<Record> records = new ArrayList<>(this.taskRecords);
         int recordPosition = records.indexOf(record);
         if (recordPosition != -1) {
-            Log.i(TAG, "Record exists at " +recordPosition +" replacing: " + record);
+            LogWrapper.i(TAG, "Record exists at " +recordPosition +" replacing: " + record);
             records.set(recordPosition, record);
             this.taskRecords = records;
         } else {

@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +19,10 @@ import org.joda.time.DateTime;
 import lombok.Getter;
 import lombok.Setter;
 import timelogger.mprtcz.com.timelogger.R;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 
 public class DateTimeFragment extends Fragment {
-
+    private static final String TAG = "DateTimeFragment";
     @Getter
     DateTimeValues dateTimeValues = new DateTimeValues();
     EditText timeEditText;
@@ -127,7 +127,7 @@ public class DateTimeFragment extends Fragment {
     }
 
     private DatePickerDialog.OnDateSetListener getDateListener() {
-        System.out.println("DateTimeFragment.getDateListener");
+        LogWrapper.i(TAG, "DateTimeFragment.getDateListener");
         return new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -138,7 +138,7 @@ public class DateTimeFragment extends Fragment {
     }
 
     private TimePickerDialog.OnTimeSetListener getTimeListener() {
-        System.out.println("DateTimeFragment.getTimeListener");
+        LogWrapper.i(TAG, "DateTimeFragment.getTimeListener");
 
         return new TimePickerDialog.OnTimeSetListener() {
             @Override
@@ -173,7 +173,7 @@ public class DateTimeFragment extends Fragment {
         }
 
         public void setDate(int year, int month, int dayOfMonth) {
-            Log.d("DateTimeFrag", "year = " + year + "month = " + month + "dayOfMonth = " + dayOfMonth);
+            LogWrapper.d("DateTimeFrag", "year = " + year + "month = " + month + "dayOfMonth = " + dayOfMonth);
             this.year = year;
             this.month = month;
             this.dayOfMonth = dayOfMonth;
@@ -183,7 +183,7 @@ public class DateTimeFragment extends Fragment {
         }
 
         public void setTime(int hourOfDay, int minute) {
-            Log.d("DateTimeFrag", "hourOfDay = " + hourOfDay + " minute = " + minute);
+            LogWrapper.d("DateTimeFrag", "hourOfDay = " + hourOfDay + " minute = " + minute);
             this.hourOfDay = hourOfDay;
             this.minute = minute;
             if (this.listener != null) {
@@ -192,7 +192,7 @@ public class DateTimeFragment extends Fragment {
         }
 
         public DateTime parseDate() {
-            Log.d("parsingDate", "" +
+            LogWrapper.d("parsingDate", "" +
                     "this.year = " + this.year +
                     "\nthis.month = " + this.month +
                     "\nthis.dayOfMonth = " + this.dayOfMonth +

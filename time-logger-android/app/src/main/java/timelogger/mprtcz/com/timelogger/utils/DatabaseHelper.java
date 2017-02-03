@@ -32,18 +32,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public DatabaseHelper(Context context) throws SQLException {
         super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
-        Log.d("DatabaseHelper","DatabaseHelper.DatabaseHelper constructor");
+        LogWrapper.d("DatabaseHelper","DatabaseHelper.DatabaseHelper constructor");
     }
 
     @Override
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
 
         try {
-            Log.i(DatabaseHelper.class.getName(), "onCreate");
+            LogWrapper.i(DatabaseHelper.class.getName(), "onCreate");
             TableUtils.createTable(connectionSource, Task.class);
             TableUtils.createTable(connectionSource, Record.class);
         } catch (SQLException e) {
-            Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
+            LogWrapper.e(DatabaseHelper.class.getName(), "Can't create database", e);
             throw new RuntimeException(e);
         }
     }
@@ -53,12 +53,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                           ConnectionSource connectionSource,
                           int oldVersion, int newVersion) {
         try {
-            Log.i(DatabaseHelper.class.getName(), "onUpgrade");
+            LogWrapper.i(DatabaseHelper.class.getName(), "onUpgrade");
             TableUtils.dropTable(connectionSource, Task.class, true);
             TableUtils.dropTable(connectionSource, Record.class, true);
             onCreate(database, connectionSource);
         } catch (SQLException e) {
-            Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
+            LogWrapper.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
             throw new RuntimeException(e);
         }
 

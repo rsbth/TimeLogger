@@ -1,8 +1,6 @@
 package timelogger.mprtcz.com.timelogger.task.service;
 
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +13,7 @@ import timelogger.mprtcz.com.timelogger.task.controllers.WebTaskController;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.model.TaskDto;
 import timelogger.mprtcz.com.timelogger.task.model.converter.TaskConverter;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 import timelogger.mprtcz.com.timelogger.utils.web.CustomWebCallback;
 
@@ -36,6 +35,7 @@ public class TaskSyncService {
     }
 
     public void synchronizeTasks(Synchrotron synchrotron) throws Exception {
+        LogWrapper.d(TAG, "synchronizeTasks background thread: " + Thread.currentThread().toString());
         this.synchrotron = synchrotron;
         List<Task> localTasks = this.taskService.getAllTasks();
         List<TaskDto> serverTasks = this.webTaskController.getTasksFromServer();
@@ -53,7 +53,7 @@ public class TaskSyncService {
 
     private void synchronizeLocalTasksWithServer(List<Task> localTasks,
                                                  List<TaskDto> serverTasks) throws Exception {
-        Log.i(TAG, "TaskService.synchronizeLocalTasksWithServer, server tasks = "
+        LogWrapper.i(TAG, "TaskService.synchronizeLocalTasksWithServer, server tasks = "
                 + serverTasks);
         Map<Long, Task> localTasksMap = getLocalTasksMap(localTasks);
         if (serverTasks == null) {
@@ -62,21 +62,21 @@ public class TaskSyncService {
         List<Task> tasksToSendToServer = new ArrayList<>();
         for (TaskDto serverTask : serverTasks) {
             Task localTask = localTasksMap.get(serverTask.getServerId());
-            Log.i(TAG, "server Task  = " + serverTask.toString());
-            Log.i(TAG, "local matching Task  = " + localTask);
+            LogWrapper.i(TAG, "server Task  = " + serverTask.toString());
+            LogWrapper.i(TAG, "local matching Task  = " + localTask);
             if (serverTask.isActive()) {
-                Log.i(TAG, "server task is active");
+                LogWrapper.i(TAG, "server task is active");
                 if (localTask != null) {
-                    Log.i(TAG, "task exists in local db");
+                    LogWrapper.i(TAG, "task exists in local db");
                     if (localTask.isActive()) {
-                        Log.i(TAG, "task is active in local db");
+                        LogWrapper.i(TAG, "task is active in local db");
                         if (localTask.getLastModified().before(serverTask.getLastModified())) {
                             logModificationDates("task has been modified on server:\n",
                                     serverTask, localTask);
                             try {
                                 this.updateTaskWithServerData(localTask, serverTask);
                             } catch (Exception e) {
-                                Log.e(TAG, "Error while updating task with server data = " + e.toString());
+                                LogWrapper.e(TAG, "Error while updating task with server data = " + e.toString());
                                 e.printStackTrace();
                             }
                         } else if (localTask.getLastModified().after(serverTask.getLastModified())) {
@@ -89,7 +89,7 @@ public class TaskSyncService {
                                     serverTask, localTask);
                         }
                     } else {
-                        Log.i(TAG, "Task is inactive in local db, task = " + localTask);
+                        LogWrapper.i(TAG, "Task is inactive in local db, task = " + localTask);
                         tasksToSendToServer.add(localTask);
                     }
                 } else {
@@ -97,17 +97,17 @@ public class TaskSyncService {
                         this.taskService.saveTask(
                                 TaskConverter.toEntity(serverTask));
                     } catch (Exception e) {
-                        Log.e(TAG, "Error while saving server task = " + e.toString());
+                        LogWrapper.e(TAG, "Error while saving server task = " + e.toString());
                         e.printStackTrace();
                     }
                 }
             } else {
-                Log.i(TAG, "server task is removed from server");
+                LogWrapper.i(TAG, "server task is removed from server");
                 if (localTask != null && localTask.isActive()) {
                     try {
                         this.taskService.removeTaskLocally(localTask);
                     } catch (Exception e) {
-                        Log.e(TAG, "Error while removing server task = " + e.toString());
+                        LogWrapper.e(TAG, "Error while removing server task = " + e.toString());
                         e.printStackTrace();
                     }
                 }
@@ -120,7 +120,7 @@ public class TaskSyncService {
             }
         }
         sendLocalChangesToServer(tasksToSendToServer);
-        Log.i(TAG, "tasksToSendToServer = " + tasksToSendToServer);
+        LogWrapper.i(TAG, "tasksToSendToServer = " + tasksToSendToServer);
         this.synchrotron.synchronizeRecords();
     }
 
@@ -137,7 +137,7 @@ public class TaskSyncService {
 
     private ValidationResult updateTaskWithServerData(Task task, TaskDto taskDto)
             throws Exception {
-        Log.d(TAG, "updateTaskWithServerData() called with: task = [" + task
+        LogWrapper.d(TAG, "updateTaskWithServerData() called with: task = [" + task
                 + "], taskDto = [" + taskDto + "]");
         task.setName(taskDto.getName());
         task.setLastModified(taskDto.getLastModified());
@@ -156,7 +156,7 @@ public class TaskSyncService {
             }
             if (task.getServerId() == null) {
                 Response<TaskDto> response = this.webTaskController.postNewTaskToServer(task);
-                Log.i(TAG, "sendLocalChangesToServer: response when posting new task to server: "
+                LogWrapper.i(TAG, "sendLocalChangesToServer: response when posting new task to server: "
                         + response.toString());
                 if(!response.isSuccessful()) {
                     if(response.errorBody().string().equals(TASK_EXISTS_RESPONSE_BODY)) {
@@ -176,7 +176,7 @@ public class TaskSyncService {
         return new CustomWebCallback<Void>(this.synchrotron) {
             @Override
             public void onSuccessfulCall(Response<Void> response) {
-                Log.i(TAG, "Deletion successful, task = " + task);
+                LogWrapper.i(TAG, "Deletion successful, task = " + task);
             }
         };
     }
@@ -189,7 +189,7 @@ public class TaskSyncService {
                 try {
                     updateTaskWithServerData(task, taskDto);
                 } catch (Exception e) {
-                    Log.w(TAG, "Update unsuccessful, exception = " + e.toString() +
+                    LogWrapper.w(TAG, "Update unsuccessful, exception = " + e.toString() +
                             " response code = " + response.code());
                     e.printStackTrace();
                 }
@@ -201,7 +201,7 @@ public class TaskSyncService {
         return new CustomWebCallback<TaskDto>(this.synchrotron) {
             @Override
             public void onSuccessfulCall(Response<TaskDto> response) {
-                Log.i(TAG, "Patching successful");
+                LogWrapper.i(TAG, "Patching successful");
             }
         };
     }
@@ -222,7 +222,7 @@ public class TaskSyncService {
     }
 
     private void logModificationDates(String message, TaskDto serverTask, Task localTask) {
-        Log.i(TAG, message + "task.getLastModified() = "
+        LogWrapper.i(TAG, message + "task.getLastModified() = "
                 + localTask.getLastModified() + " serverTask.getLastModified() = "
                 + serverTask.getLastModified());
     }

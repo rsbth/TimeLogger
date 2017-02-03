@@ -3,7 +3,6 @@ package timelogger.mprtcz.com.timelogger.task.controllers;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -11,6 +10,7 @@ import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 
@@ -39,7 +39,7 @@ public class EditTaskController extends AddTaskController {
         Task returnedTask = UiUtils.getTaskByIdAsync(taskId, baseActivity);
 
         if (returnedTask != null) {
-            Log.i(TAG, "returned task's name = " + returnedTask.getName());
+            LogWrapper.i(TAG, "returned task's name = " + returnedTask.getName());
             this.updatingTask = returnedTask;
             nameEditText.setText(returnedTask.getName());
             descriptionEditText.setText(returnedTask.getDescription());

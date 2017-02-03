@@ -1,12 +1,11 @@
 package timelogger.mprtcz.com.timelogger.task.dao;
 
-import android.util.Log;
-
 import java.util.List;
 import java.util.Objects;
 
 import timelogger.mprtcz.com.timelogger.record.model.Record;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 
 /**
  * Created by Azet on 2017-01-18.
@@ -26,11 +25,11 @@ public class InMemoryDao implements CustomDao {
 
     @Override
     public Task findTaskById(Long id) {
-        Log.d("InMemorydao", "find by id =" +id);
+        LogWrapper.d("InMemorydao", "find by id =" +id);
         for (Task task :
                 getAllTasks()){
             if (Objects.equals(task.getId(), id)) {
-                Log.d("InMemorydao", "returning task = " +task.toString());
+                LogWrapper.d("InMemorydao", "returning task = " +task.toString());
                 return task;
             }
         }

@@ -1,11 +1,10 @@
 package timelogger.mprtcz.com.timelogger.utils.web;
 
-import android.util.Log;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import timelogger.mprtcz.com.timelogger.interfaces.Synchrotron;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 
 import static timelogger.mprtcz.com.timelogger.utils.web.WebHandler.handleWebCallbackException;
 
@@ -27,7 +26,7 @@ public abstract class CustomWebCallback<T> implements Callback<T> {
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
         if (response.isSuccessful()) {
-            Log.i(TAG, "Call successful, call = " +call);
+            LogWrapper.i(TAG, "Call successful, call = " +call);
             try {
                 onSuccessfulCall(response);
             } catch (Exception e) {

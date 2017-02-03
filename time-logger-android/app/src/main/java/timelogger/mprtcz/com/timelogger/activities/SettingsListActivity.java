@@ -4,7 +4,6 @@ import android.app.ListActivity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +14,7 @@ import java.util.Locale;
 
 import lombok.Getter;
 import timelogger.mprtcz.com.timelogger.R;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 
 public class SettingsListActivity extends ListActivity {
@@ -48,14 +48,14 @@ public class SettingsListActivity extends ListActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Language language = languages[position - 1]; //subtracting 1 because of header
             loadChosenLanguage(language.getLocale());
-            Log.d(TAG, "language : " + language.getLocale());
+            LogWrapper.d(TAG, "language : " + language.getLocale());
             saveLanguage(language.getLocale().getCountry().toLowerCase());
             finish();
         }
     };
 
     private void loadChosenLanguage(Locale locale) {
-        Log.d(TAG, "Setting default locale = " +locale);
+        LogWrapper.d(TAG, "Setting default locale = " +locale);
         Locale.setDefault(locale);
         Configuration config = new Configuration();
         config.locale = locale;
@@ -66,7 +66,7 @@ public class SettingsListActivity extends ListActivity {
     private void saveLanguage(String locale) {
         SharedPreferences languagepref = getApplicationContext().getSharedPreferences("language", 0);
         SharedPreferences.Editor editor = languagepref.edit();
-        Log.d(TAG, "Saving language: " + locale);
+        LogWrapper.d(TAG, "Saving language: " + locale);
         editor.putString("languageToLoad", locale);
         editor.apply();
     }

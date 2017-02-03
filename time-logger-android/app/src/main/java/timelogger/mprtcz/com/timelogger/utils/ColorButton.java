@@ -24,19 +24,19 @@ public class ColorButton extends Button {
     @Override
     public void setBackgroundColor(int color) {
         super.setBackgroundColor(color);
-        System.out.println("color = " + color);
+        LogWrapper.i(TAG, "color = " + color);
         this.changeTextColor(color);
     }
 
     public static final int LUMINANCE_BORDER = 100;
 
     private void changeTextColor(int color) {
-        System.out.println("Changing color");
+        LogWrapper.i(TAG, "Changing color");
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
         double luminace = 0.299 * red + 0.587 * green + 0.114 * blue;
-        Log.d(TAG, "Luminace = " + luminace);
+        LogWrapper.d(TAG, "Luminace = " + luminace);
         int invLuminace = 255 - (int) luminace;
         if (invLuminace < LUMINANCE_BORDER) {
             super.setTextColor(Color.argb(137, 0, 0, 0));

@@ -1,7 +1,6 @@
 package timelogger.mprtcz.com.timelogger.record.service;
 
 import android.app.Activity;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +13,7 @@ import timelogger.mprtcz.com.timelogger.record.model.Record;
 import timelogger.mprtcz.com.timelogger.record.validator.RecordValidator;
 import timelogger.mprtcz.com.timelogger.task.model.Task;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 
 /**
@@ -51,7 +51,7 @@ public class RecordService {
     }
 
     public List<Record> getAllRecords() throws Exception {
-        Log.d(TAG, "getAllRecords() called");
+        LogWrapper.d(TAG, "getAllRecords() called");
         List<Task> tasks = this.taskService.getAllTasks();
         List<Record> allRecords = new ArrayList<>();
         for (Task task : tasks) {
@@ -59,7 +59,7 @@ public class RecordService {
                 allRecords.addAll(task.getTaskRecords());
             }
         }
-        Log.d(TAG, "getAllRecords() returned: " + allRecords);
+        LogWrapper.d(TAG, "getAllRecords() returned: " + allRecords);
         return allRecords;
     }
 
@@ -80,7 +80,7 @@ public class RecordService {
     public static RecordService getInstance(Activity activity) {
         TaskService taskService = TaskService.getInstance(activity);
         RecordService recordService = new RecordService(taskService);
-        Log.d(TAG, "getInstance() returned: " + recordService);
+        LogWrapper.d(TAG, "getInstance() returned: " + recordService);
         return recordService;
     }
 }

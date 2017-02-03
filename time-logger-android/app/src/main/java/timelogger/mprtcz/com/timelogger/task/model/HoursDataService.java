@@ -1,7 +1,5 @@
 package timelogger.mprtcz.com.timelogger.task.model;
 
-import android.util.Log;
-
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Hours;
@@ -13,6 +11,7 @@ import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import timelogger.mprtcz.com.timelogger.record.model.Record;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 
 /**
  * Created by Azet on 2017-01-20.
@@ -43,8 +42,7 @@ public class HoursDataService {
                 this.allRecords.addAll(task.getTaskRecords());
             }
         }
-        System.out.println("allRecords = " + allRecords);
-        Log.d(TAG, "allRecords = " + allRecords);
+        LogWrapper.d(TAG, "allRecords = " + allRecords);
     }
 
     private void setExtremeRecords() {
@@ -75,9 +73,9 @@ public class HoursDataService {
 
     public HoursDataService.Hour[][] getHoursArray() {
         long dayDelta = calculateDayDelta(earliest, latest);
-        Log.d(TAG, "getHoursArray dayDelta = " +dayDelta);
-        Log.d(TAG, "earlitest =" +earliest);
-        Log.d(TAG, "latest = " +latest);
+        LogWrapper.d(TAG, "getHoursArray dayDelta = " +dayDelta);
+        LogWrapper.d(TAG, "earlitest =" +earliest);
+        LogWrapper.d(TAG, "latest = " +latest);
         int dayDeltaInt = (int)dayDelta;
         HoursDataService.Hour[][] hoursArray = new HoursDataService.Hour[dayDeltaInt + 1][24];
 
@@ -91,10 +89,10 @@ public class HoursDataService {
     }
 
     private void createHoursList() {
-        Log.d(TAG, "Earliest = " + earliest);
-        Log.d(TAG, "Latest = " + latest);
+        LogWrapper.d(TAG, "Earliest = " + earliest);
+        LogWrapper.d(TAG, "Latest = " + latest);
         long hoursDelta = Hours.hoursBetween(earliest, latest).getHours();
-        System.out.println("hoursDelta = " + hoursDelta);
+        LogWrapper.i(TAG, "hoursDelta = " + hoursDelta);
         DateTime currentHour = earliest;
         this.hours = new ArrayList<>();
         for (int i = 0; i < hoursDelta; i++) {
@@ -108,7 +106,7 @@ public class HoursDataService {
         for (Record record : this.allRecords) {
             DateTime start = new DateTime(record.getStartDateTime());
             DateTime end = new DateTime(record.getEndDateTime());
-            Log.d(TAG, "Start datetime = " +start +", end Datetime = "+ end);
+            LogWrapper.d(TAG, "Start datetime = " +start +", end Datetime = "+ end);
             long duration = Hours.hoursBetween(start, end).getHours();
             int position = getListPositionOfSpecificHour(start);
             for (int i = 0; i < duration; i++) {
@@ -122,13 +120,13 @@ public class HoursDataService {
     private int getListPositionOfSpecificHour(DateTime hourToFind) {
         for (Hour hour :
                 this.hours) {
-            Log.d(TAG, "Current hour = " +hour);
-            Log.d(TAG, "hour to find = " +hourToFind);
+//            LogWrapper.d(TAG, "Current hour = " +hour);
+//            LogWrapper.d(TAG, "hour to find = " +hourToFind);
             if (hourToFind.equals(hour.getDatetime())) {
                 return this.hours.indexOf(hour);
             }
         }
-        Log.e(TAG, "Couldn't find hour = " +hourToFind);
+        LogWrapper.e(TAG, "Couldn't find hour = " +hourToFind);
         return -1;
     }
 

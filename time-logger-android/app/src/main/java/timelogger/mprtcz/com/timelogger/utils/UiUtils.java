@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -33,7 +32,7 @@ public class UiUtils {
     private static final String TAG = "UiUtils";
 
     public static void messageBox(Context context, String method, String message) {
-        Log.d("EXCEPTION: " + method, message);
+        LogWrapper.d("EXCEPTION: " + method, message);
 
         AlertDialog.Builder messageBox = new AlertDialog.Builder(context);
         messageBox.setTitle(method);
@@ -65,13 +64,13 @@ public class UiUtils {
         List<Task> returnedTask = null;
         Future<List<Task>> result = executor.submit(new Callable<List<Task>>() {
             public List<Task> call() throws Exception {
-                Log.d("Task save", "saving task");
+                LogWrapper.d("Task save", "saving task");
                 return taskService.getActiveTasks();
             }
         });
         try {
             returnedTask = result.get();
-            Log.i(TAG, "getActiveTasksFromBackendAsync, returned tasks = " + returnedTask.toString());
+            LogWrapper.i(TAG, "getActiveTasksFromBackendAsync, returned tasks = " + returnedTask.toString());
         } catch (Exception e) {
             e.printStackTrace();
             messageBox(activity, "Exception", e.toString());
@@ -86,13 +85,13 @@ public class UiUtils {
         Future<Task> result;
         result = executor.submit(new Callable<Task>() {
             public Task call() throws Exception {
-                Log.d("Task save", "saving task");
+                LogWrapper.d("Task save", "saving task");
                 return taskService.getTaskById(id);
             }
         });
         try {
             returnValue = result.get();
-            Log.i(TAG, "return value = " + returnValue.toString());
+            LogWrapper.i(TAG, "return value = " + returnValue.toString());
         } catch (Exception e) {
             e.printStackTrace();
             messageBox(activity, "Exception", e.toString());
@@ -111,13 +110,13 @@ public class UiUtils {
         Future<ValidationResult> result;
         result = executor.submit(new Callable<ValidationResult>() {
             public ValidationResult call() throws Exception {
-                Log.d("Task save", "saving task");
+                LogWrapper.d("Task save", "saving task");
                 return taskService.saveTask(newTask);
             }
         });
         try {
             returnValue = result.get();
-            Log.i(TAG, "return value = " + returnValue.toString());
+            LogWrapper.i(TAG, "return value = " + returnValue.toString());
         } catch (Exception e) {
             e.printStackTrace();
             messageBox(activity, "Exception", e.toString());
@@ -132,13 +131,13 @@ public class UiUtils {
         Future<ValidationResult> result;
         result = executor.submit(new Callable<ValidationResult>() {
             public ValidationResult call() throws Exception {
-                Log.d("Task update", "updating task");
+                LogWrapper.d("Task update", "updating task");
                 return taskService.updateTask(updatingTask, TaskService.UpdateType.LOCAL);
             }
         });
         try {
             returnValue = result.get();
-            Log.i(TAG, "return value = " + returnValue.toString());
+            LogWrapper.i(TAG, "return value = " + returnValue.toString());
         } catch (Exception e) {
             e.printStackTrace();
             messageBox(activity, "Exception", e.toString());
@@ -153,7 +152,7 @@ public class UiUtils {
         Future<ValidationResult> result;
         result = executor.submit(new Callable<ValidationResult>() {
             public ValidationResult call() throws Exception {
-                Log.d("record save", "saving record = " + record.toString());
+                LogWrapper.d("record save", "saving record = " + record.toString());
                 return recordService.addRecord(record);
             }
         });
@@ -161,7 +160,7 @@ public class UiUtils {
             returnValue = result.get();
             displayValidationResult(activity, returnValue,
                     activity.getResources().getString(R.string.recordValidationMsgBoxHeader));
-            Log.i(TAG, "return value = " + returnValue.toString());
+            LogWrapper.i(TAG, "return value = " + returnValue.toString());
         } catch (Exception e) {
             e.printStackTrace();
             messageBox(activity, "Exception", e.toString());
@@ -182,7 +181,7 @@ public class UiUtils {
         });
         try {
             returnValue = result.get();
-            Log.i(TAG, "return value = " + Arrays.deepToString(returnValue));
+//            LogWrapper.i(TAG, "return value = " + Arrays.deepToString(returnValue));
         } catch (Exception e) {
             e.printStackTrace();
             messageBox(activity, "Exception", e.toString());
@@ -198,12 +197,12 @@ public class UiUtils {
     public static void loadLanguage(final Activity activity, Locale oldLocale) {
         SharedPreferences preferences = activity.getSharedPreferences("language", 0);
         String lang = preferences.getString("languageToLoad", "en");
-        Log.d(TAG, "loadLanguage(final Activity activity, Locale oldLocale) " +lang);
+        LogWrapper.d(TAG, "loadLanguage(final Activity activity, Locale oldLocale) " +lang);
         Locale locale = new Locale(lang);
-        Log.d(TAG, "oldLocale = " +Locale.getDefault());
+        LogWrapper.d(TAG, "oldLocale = " +Locale.getDefault());
         Locale.setDefault(locale);
         Locale newLocale = Locale.getDefault();
-        Log.d(TAG, "newLocale = " +Locale.getDefault());
+        LogWrapper.d(TAG, "newLocale = " +Locale.getDefault());
         if(oldLocale == null || !oldLocale.equals(newLocale)) {
             activity.recreate();
         }
@@ -211,6 +210,6 @@ public class UiUtils {
         config.locale = locale;
         activity.getBaseContext().getResources().updateConfiguration(config,
                 activity.getBaseContext().getResources().getDisplayMetrics());
-        Log.d(TAG, "config = " +config.toString());
+        LogWrapper.d(TAG, "config = " +config.toString());
     }
 }

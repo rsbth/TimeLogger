@@ -1,6 +1,7 @@
 package timelogger.mprtcz.com.timelogger.record.validator;
 
 import timelogger.mprtcz.com.timelogger.record.model.Record;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
 
 /**
@@ -8,13 +9,15 @@ import timelogger.mprtcz.com.timelogger.utils.ValidationResult;
  */
 
 public class RecordValidator {
+    private static final String TAG = "RecordValidator";
+
     private ValidationResult validationResult;
 
     public ValidationResult validateNewRecordData(Record validationObject) {
         this.validationResult = new ValidationResult(ValidationResult.CustomErrorEnum.RECORD_SAVED);
         nullCheck(validationObject);
         hourConsecutivenessCheck(validationObject);
-        System.out.println("this.validationResult = " + this.validationResult);
+        LogWrapper.i(TAG, "this.validationResult = " + this.validationResult);
         return this.validationResult;
     }
 

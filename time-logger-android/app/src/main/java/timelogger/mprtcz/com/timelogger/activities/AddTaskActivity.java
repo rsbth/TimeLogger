@@ -10,10 +10,12 @@ import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.task.controllers.AddTaskController;
 import timelogger.mprtcz.com.timelogger.task.controllers.EditTaskController;
 import timelogger.mprtcz.com.timelogger.utils.ColorButton;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 
 
 public class AddTaskActivity extends Activity {
+    private static final String TAG = "AddTaskActivity";
     EditText nameEditText;
     EditText descriptionEditText;
     ColorButton pickColorButton;
@@ -22,7 +24,7 @@ public class AddTaskActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("AddTaskActivity.onCreate");
+        LogWrapper.i(TAG, "AddTaskActivity.onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
         UiUtils.loadLanguage(this);

@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -15,6 +14,7 @@ import java.util.Locale;
 import timelogger.mprtcz.com.timelogger.R;
 import timelogger.mprtcz.com.timelogger.task.model.TasksAdapter;
 import timelogger.mprtcz.com.timelogger.task.service.TaskService;
+import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
 import timelogger.mprtcz.com.timelogger.utils.UiUtils;
 
 import static timelogger.mprtcz.com.timelogger.activities.AddRecordActivity.ADD_TASK_ID;
@@ -42,7 +42,7 @@ public class TasksListActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart()");
+        LogWrapper.d(TAG, "onStart()");
         ListView listView = (ListView) findViewById(R.id.activitiesList);
         adapter = new TasksAdapter(this, getActiveTasksFromBackendAsync(this));
         listView.setAdapter(adapter);
@@ -51,7 +51,7 @@ public class TasksListActivity extends AppCompatActivity {
     }
 
     public void onRemoveTaskButtonClicked(View view) {
-        System.out.println("adapter.getSelectedItemPosition() = " + adapter.getSelectedTask());
+        LogWrapper.i(TAG, "adapter.getSelectedItemPosition() = " + adapter.getSelectedTask());
         if (adapter.getSelectedTask() != null) {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
@@ -66,7 +66,7 @@ public class TasksListActivity extends AppCompatActivity {
                                         taskService.removeTask(adapter.getSelectedTask());
                                     } catch (Exception e) {
                                         e.printStackTrace();
-                                        Log.e(TAG, "Exception while removing task: " +e.toString());
+                                        LogWrapper.e(TAG, "Exception while removing task: " +e.toString());
                                     }
                                     onStart();
                                 }
