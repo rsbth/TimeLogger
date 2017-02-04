@@ -11,7 +11,7 @@ The application allows a user to define and store task records with an hourly ac
 
 While creating a new task user can define the activity's name, it's optional description and the color which will be displayed on the application's graphic.
 
-![addingactivity](https://media.giphy.com/media/26xBxvZwLgQBFWdb2/source.gif)
+![addingactivity](https://media.giphy.com/media/l0ExkrsNwOx5BLCZG/source.gif)
 
 The application uses SQLite database which can be created upon first application's run along with all it's necessary tables.
  
@@ -36,9 +36,9 @@ Every defined activity can have it's name, description and the color changed:
   ![languagegif](https://media.giphy.com/media/26xBQSPMy64G4GKU8/source.gif)
   
   
-  The user can set visibility of data displayed on the graph via the slider setting how many days are displayed:
+  The user can set visibility of data displayed on the graph via the date range picker: 
   
-  ![settings-canvas](https://media.giphy.com/media/26xBC5gmuOmoSiORi/source.gif)
+  ![settings-canvas](https://media.giphy.com/media/26gsjR3CxpgNcvYwE/source.gif)
   
   If the application runs into any exception or malformed input data, it will display an alert at the bottom of the screen:
   
