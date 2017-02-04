@@ -37,6 +37,7 @@ dependencies {
     compile group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.1.0'
     // https://mvnrepository.com/artifact/com.squareup.retrofit2/converter-gson
     compile group: 'com.squareup.retrofit2', name: 'converter-gson', version: '2.1.0'
+    compile 'com.leavjenn.smoothdaterangepicker:library:0.2.0'
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.google.android:flexbox:0.2.5'
     compile 'org.projectlombok:lombok:1.16.12'

@@ -5,8 +5,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 
+import org.joda.time.DateTime;
+
 import java.util.Arrays;
 
+import lombok.Getter;
 import lombok.Setter;
 import timelogger.mprtcz.com.timelogger.task.model.HoursDataService;
 import timelogger.mprtcz.com.timelogger.utils.LogWrapper;
@@ -31,6 +34,10 @@ public class GraphicController {
     private int headerHeight = 0;
     private int cellWidth = 0;
     private int leftLegendWidth = 0;
+    @Getter
+    private DateTime earliestDay;
+    @Getter
+    private DateTime latestDay;
 
     private Paint paint;
 
@@ -39,8 +46,25 @@ public class GraphicController {
 
     public GraphicController(HoursDataService.Hour[][] hoursArray) {
         this.hoursArray = hoursArray;
+        setEarliestAndLatestDay();
         this.maxDays = hoursArray.length;
         this.paint = new Paint();
+    }
+
+    private void setEarliestAndLatestDay() {
+        for (int i = 0; i < this.hoursArray[0].length; i++) {
+            if(this.hoursArray[0][i] != null) {
+                this.earliestDay = this.hoursArray[0][i].getDatetime();
+                break;
+            }
+        }
+        int lastRowIndex = this.hoursArray.length - 1;
+        for (int i = 0; i < this.hoursArray[lastRowIndex].length; i++) {
+            if(this.hoursArray[lastRowIndex][i] != null) {
+                this.latestDay = this.hoursArray[lastRowIndex][i].getDatetime();
+                break;
+            }
+        }
     }
 
     public int getMaxDays() {
@@ -94,7 +118,10 @@ public class GraphicController {
         }
     }
 
-    private int getDrawStartingDay(int arrayLength) {
+    private int getDrawDeltaDays(int arrayLength) {
+        if(firstDayToDraw > 0 && lastDayToDraw > 0) {
+            this.visibleDays = lastDayToDraw - firstDayToDraw;
+        }
         if (visibleDays > arrayLength) {
             return 0;
         } else if(visibleDays < 1) {
@@ -104,12 +131,20 @@ public class GraphicController {
         }
     }
 
+    int firstDayToDraw;
+    int lastDayToDraw;
+
+    public void setDayRangeToDraw(int firstDay, int secondDay) {
+        this.firstDayToDraw = firstDay;
+        this.lastDayToDraw = secondDay;
+    }
+
     private void setTrimmedArray(HoursDataService.Hour[][] hourArray) {
         LogWrapper.d(TAG, "hourArray = " + Arrays.deepToString(hourArray));
         this.trimmedHourArray = new HoursDataService.Hour[hourArray.length -
-                getDrawStartingDay(hourArray.length)][hourArray[0].length];
+                getDrawDeltaDays(hourArray.length)][hourArray[0].length];
         int index = 0;
-        for (int i = getDrawStartingDay(hourArray.length); i < hourArray.length; i++) {
+        for (int i = firstDayToDraw; i < lastDayToDraw; i++) {
             this.trimmedHourArray[index] = hourArray[i];
             index++;
         }
