@@ -1,5 +1,6 @@
 target/
 .mvn/
+material-design-lite/
 
 ### STS ###
 .apt_generated
@@ -22,3 +23,7 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+logger/
+mvnw
+mvnw.cmd
+out/
