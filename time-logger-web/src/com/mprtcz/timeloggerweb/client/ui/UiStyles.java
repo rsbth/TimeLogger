@@ -1,7 +1,7 @@
 package com.mprtcz.timeloggerweb.client.ui;
 
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 
 /**
@@ -11,25 +11,25 @@ public class UiStyles {
 
     public static Label getColoredLabel(String color) {
         Label label = new Label("____");
+        label.addStyleName("color-Label mdl-shadow--4dp");
         label.getElement().getStyle().setBackgroundColor(color);
         label.getElement().getStyle().setColor(color);
         return label;
     }
 
+    public static void stylizeTable(FlexTable table) {
+        table.addStyleName("mdl-data-table mdl-js-data-table mdl-shadow--2dp");
+    }
+
     public static Button getEditButton() {
         Button button = new Button("Edit");
-        button.getElement().getStyle().setPadding(5, Style.Unit.PX);
-        button.getElement().getStyle().setMargin(5, Style.Unit.PX);
-        button.getElement().getStyle().setBackgroundColor("#2196F3");
+        button.addStyleName("mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary");
         return button;
     }
 
     public static Button getRemoveButton() {
         Button button = new Button("Remove");
-//        button.getElement().getStyle().setPadding(5, Style.Unit.PX);
-//        button.getElement().getStyle().setMargin(5, Style.Unit.PX);
-//        button.getElement().getStyle().setBackgroundColor("#EC407A");
-        button.addStyleName("my-Button");
+        button.addStyleName("mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent");
         return button;
     }
 }

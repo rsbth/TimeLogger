@@ -11,17 +11,28 @@
     <!--                                            -->
     <!-- This script is required bootstrap stuff.   -->
     <!--                                            -->
+    <script  type="text/javascript" language="javascript" src="./material-design-lite/material.js"></script>
     <script type="text/javascript" language="javascript" src="TimeLoggerWeb/TimeLoggerWeb.nocache.js"></script>
-</head>
 
-<!--                                           -->
-<!-- The body can have arbitrary html, or      -->
-<!-- you can leave the body empty if you want  -->
-<!-- to create a completely dynamic ui         -->
-<!--                                           -->
-<body>
-<h1>Time Logger</h1>
-<div id="tasksList"></div>
+    <link rel="stylesheet" href="./material-design-lite/material.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+            <!-- Title -->
+            <span class="mdl-layout-title">Time Logger</span>
+        </div>
+    </header>
+    <main class="mdl-layout__content">
+        <section class="mdl-layout__tab-panel is-active">
+            <div class="page-content" style="margin-top: 20px">
+                <div align="center" id="tasksList"></div>
+            </div>
+        </section>
+    </main>
+</div>
 <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
 <noscript>
     <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
@@ -29,5 +40,6 @@
         in order for this application to display correctly.
     </div>
 </noscript>
+<script  type="text/javascript" language="javascript" src="./material-design-lite/material.min.js"></script>
 </body>
 </html>

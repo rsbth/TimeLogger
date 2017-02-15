@@ -17,9 +17,6 @@ public class TimeLoggerWeb implements EntryPoint {
      * This is the entry point method.
      */
     public void onModuleLoad() {
-        tasksFlexTable.setText(0, 0, "Name");
-        tasksFlexTable.setText(0, 1, "Description");
-        tasksFlexTable.setText(0, 2, "Color");
 
         mainPanel.add(tasksFlexTable);
 

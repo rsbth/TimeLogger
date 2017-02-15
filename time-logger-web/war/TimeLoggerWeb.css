@@ -10,7 +10,19 @@ body, td, a, div, .p {
     font-family: arial, sans-serif
 }
 
-.my-Button {
+.list-edit-Button, .list-remove-Button {
+    margin: 10px;
+    padding: 10px;
+    border: none;
+}
+
+.list-edit-Button {
+    background-color: #2196F3 !important;
+}
+.list-remove-Button {
     background-color: #EC407A !important;
-    margin: 20px;
+}
+
+.color-Label {
+    padding:10px;
 }
