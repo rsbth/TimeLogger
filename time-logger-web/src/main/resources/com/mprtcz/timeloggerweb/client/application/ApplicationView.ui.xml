@@ -1,0 +1,54 @@
+<!--
+  #%L
+  GwtMaterial
+  %%
+  Copyright (C) 2015 - 2017 GwtMaterialDesign
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:m="urn:import:gwt.material.design.client.ui">
+
+    <ui:with field="res" type="com.mprtcz.timeloggerweb.client.resources.AppResources"/>
+
+    <m:MaterialPanel backgroundColor="GREY_LIGHTEN_5">
+        <m:MaterialHeader>
+            <m:MaterialNavBar activates="sidenav">
+                <m:MaterialNavBrand paddingLeft="60" text="Time Logger"/>
+                <m:MaterialNavSection float="RIGHT">
+                    <m:MaterialLink text="Link 1"/>
+                    <m:MaterialLink iconType="POLYMER"/>
+                </m:MaterialNavSection>
+            </m:MaterialNavBar>
+            <m:MaterialSideNav m:id="sidenav" type="PUSH" width="280" alwaysShowActivator="true" showOnAttach="false">
+                <m:MaterialLink text="Link 1" iconType="POLYMER"/>
+                <m:MaterialLink text="Link 2" iconType="POLYMER"/>
+                <m:MaterialLink text="Link 3" iconType="POLYMER"/>
+            </m:MaterialSideNav>
+        </m:MaterialHeader>
+
+        <m:MaterialContainer>
+            <m:MaterialPanel textAlign="CENTER" style="margin-top: 20px">
+                <m:MaterialRow addStyleNames="code" width="70%" ui:field="tasksMaterialRow" visible="false">
+                    <m:MaterialTitle title="Tasks List" fontSize="2em"/>
+                    <m:MaterialCollection ui:field="tasksCollection">
+                    </m:MaterialCollection>
+                </m:MaterialRow>
+            </m:MaterialPanel>
+
+        </m:MaterialContainer>
+
+    </m:MaterialPanel>
+</ui:UiBinder>
