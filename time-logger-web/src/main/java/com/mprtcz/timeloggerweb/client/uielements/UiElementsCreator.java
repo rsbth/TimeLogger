@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.mprtcz.timeloggerweb.client.model.TaskArray;
 import com.mprtcz.timeloggerweb.client.model.TaskOverlay;
+import gwt.material.design.addins.client.cutout.MaterialCutOut;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.WavesType;
@@ -20,86 +21,77 @@ import gwt.material.design.client.ui.animate.Transition;
  */
 public class UiElementsCreator {
 
-    public static MaterialCollectionItem createListCell(TaskOverlay taskOverlay) {
-        HorizontalPanel labelsHorizontalPanel = new HorizontalPanel();
-        VerticalPanel textPanel = new VerticalPanel();
-        MaterialLabel nameLabel = new MaterialLabel(taskOverlay.getName());
-        nameLabel.addStyleName("task-name-label");
+
+    public static MaterialCollapsibleItem createCollapsibleListItem(TaskOverlay taskOverlay,
+                                                                    MaterialCutOut cutout) {
+        MaterialCollapsibleItem mci = new MaterialCollapsibleItem();
+        MaterialCollapsibleHeader header = new MaterialCollapsibleHeader();
+        MaterialLink nameLink = new MaterialLink();
+        addLinkListener(nameLink, cutout, taskOverlay);
+        nameLink.setIconType(IconType.ADD);
+        nameLink.getElement().getStyle().setColor(taskOverlay.getColor());
+        nameLink.setText(taskOverlay.getName());
+        MaterialCollectionSecondary taskOptionsSecondary = new MaterialCollectionSecondary();
+        taskOptionsSecondary.add(getTaskLinksPanel());
+        header.add(nameLink);
+        header.add(taskOptionsSecondary);
+        MaterialCollapsibleBody body = new MaterialCollapsibleBody();
         MaterialLabel descriptionLabel = new MaterialLabel(taskOverlay.getDescription());
-        MaterialLabel colorLabel = new MaterialLabel("____");
-        colorLabel.setStyleName("task-color-label");
-        colorLabel.getElement().getStyle().setBackgroundColor(taskOverlay.getColor());
-        colorLabel.getElement().getStyle().setColor(taskOverlay.getColor());
-        textPanel.add(nameLabel);
-        textPanel.add(descriptionLabel);
-        labelsHorizontalPanel.add(colorLabel);
-        labelsHorizontalPanel.add(textPanel);
-        labelsHorizontalPanel.setWidth("0px");
-        MaterialCollectionItem mci = new MaterialCollectionItem();
-        mci.setWaves(WavesType.DEFAULT);
-        MaterialCollectionSecondary hp = new MaterialCollectionSecondary();
-        hp.add(getTaskIconsPanel());
-        mci.add(labelsHorizontalPanel);
-        mci.add(hp);
+        body.add(descriptionLabel);
+        mci.add(header);
+        mci.add(body);
         return mci;
     }
 
-    static void addButtonListener(MaterialButton materialButton) {
+
+    static void addLinkListener(MaterialLink materialLink, MaterialCutOut cutout, TaskOverlay taskOverlay) {
+        materialLink.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                GWT.log("Button clicked = " + event.getSource());
+                showModalDialog(materialLink, taskOverlay, cutout);
+            }
+        });
+    }
+
+    public static void showModalDialog(MaterialLink materialLink, TaskOverlay taskOverlay, MaterialCutOut cutout) {
+        cutout.clear();
+        cutout.setTarget(materialLink);
+        cutout.getElement().getStyle().setColor(taskOverlay.getColor());
+        MaterialButton materialButton = new MaterialButton("Close");
         materialButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                GWT.log("Button clicked = " + event.getSource());
+                cutout.close();
             }
         });
+        cutout.add(getNewTaskPanel());
+        cutout.add(materialButton);
+        cutout.open();
     }
 
-    static void addIconListener(MaterialIcon materialIcon) {
-        materialIcon.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                GWT.log("Button clicked = " + event.getSource());
-            }
-        });
-    }
-
-    static CellPanel getTaskButtonsPanel() {
+    private static CellPanel getTaskLinksPanel() {
         CellPanel vp = new HorizontalPanel();
-        MaterialButton editButton = new MaterialButton();
+        MaterialLink editButton = new MaterialLink();
         editButton.setIconType(IconType.EDIT);
-        editButton.setWaves(WavesType.LIGHT);
-        addButtonListener(editButton);
-        MaterialButton deleteButton = new MaterialButton();
-        deleteButton.setIconType(IconType.DELETE);
-        deleteButton.setWaves(WavesType.LIGHT);
-        deleteButton.setBackgroundColor(Color.RED);
-        vp.add(editButton);
-        vp.add(deleteButton);
-        return vp;
-    }
-
-    private static CellPanel getTaskIconsPanel() {
-        CellPanel vp = new HorizontalPanel();
-        MaterialIcon editButton = new MaterialIcon();
-        editButton.setIconType(IconType.EDIT);
-        editButton.setWaves(WavesType.LIGHT);
+        editButton.setWaves(WavesType.GREEN);
         editButton.setMarginRight(15);
-        addIconListener(editButton);
-        MaterialIcon deleteButton = new MaterialIcon();
+        MaterialLink deleteButton = new MaterialLink();
         deleteButton.setIconType(IconType.DELETE);
-        deleteButton.setWaves(WavesType.LIGHT);
+        deleteButton.setWaves(WavesType.RED);
         deleteButton.setIconColor(Color.RED);
         vp.add(editButton);
         vp.add(deleteButton);
         return vp;
     }
 
-    public static void populateTasksTable(MaterialCollection tasksCollection,
+    public static void populateTasksTable(MaterialCutOut cutout,
                                           TaskArray<TaskOverlay> taskOverlays,
-                                          MaterialRow tasksMaterialRow) {
+                                          MaterialRow tasksMaterialRow,
+                                          MaterialCollapsible taskCollapsible) {
         for (int i = 0; i < taskOverlays.length(); i++) {
-            MaterialCollectionItem mci = createListCell(taskOverlays.get(i));
-            setMaterialCollectionItemClickListener(tasksCollection, mci);
-            tasksCollection.add(mci);
+            MaterialCollapsibleItem mcoli = createCollapsibleListItem(taskOverlays.get(i), cutout);
+            taskCollapsible.add(mcoli);
         }
         MaterialAnimation animation = new MaterialAnimation();
         animation.setTransition(Transition.SLIDEINUP);
@@ -110,14 +102,16 @@ public class UiElementsCreator {
         animation.animate(tasksMaterialRow);
     }
 
-    static void setMaterialCollectionItemClickListener(MaterialCollection tasksCollection, MaterialCollectionItem mci) {
-        mci.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                MaterialCollectionItem source = (MaterialCollectionItem) event.getSource();
-                tasksCollection.clearActive();
-                source.setActive(true);
-            }
-        });
+    private static CellPanel getNewTaskPanel() {
+        CellPanel rootPanel = new HorizontalPanel();
+        VerticalPanel textFieldsPanel = new VerticalPanel();
+        MaterialTextBox nameTextBox = new MaterialTextBox();
+        nameTextBox.setBackgroundColor(Color.WHITE);
+        MaterialTextBox descriptionTextBox = new MaterialTextBox();
+        descriptionTextBox.setBackgroundColor(Color.WHITE);
+        textFieldsPanel.add(nameTextBox);
+        textFieldsPanel.add(descriptionTextBox);
+        rootPanel.add(textFieldsPanel);
+        return rootPanel;
     }
 }

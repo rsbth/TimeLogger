@@ -19,7 +19,8 @@
   -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:m="urn:import:gwt.material.design.client.ui">
+             xmlns:m="urn:import:gwt.material.design.client.ui"
+             xmlns:ma="urn:import:gwt.material.design.addins.client">
 
     <ui:with field="res" type="com.mprtcz.timeloggerweb.client.resources.AppResources"/>
 
@@ -39,6 +40,15 @@
             </m:MaterialSideNav>
         </m:MaterialHeader>
 
+        <m:MaterialContainer fontSize="0.8em">
+            <m:MaterialRow addStyleNames="code" style="margin-top: 20px; max-width: 70%">
+                <m:MaterialLabel text="Tasks List" textColor="GREY"/>
+                <!-- Collapsible -->
+                <m:MaterialCollapsible  ui:field="taskCollapsible">
+                </m:MaterialCollapsible>
+            </m:MaterialRow>
+        </m:MaterialContainer>
+
         <m:MaterialContainer>
             <m:MaterialPanel textAlign="CENTER" style="margin-top: 20px">
                 <m:MaterialRow addStyleNames="code" width="70%" ui:field="tasksMaterialRow" visible="false">
@@ -47,8 +57,20 @@
                     </m:MaterialCollection>
                 </m:MaterialRow>
             </m:MaterialPanel>
-
         </m:MaterialContainer>
 
+        <m:MaterialFAB ui:field="btnClickOnlyFABEvent" bottom="80" type="CLICK_ONLY"
+                       axis="HORIZONTAL" depth="995" layoutPosition="ABSOLUTE" right="80">
+            <m:MaterialButton type="FLOATING" tooltip="Add new Task" tooltipPosition="LEFT"
+                              backgroundColor="RED" iconType="ADD" size="LARGE"/>
+            <m:MaterialFABList>
+                <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" iconType="POLYMER"/>
+            </m:MaterialFABList>
+        </m:MaterialFAB>
+
+        <m:MaterialModal ui:field="modalFixed" type="FIXED_FOOTER" dismissible="false" inDuration="500" outDuration="500"/>
+
+        <ma:cutout.MaterialCutOut ui:field="cutout" backgroundColor="BLUE" circle="true" opacity="0.8" textAlign="CENTER">
+        </ma:cutout.MaterialCutOut>
     </m:MaterialPanel>
 </ui:UiBinder>

@@ -24,7 +24,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtplatform.mvp.client.ViewImpl;
 import com.mprtcz.timeloggerweb.client.http.HttpClientAsync;
+import gwt.material.design.addins.client.cutout.MaterialCutOut;
+import gwt.material.design.client.ui.MaterialCollapsible;
 import gwt.material.design.client.ui.MaterialCollection;
+import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialRow;
 
 import javax.inject.Inject;
@@ -37,6 +40,13 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
     MaterialCollection tasksCollection;
     @UiField
     MaterialRow tasksMaterialRow;
+    @UiField
+    MaterialCollapsible taskCollapsible;
+    @UiField
+    MaterialModal modalFixed;
+    @UiField
+    MaterialCutOut cutout;
+
 
     @Inject
     ApplicationView(Binder uiBinder) {
@@ -46,7 +56,7 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
 
     private void populateMaterialList() {
         HttpClientAsync httpClientAsync = new HttpClientAsync();
-        httpClientAsync.getTasks(tasksCollection, tasksMaterialRow);
+        httpClientAsync.getTasks(cutout, tasksMaterialRow, taskCollapsible);
     }
 
 }
