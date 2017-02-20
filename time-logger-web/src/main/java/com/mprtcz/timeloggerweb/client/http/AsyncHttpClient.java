@@ -2,9 +2,9 @@ package com.mprtcz.timeloggerweb.client.http;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.*;
-import com.mprtcz.timeloggerweb.client.model.TaskArray;
-import com.mprtcz.timeloggerweb.client.model.TaskOverlay;
-import com.mprtcz.timeloggerweb.client.uielements.TasksListUiCreator;
+import com.mprtcz.timeloggerweb.client.application.task.model.TaskArray;
+import com.mprtcz.timeloggerweb.client.application.task.model.TaskOverlay;
+import com.mprtcz.timeloggerweb.client.application.task.uielements.TasksListUiCreator;
 
 /**
  * Created by mprtcz on 2017-02-20.

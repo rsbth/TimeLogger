@@ -1,18 +1,20 @@
-package com.mprtcz.timeloggerweb.client.uielements;
+package com.mprtcz.timeloggerweb.client.application.task.uielements;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.mprtcz.timeloggerweb.client.model.TaskArray;
-import com.mprtcz.timeloggerweb.client.model.TaskOverlay;
+import com.mprtcz.timeloggerweb.client.application.record.controller.RecordController;
+import com.mprtcz.timeloggerweb.client.application.task.model.TaskArray;
+import com.mprtcz.timeloggerweb.client.application.task.model.TaskOverlay;
+import com.mprtcz.timeloggerweb.client.uielements.DateTimePicker;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.animate.MaterialAnimation;
 import gwt.material.design.client.ui.animate.Transition;
 
-import static com.mprtcz.timeloggerweb.client.uielements.StaticUiElementsCreator.getNewTaskPanel;
-import static com.mprtcz.timeloggerweb.client.uielements.StaticUiElementsCreator.getTaskLinksPanel;
+import static com.mprtcz.timeloggerweb.client.application.record.validator.RecordDataValidator.validateRecordData;
+import static com.mprtcz.timeloggerweb.client.uielements.StaticUiElementsCreator.*;
 
 /**
  * Created by mprtcz on 2017-02-20.
@@ -22,6 +24,7 @@ public class TasksListUiCreator {
     private MaterialCutOut cutout;
     private MaterialRow tasksMaterialRow;
     private MaterialCollapsible taskCollapsible;
+    private RecordController recordController;
 
     public TasksListUiCreator(MaterialCutOut cutout,
                              MaterialRow tasksMaterialRow,
@@ -29,6 +32,7 @@ public class TasksListUiCreator {
         this.cutout = cutout;
         this.tasksMaterialRow = tasksMaterialRow;
         this.taskCollapsible = taskCollapsible;
+        this.recordController = new RecordController();
     }
 
     public  MaterialCollapsibleItem createCollapsibleListItem(TaskOverlay taskOverlay) {
@@ -66,15 +70,26 @@ public class TasksListUiCreator {
     public  void showModalDialog(MaterialLink materialLink, TaskOverlay taskOverlay) {
         cutout.clear();
         cutout.setTarget(materialLink);
-        MaterialButton materialButton = new MaterialButton("Close");
-        materialButton.addClickHandler(new ClickHandler() {
+        DateTimePicker startDateTimePicker = new DateTimePicker("Pick a start date and time");
+        DateTimePicker endDateTimePicker = new DateTimePicker("Pick an end date and time");
+        ClickHandler closeClickHandler = new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 cutout.close();
             }
-        });
-        cutout.add(getNewTaskPanel());
-        cutout.add(materialButton);
+        };
+        ClickHandler acceptClickHandler = new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                //retrieve datetime values
+                startDateTimePicker.getSelectedValues();
+                endDateTimePicker.getSelectedValues();
+                validateRecordData(startDateTimePicker, endDateTimePicker, taskOverlay);
+            }
+        };
+        cutout.add(getAddRecordPanel(startDateTimePicker, endDateTimePicker));
+        cutout.add(getButtonStub("Add record", acceptClickHandler));
+        cutout.add(getButtonStub("Cancel", closeClickHandler));
         cutout.open();
     }
 

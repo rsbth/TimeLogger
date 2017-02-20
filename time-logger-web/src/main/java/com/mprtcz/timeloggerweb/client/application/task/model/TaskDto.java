@@ -1,4 +1,4 @@
-package com.mprtcz.timeloggerweb.client.model;
+package com.mprtcz.timeloggerweb.client.application.task.model;
 
 /**
  * Created by mprtcz on 2017-02-17.

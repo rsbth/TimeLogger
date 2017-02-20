@@ -37,3 +37,9 @@
     float: right;
     width: 100%;
 }
+
+.center-horizontal-panel {
+    justify-content: center;
+    align-content: center;
+    background-color: red;
+}

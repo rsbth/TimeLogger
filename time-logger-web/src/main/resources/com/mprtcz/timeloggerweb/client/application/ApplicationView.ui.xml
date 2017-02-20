@@ -58,8 +58,6 @@
             </m:MaterialFABList>
         </m:MaterialFAB>
 
-        <m:MaterialModal ui:field="modalFixed" type="FIXED_FOOTER" dismissible="false" inDuration="500" outDuration="500"/>
-
         <ma:cutout.MaterialCutOut ui:field="cutout" backgroundColor="BLUE" circle="true" opacity="0.8" textAlign="CENTER">
         </ma:cutout.MaterialCutOut>
     </m:MaterialPanel>

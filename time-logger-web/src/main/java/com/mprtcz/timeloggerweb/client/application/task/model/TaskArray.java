@@ -1,4 +1,4 @@
-package com.mprtcz.timeloggerweb.client.model;
+package com.mprtcz.timeloggerweb.client.application.task.model;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
