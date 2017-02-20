@@ -17,16 +17,18 @@ import gwt.material.design.client.ui.animate.Transition;
  */
 public class StaticUiElementsCreator {
 
-    public static CellPanel getTaskLinksPanel() {
+    public static CellPanel getTaskLinksPanel(ClickHandler editClickHandler, ClickHandler deleteClickHandler) {
         CellPanel vp = new HorizontalPanel();
         MaterialLink editButton = new MaterialLink();
         editButton.setIconType(IconType.EDIT);
         editButton.setWaves(WavesType.GREEN);
         editButton.setMarginRight(15);
+        editButton.addClickHandler(editClickHandler);
         MaterialLink deleteButton = new MaterialLink();
         deleteButton.setIconType(IconType.DELETE);
         deleteButton.setWaves(WavesType.RED);
         deleteButton.setIconColor(Color.RED);
+        deleteButton.addClickHandler(deleteClickHandler);
         vp.add(editButton);
         vp.add(deleteButton);
         return vp;

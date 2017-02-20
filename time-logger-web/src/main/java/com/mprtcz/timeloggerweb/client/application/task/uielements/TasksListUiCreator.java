@@ -28,15 +28,15 @@ public class TasksListUiCreator {
     private RecordController recordController;
 
     public TasksListUiCreator(MaterialCutOut cutout,
-                             MaterialRow tasksMaterialRow,
-                             MaterialCollapsible taskCollapsible) {
+                              MaterialRow tasksMaterialRow,
+                              MaterialCollapsible taskCollapsible) {
         this.cutout = cutout;
         this.tasksMaterialRow = tasksMaterialRow;
         this.taskCollapsible = taskCollapsible;
         this.recordController = new RecordController();
     }
 
-    public  MaterialCollapsibleItem createCollapsibleListItem(TaskOverlay taskOverlay) {
+    public MaterialCollapsibleItem createCollapsibleListItem(TaskOverlay taskOverlay) {
         MaterialCollapsibleItem mci = new MaterialCollapsibleItem();
         MaterialCollapsibleHeader header = new MaterialCollapsibleHeader();
         MaterialLink nameLink = new MaterialLink();
@@ -45,7 +45,7 @@ public class TasksListUiCreator {
         nameLink.getElement().getStyle().setColor(taskOverlay.getColor());
         nameLink.setText(taskOverlay.getName());
         MaterialCollectionSecondary taskOptionsSecondary = new MaterialCollectionSecondary();
-        taskOptionsSecondary.add(getTaskLinksPanel());
+        taskOptionsSecondary.add(getTaskLinksPanel(getEditTaskClickHandler(taskOverlay), getDeleteTaskClickHandler(taskOverlay)));
         header.add(nameLink);
         header.add(taskOptionsSecondary);
         MaterialCollapsibleBody body = new MaterialCollapsibleBody();
@@ -68,7 +68,7 @@ public class TasksListUiCreator {
         });
     }
 
-    public  void showModalDialog(MaterialLink materialLink, TaskOverlay taskOverlay) {
+    public void showModalDialog(MaterialLink materialLink, TaskOverlay taskOverlay) {
         cutout.clear();
         cutout.setTarget(materialLink);
         DateTimePicker startDateTimePicker = new DateTimePicker("Pick a start date and time");
@@ -82,19 +82,29 @@ public class TasksListUiCreator {
         ClickHandler acceptClickHandler = new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                validateRecordData(startDateTimePicker, endDateTimePicker, taskOverlay);
+                boolean result = validateRecordData(startDateTimePicker, endDateTimePicker, taskOverlay);
+                if (result) {
+                    recordController.createRecordInstance(
+                            startDateTimePicker.getSelectedValues(),
+                            endDateTimePicker.getSelectedValues(),
+                            taskOverlay);
+                }
             }
         };
         CellPanel addRecordPanel = getAddRecordPanel(startDateTimePicker, endDateTimePicker);
+        MaterialButton confirmButton = getButtonStub("Add record", acceptClickHandler);
+        MaterialButton cancelButton = getButtonStub("Cancel", closeClickHandler);
         cutout.add(addRecordPanel);
-        cutout.add(getButtonStub("Add record", acceptClickHandler));
-        cutout.add(getButtonStub("Cancel", closeClickHandler));
-        addRecordPanel.setVisible(true);
-        getAnimationInstance(Transition.SLIDEINDOWN).animate(addRecordPanel);
+        cutout.add(confirmButton);
+        cutout.add(cancelButton);
         cutout.open();
+        getAnimationInstance(Transition.SLIDEINDOWN).animate(addRecordPanel);
+        getAnimationInstance(Transition.SLIDEINLEFT).animate(confirmButton);
+        getAnimationInstance(Transition.SLIDEINRIGHT).animate(cancelButton);
+        addRecordPanel.setVisible(true);
     }
 
-    public  void populateTasksTable(TaskArray<TaskOverlay> taskOverlays) {
+    public void populateTasksTable(TaskArray<TaskOverlay> taskOverlays) {
         for (int i = 0; i < taskOverlays.length(); i++) {
             MaterialCollapsibleItem mcoli = createCollapsibleListItem(taskOverlays.get(i));
             taskCollapsible.add(mcoli);
@@ -104,5 +114,25 @@ public class TasksListUiCreator {
         MaterialAnimation gridAnimation = new MaterialAnimation();
         gridAnimation.setTransition(Transition.SHOW_STAGGERED_LIST);
         gridAnimation.animate(taskCollapsible);
+    }
+
+    private ClickHandler getEditTaskClickHandler(TaskOverlay taskOverlay) {
+        return new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                event.stopPropagation();
+                GWT.log("Clicked edit button for task = " + taskOverlay.getName());
+            }
+        };
+    }
+
+    private ClickHandler getDeleteTaskClickHandler(TaskOverlay taskOverlay) {
+        return new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                event.stopPropagation();
+                GWT.log("Clicked delete button for task = " + taskOverlay.getName());
+            }
+        };
     }
 }

@@ -19,14 +19,19 @@
  */
 package com.mprtcz.timeloggerweb.client.application;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtplatform.mvp.client.ViewImpl;
+import com.mprtcz.timeloggerweb.client.application.task.uielements.NewTaskUI;
 import com.mprtcz.timeloggerweb.client.http.AsyncHttpClient;
 import com.mprtcz.timeloggerweb.client.application.task.uielements.TasksListUiCreator;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
+import gwt.material.design.addins.client.window.MaterialWindow;
 import gwt.material.design.client.ui.MaterialCollapsible;
+import gwt.material.design.client.ui.MaterialFAB;
 import gwt.material.design.client.ui.MaterialRow;
 
 import javax.inject.Inject;
@@ -41,12 +46,28 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
     MaterialCollapsible taskCollapsible;
     @UiField
     MaterialCutOut cutout;
+    @UiField
+    MaterialFAB addTaskFAB;
 
 
     @Inject
     ApplicationView(Binder uiBinder) {
         initWidget(uiBinder.createAndBindUi(this));
         populateMaterialList();
+        addTaskFabListener();
+    }
+
+    private void addTaskFabListener() {
+        this.addTaskFAB.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                MaterialWindow materialWindow = new MaterialWindow();
+                materialWindow.setMaximize(true);
+                NewTaskUI newTaskUI = new NewTaskUI();
+                materialWindow.add(newTaskUI.constructUI());
+                materialWindow.open();
+            }
+        });
     }
 
     private void populateMaterialList() {

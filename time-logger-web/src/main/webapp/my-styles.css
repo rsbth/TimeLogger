@@ -38,8 +38,6 @@
     width: 100%;
 }
 
-.center-horizontal-panel {
-    justify-content: center;
-    align-content: center;
-    background-color: red;
+.visible-animated.animated {
+    visibility: visible;
 }
