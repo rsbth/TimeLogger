@@ -23,10 +23,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtplatform.mvp.client.ViewImpl;
-import com.mprtcz.timeloggerweb.client.http.HttpClientAsync;
+import com.mprtcz.timeloggerweb.client.http.AsyncHttpClient;
+import com.mprtcz.timeloggerweb.client.uielements.TasksListUiCreator;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
 import gwt.material.design.client.ui.MaterialCollapsible;
-import gwt.material.design.client.ui.MaterialCollection;
 import gwt.material.design.client.ui.MaterialModal;
 import gwt.material.design.client.ui.MaterialRow;
 
@@ -36,8 +36,6 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
     interface Binder extends UiBinder<Widget, ApplicationView> {
     }
 
-    @UiField
-    MaterialCollection tasksCollection;
     @UiField
     MaterialRow tasksMaterialRow;
     @UiField
@@ -55,8 +53,8 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
     }
 
     private void populateMaterialList() {
-        HttpClientAsync httpClientAsync = new HttpClientAsync();
-        httpClientAsync.getTasks(cutout, tasksMaterialRow, taskCollapsible);
+        AsyncHttpClient httpClientAsync = new AsyncHttpClient();
+        TasksListUiCreator tasksListUiCreator = new TasksListUiCreator(cutout, tasksMaterialRow, taskCollapsible);
+        httpClientAsync.getTasksAsync(tasksListUiCreator);
     }
-
 }

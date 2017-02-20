@@ -41,22 +41,12 @@
         </m:MaterialHeader>
 
         <m:MaterialContainer fontSize="0.8em">
-            <m:MaterialRow addStyleNames="code" style="margin-top: 20px; max-width: 70%">
+            <m:MaterialRow addStyleNames="code" style="margin-top: 20px; max-width: 70%"  ui:field="tasksMaterialRow">
                 <m:MaterialLabel text="Tasks List" textColor="GREY"/>
                 <!-- Collapsible -->
                 <m:MaterialCollapsible  ui:field="taskCollapsible">
                 </m:MaterialCollapsible>
             </m:MaterialRow>
-        </m:MaterialContainer>
-
-        <m:MaterialContainer>
-            <m:MaterialPanel textAlign="CENTER" style="margin-top: 20px">
-                <m:MaterialRow addStyleNames="code" width="70%" ui:field="tasksMaterialRow" visible="false">
-                    <m:MaterialTitle title="Tasks List" fontSize="2em"/>
-                    <m:MaterialCollection ui:field="tasksCollection">
-                    </m:MaterialCollection>
-                </m:MaterialRow>
-            </m:MaterialPanel>
         </m:MaterialContainer>
 
         <m:MaterialFAB ui:field="btnClickOnlyFABEvent" bottom="80" type="CLICK_ONLY"
