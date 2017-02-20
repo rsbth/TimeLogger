@@ -50,6 +50,7 @@ public class DateTimePicker {
 
     public MaterialRow getCompletePanel() {
         MaterialRow materialRow = new MaterialRow();
+        materialRow.setStyleName("code");
         materialRow.getElement().getStyle().setWidth(360, Style.Unit.PX);
         materialRow.getElement().getStyle().setMarginTop(30, Style.Unit.PX);
         materialRow.setPadding(15);

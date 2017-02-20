@@ -41,7 +41,7 @@
         </m:MaterialHeader>
 
         <m:MaterialContainer fontSize="0.8em">
-            <m:MaterialRow addStyleNames="code" style="margin-top: 20px; max-width: 70%"  ui:field="tasksMaterialRow">
+            <m:MaterialRow addStyleNames="code" style="margin-top: 20px; max-width: 70%; min-width: 350px"  ui:field="tasksMaterialRow">
                 <m:MaterialLabel text="Tasks List" textColor="GREY"/>
                 <!-- Collapsible -->
                 <m:MaterialCollapsible  ui:field="taskCollapsible">
@@ -52,13 +52,13 @@
         <m:MaterialFAB ui:field="btnClickOnlyFABEvent" bottom="80" type="CLICK_ONLY"
                        axis="HORIZONTAL" depth="995" layoutPosition="ABSOLUTE" right="80">
             <m:MaterialButton type="FLOATING" tooltip="Add new Task" tooltipPosition="LEFT"
-                              backgroundColor="RED" iconType="ADD" size="LARGE"/>
+                              backgroundColor="ORANGE_ACCENT_1" iconType="ADD" size="LARGE"/>
             <m:MaterialFABList>
                 <m:MaterialAnchorButton type="FLOATING" waves="LIGHT" iconType="POLYMER"/>
             </m:MaterialFABList>
         </m:MaterialFAB>
 
-        <ma:cutout.MaterialCutOut ui:field="cutout" backgroundColor="BLUE" circle="true" opacity="0.8" textAlign="CENTER">
+        <ma:cutout.MaterialCutOut ui:field="cutout" backgroundColor="ORANGE_ACCENT_1" circle="true" opacity="0.8" textAlign="CENTER">
         </ma:cutout.MaterialCutOut>
     </m:MaterialPanel>
 </ui:UiBinder>

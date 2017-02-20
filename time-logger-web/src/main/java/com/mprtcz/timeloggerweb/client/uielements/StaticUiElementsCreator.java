@@ -9,7 +9,8 @@ import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialLink;
-import gwt.material.design.client.ui.MaterialTextBox;
+import gwt.material.design.client.ui.animate.MaterialAnimation;
+import gwt.material.design.client.ui.animate.Transition;
 
 /**
  * Created by mprtcz on 2017-02-17.
@@ -31,36 +32,12 @@ public class StaticUiElementsCreator {
         return vp;
     }
 
-    static CellPanel getNewTaskPanel() {
-        CellPanel rootPanel = new HorizontalPanel();
-        VerticalPanel textFieldsPanel = new VerticalPanel();
-        MaterialTextBox nameTextBox = new MaterialTextBox();
-        nameTextBox.setBackgroundColor(Color.WHITE);
-        MaterialTextBox descriptionTextBox = new MaterialTextBox();
-        descriptionTextBox.setBackgroundColor(Color.WHITE);
-        textFieldsPanel.add(nameTextBox);
-        textFieldsPanel.add(descriptionTextBox);
-        rootPanel.add(textFieldsPanel);
-        return rootPanel;
-    }
-
     public static CellPanel getAddRecordPanel(DateTimePicker startDateTimePicker, DateTimePicker endDateTimePicker) {
         VerticalPanel verticalPanel = new VerticalPanel();
         verticalPanel.add(startDateTimePicker.getCompletePanel());
         verticalPanel.add(endDateTimePicker.getCompletePanel());
+        verticalPanel.setVisible(false);
         return verticalPanel;
-    }
-
-    public static CellPanel getRecordButtonsPanel(ClickHandler acceptClickHandler, ClickHandler closeClickHandler) {
-        HorizontalPanel horizontalPanel = new HorizontalPanel();
-        horizontalPanel.setWidth("0");
-        MaterialButton addButton = new MaterialButton("Add Record");
-        addButton.addClickHandler(acceptClickHandler);
-        MaterialButton closeButton = new MaterialButton("Close");
-        closeButton.addClickHandler(closeClickHandler);
-        horizontalPanel.add(addButton);
-        horizontalPanel.add(closeButton);
-        return horizontalPanel;
     }
 
     public static MaterialButton getButtonStub(String text, ClickHandler handler) {
@@ -68,5 +45,14 @@ public class StaticUiElementsCreator {
         materialButton.addClickHandler(handler);
         materialButton.setMargin(15);
         return materialButton;
+    }
+
+    public static MaterialAnimation getAnimationInstance(Transition transition) {
+        MaterialAnimation animation = new MaterialAnimation();
+        animation.setTransition(transition);
+        animation.setDelayMillis(0);
+        animation.setDurationMillis(1000);
+        animation.setInfinite(false);
+        return animation;
     }
 }

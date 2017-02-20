@@ -3,6 +3,7 @@ package com.mprtcz.timeloggerweb.client.application.task.uielements;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.CellPanel;
 import com.mprtcz.timeloggerweb.client.application.record.controller.RecordController;
 import com.mprtcz.timeloggerweb.client.application.task.model.TaskArray;
 import com.mprtcz.timeloggerweb.client.application.task.model.TaskOverlay;
@@ -81,15 +82,15 @@ public class TasksListUiCreator {
         ClickHandler acceptClickHandler = new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                //retrieve datetime values
-                startDateTimePicker.getSelectedValues();
-                endDateTimePicker.getSelectedValues();
                 validateRecordData(startDateTimePicker, endDateTimePicker, taskOverlay);
             }
         };
-        cutout.add(getAddRecordPanel(startDateTimePicker, endDateTimePicker));
+        CellPanel addRecordPanel = getAddRecordPanel(startDateTimePicker, endDateTimePicker);
+        cutout.add(addRecordPanel);
         cutout.add(getButtonStub("Add record", acceptClickHandler));
         cutout.add(getButtonStub("Cancel", closeClickHandler));
+        addRecordPanel.setVisible(true);
+        getAnimationInstance(Transition.SLIDEINDOWN).animate(addRecordPanel);
         cutout.open();
     }
 
@@ -98,12 +99,10 @@ public class TasksListUiCreator {
             MaterialCollapsibleItem mcoli = createCollapsibleListItem(taskOverlays.get(i));
             taskCollapsible.add(mcoli);
         }
-        MaterialAnimation animation = new MaterialAnimation();
-        animation.setTransition(Transition.SLIDEINUP);
-        animation.setDelayMillis(0);
-        animation.setDurationMillis(1000);
-        animation.setInfinite(false);
         tasksMaterialRow.setVisible(true);
-        animation.animate(tasksMaterialRow);
+        getAnimationInstance(Transition.SLIDEINLEFT).animate(tasksMaterialRow);
+        MaterialAnimation gridAnimation = new MaterialAnimation();
+        gridAnimation.setTransition(Transition.SHOW_STAGGERED_LIST);
+        gridAnimation.animate(taskCollapsible);
     }
 }
