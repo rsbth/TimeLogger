@@ -9,6 +9,8 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.mprtcz.timeloggerweb.client.application.task.model.TaskDto;
+import com.mprtcz.timeloggerweb.client.utils.ColorTranslator;
 import gwt.material.design.addins.client.window.MaterialWindow;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
@@ -34,6 +36,7 @@ public class NewTaskUI {
     private MaterialButton confirmButton = new MaterialButton("Add");
     private MaterialButton cancelButton = new MaterialButton("Cancel");
     private MaterialWindow materialWindow;
+    private Color selectedColor;
 
     public NewTaskUI(MaterialWindow materialWindow) {
         this.materialWindow = materialWindow;
@@ -76,10 +79,20 @@ public class NewTaskUI {
             @Override
             public void onClick(ClickEvent event) {
                 GWT.log("Adding clock listener");
-                materialWindow.getChildren().forEach(Widget::removeFromParent);
                 materialWindow.close();
-                materialWindow.clear();
-                materialWindow.close();
+            }
+        });
+
+        this.confirmButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                String color  = ColorTranslator.getCodeOfColor(selectedColor);
+                TaskDto taskDto = new TaskDto(taskName.getText(), taskDescription.getText(), color);
+                GWT.log("Task name = " +taskDto.getName());
+
+                GWT.log("Task name = " +taskDto.getName());
+                GWT.log("Task description = " +taskDto.getDescription());
+                GWT.log("Task color = " +taskDto.getColor());
             }
         });
     }
@@ -98,6 +111,7 @@ public class NewTaskUI {
         for (Color color : colors) {
             GWT.log("Color = " + color);
             if(color == Color.DEFAULT) {continue;}
+            if(color == Color.TRANSPARENT) {continue;}
             this.colorsDropdown.add(getColoredLink(color));
         }
         this.colorsDropdown.setConstrainWidth(false);
@@ -106,6 +120,7 @@ public class NewTaskUI {
             public void onSelection(SelectionEvent<Widget> event) {
                 if (event.getSelectedItem() instanceof MaterialLink) {
                     Color c = Color.valueOf(((MaterialLink) event.getSelectedItem()).getText());
+                    selectedColor = c;
                     GWT.log("Color = " + c.name());
                     dropdownActivatorButton.setBackgroundColor(c);
                     if(isColorDim(c)) {
