@@ -10,7 +10,7 @@ import com.mprtcz.timeloggerweb.client.application.task.uielements.TasksListUiCr
  * Created by mprtcz on 2017-02-20.
  */
 public class AsyncHttpClient {
-    public static final String SERVER_URL = "http://192.168.0.7:8080";
+    public static final String SERVER_URL = "http://localhost:8080";
     private RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(SERVER_URL));
 
     public void getTasksAsync(TasksListUiCreator tasksListUiCreator) {

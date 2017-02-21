@@ -26,8 +26,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtplatform.mvp.client.ViewImpl;
 import com.mprtcz.timeloggerweb.client.application.task.uielements.NewTaskUI;
-import com.mprtcz.timeloggerweb.client.http.AsyncHttpClient;
 import com.mprtcz.timeloggerweb.client.application.task.uielements.TasksListUiCreator;
+import com.mprtcz.timeloggerweb.client.http.AsyncHttpClient;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
 import gwt.material.design.addins.client.window.MaterialWindow;
 import gwt.material.design.client.ui.MaterialCollapsible;
@@ -35,6 +35,8 @@ import gwt.material.design.client.ui.MaterialFAB;
 import gwt.material.design.client.ui.MaterialRow;
 
 import javax.inject.Inject;
+
+import static com.google.gwt.dom.client.Style.Unit.PX;
 
 public class ApplicationView extends ViewImpl implements ApplicationPresenter.MyView {
     interface Binder extends UiBinder<Widget, ApplicationView> {
@@ -49,6 +51,8 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
     @UiField
     MaterialFAB addTaskFAB;
 
+    private MaterialWindow materialWindow;
+
 
     @Inject
     ApplicationView(Binder uiBinder) {
@@ -61,10 +65,18 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
         this.addTaskFAB.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                MaterialWindow materialWindow = new MaterialWindow();
-                materialWindow.setMaximize(true);
-                NewTaskUI newTaskUI = new NewTaskUI();
+                if(materialWindow != null) {
+                    materialWindow.clear();
+                    materialWindow.close();
+                }
+                materialWindow = new MaterialWindow();
+                materialWindow.setTitle("Add new Task");
+                materialWindow.getIconClose().setVisible(false);
+                materialWindow.getIconMaximize().setVisible(false);
+                NewTaskUI newTaskUI = new NewTaskUI(materialWindow);
                 materialWindow.add(newTaskUI.constructUI());
+                materialWindow.getElement().getStyle().setWidth(320, PX);
+                materialWindow.getElement().getStyle().setBackgroundColor("white");
                 materialWindow.open();
             }
         });

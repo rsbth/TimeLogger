@@ -11,8 +11,6 @@ import com.mprtcz.timeloggerweb.client.uielements.DateTimePicker;
 import gwt.material.design.addins.client.cutout.MaterialCutOut;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.*;
-import gwt.material.design.client.ui.animate.MaterialAnimation;
-import gwt.material.design.client.ui.animate.Transition;
 
 import static com.mprtcz.timeloggerweb.client.application.record.validator.RecordDataValidator.validateRecordData;
 import static com.mprtcz.timeloggerweb.client.uielements.StaticUiElementsCreator.*;
@@ -98,9 +96,6 @@ public class TasksListUiCreator {
         cutout.add(confirmButton);
         cutout.add(cancelButton);
         cutout.open();
-        getAnimationInstance(Transition.SLIDEINDOWN).animate(addRecordPanel);
-        getAnimationInstance(Transition.SLIDEINLEFT).animate(confirmButton);
-        getAnimationInstance(Transition.SLIDEINRIGHT).animate(cancelButton);
         addRecordPanel.setVisible(true);
     }
 
@@ -110,10 +105,6 @@ public class TasksListUiCreator {
             taskCollapsible.add(mcoli);
         }
         tasksMaterialRow.setVisible(true);
-        getAnimationInstance(Transition.SLIDEINLEFT).animate(tasksMaterialRow);
-        MaterialAnimation gridAnimation = new MaterialAnimation();
-        gridAnimation.setTransition(Transition.SHOW_STAGGERED_LIST);
-        gridAnimation.animate(taskCollapsible);
     }
 
     private ClickHandler getEditTaskClickHandler(TaskOverlay taskOverlay) {

@@ -31,7 +31,7 @@ import com.gwtplatform.mvp.client.proxy.RevealContentHandler;
 
 public class ApplicationPresenter
         extends Presenter<ApplicationPresenter.MyView, ApplicationPresenter.MyProxy> {
-    interface MyView extends View {
+    public interface MyView extends View {
     }
 
     @ProxyStandard
