@@ -64,4 +64,14 @@ public class TaskOverlay extends JavaScriptObject {
     public static native TaskArray<TaskOverlay> buildTasksArray(String json)  /*-{
         return eval('(' + json + ')');
     }-*/;
+
+    public final String getStringInfo() {
+        return "TaskOverlay{" +
+                "name='" + this.getName() + '\'' +
+                ", description='" + this.getDescription() + '\'' +
+                ", color='" + this.getColor() + '\'' +
+                ", getLastModified='" + this.getLastModified() + '\'' +
+                ", getServerId='" + this.getServerId() + '\'' +
+                '}';
+    }
 }

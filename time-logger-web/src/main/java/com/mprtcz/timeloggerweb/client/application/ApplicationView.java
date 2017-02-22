@@ -19,6 +19,7 @@
  */
 package com.mprtcz.timeloggerweb.client.application;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -35,8 +36,6 @@ import gwt.material.design.client.ui.MaterialFAB;
 import gwt.material.design.client.ui.MaterialRow;
 
 import javax.inject.Inject;
-
-import static com.google.gwt.dom.client.Style.Unit.PX;
 
 public class ApplicationView extends ViewImpl implements ApplicationPresenter.MyView {
     interface Binder extends UiBinder<Widget, ApplicationView> {
@@ -71,12 +70,11 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
                 }
                 materialWindow = new MaterialWindow();
                 materialWindow.setTitle("Add new Task");
-                materialWindow.getIconClose().setVisible(false);
                 materialWindow.getIconMaximize().setVisible(false);
+                materialWindow.setOverflow(Style.Overflow.VISIBLE);
+                MaterialWindow.setOverlay(true);
                 NewTaskUI newTaskUI = new NewTaskUI(materialWindow);
                 materialWindow.add(newTaskUI.constructUI());
-                materialWindow.getElement().getStyle().setWidth(320, PX);
-                materialWindow.getElement().getStyle().setBackgroundColor("white");
                 materialWindow.open();
             }
         });

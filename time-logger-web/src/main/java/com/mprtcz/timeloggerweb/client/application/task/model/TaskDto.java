@@ -25,4 +25,13 @@ public class TaskDto {
     public String getColor() {
         return color;
     }
+
+    @Override
+    public String toString() {
+        return "TaskDto{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", color='" + color + '\'' +
+                '}';
+    }
 }
