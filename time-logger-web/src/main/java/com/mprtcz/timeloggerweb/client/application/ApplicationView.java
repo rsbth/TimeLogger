@@ -29,7 +29,6 @@ import com.gwtplatform.mvp.client.ViewImpl;
 import com.mprtcz.timeloggerweb.client.application.task.uielements.NewTaskUI;
 import com.mprtcz.timeloggerweb.client.application.task.uielements.TasksListUiCreator;
 import com.mprtcz.timeloggerweb.client.http.AsyncHttpClient;
-import gwt.material.design.addins.client.cutout.MaterialCutOut;
 import gwt.material.design.addins.client.window.MaterialWindow;
 import gwt.material.design.client.ui.MaterialCollapsible;
 import gwt.material.design.client.ui.MaterialFAB;
@@ -45,8 +44,6 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
     MaterialRow tasksMaterialRow;
     @UiField
     MaterialCollapsible taskCollapsible;
-    @UiField
-    MaterialCutOut cutout;
     @UiField
     MaterialFAB addTaskFAB;
 
@@ -82,7 +79,7 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
 
     private void populateMaterialList() {
         AsyncHttpClient httpClientAsync = new AsyncHttpClient();
-        TasksListUiCreator tasksListUiCreator = new TasksListUiCreator(cutout, tasksMaterialRow, taskCollapsible);
+        TasksListUiCreator tasksListUiCreator = new TasksListUiCreator(tasksMaterialRow, taskCollapsible);
         httpClientAsync.getTasksAsync(tasksListUiCreator);
     }
 

@@ -54,8 +54,5 @@
             <m:MaterialButton type="FLOATING" tooltip="Add new Task" tooltipPosition="LEFT"
                               backgroundColor="ORANGE_ACCENT_1" iconType="ADD" size="LARGE"/>
         </m:MaterialFAB>
-
-        <ma:cutout.MaterialCutOut ui:field="cutout" backgroundColor="ORANGE_ACCENT_1" circle="true" opacity="0.8" textAlign="CENTER">
-        </ma:cutout.MaterialCutOut>
     </m:MaterialPanel>
 </ui:UiBinder>

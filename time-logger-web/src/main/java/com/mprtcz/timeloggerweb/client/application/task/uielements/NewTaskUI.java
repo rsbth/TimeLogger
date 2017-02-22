@@ -51,7 +51,7 @@ public class NewTaskUI {
         VerticalPanel verticalPanel = new VerticalPanel();
         verticalPanel.getElement().getStyle().setWidth(FORM_WIDTH, PX);
         verticalPanel.getElement().getStyle().setBackgroundColor(BACKGROUND_COLOR);
-        verticalPanel.setStyleName("auto-margin");
+        verticalPanel.setStyleName("add-task-panel");
         initializeUiElements();
         HorizontalPanel buttonsPanel = new HorizontalPanel();
         buttonsPanel.getElement().getStyle().setMargin(FORM_MARGINS, PX);

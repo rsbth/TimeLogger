@@ -9,8 +9,8 @@ import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialLink;
-import gwt.material.design.client.ui.animate.MaterialAnimation;
-import gwt.material.design.client.ui.animate.Transition;
+import gwt.material.design.client.ui.MaterialRow;
+import gwt.material.design.client.ui.MaterialTextArea;
 
 /**
  * Created by mprtcz on 2017-02-17.
@@ -18,7 +18,7 @@ import gwt.material.design.client.ui.animate.Transition;
 public class StaticUiElementsCreator {
 
     public static CellPanel getTaskLinksPanel(ClickHandler editClickHandler, ClickHandler deleteClickHandler) {
-        CellPanel vp = new HorizontalPanel();
+        CellPanel cellPanel = new HorizontalPanel();
         MaterialLink editButton = new MaterialLink();
         editButton.setIconType(IconType.EDIT);
         editButton.setWaves(WavesType.GREEN);
@@ -29,16 +29,15 @@ public class StaticUiElementsCreator {
         deleteButton.setWaves(WavesType.RED);
         deleteButton.setIconColor(Color.RED);
         deleteButton.addClickHandler(deleteClickHandler);
-        vp.add(editButton);
-        vp.add(deleteButton);
-        return vp;
+        cellPanel.add(editButton);
+        cellPanel.add(deleteButton);
+        return cellPanel;
     }
 
     public static CellPanel getAddRecordPanel(DateTimePicker startDateTimePicker, DateTimePicker endDateTimePicker) {
         VerticalPanel verticalPanel = new VerticalPanel();
         verticalPanel.add(startDateTimePicker.getCompletePanel());
         verticalPanel.add(endDateTimePicker.getCompletePanel());
-        verticalPanel.setVisible(false);
         return verticalPanel;
     }
 
@@ -49,12 +48,18 @@ public class StaticUiElementsCreator {
         return materialButton;
     }
 
-    public static MaterialAnimation getAnimationInstance(Transition transition) {
-        MaterialAnimation animation = new MaterialAnimation();
-        animation.setTransition(transition);
-        animation.setDelayMillis(0);
-        animation.setDurationMillis(1000);
-        animation.setInfinite(false);
-        return animation;
+    public static MaterialRow getSummaryRow(MaterialTextArea summaryTextArea) {
+        MaterialRow materialRow = new MaterialRow();
+        materialRow.setStyleName("box-shadow");
+        materialRow.setMargin(10);
+        materialRow.setMarginTop(20);
+        materialRow.setMarginBottom(20);
+        summaryTextArea.setReadOnly(true);
+        materialRow.setPadding(0);
+        summaryTextArea.setPadding(0);
+        summaryTextArea.setMarginLeft(10);
+        materialRow.add(summaryTextArea);
+        materialRow.setVisible(false);
+        return materialRow;
     }
 }
