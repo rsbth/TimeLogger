@@ -1,5 +1,4 @@
 #Time Logger Server
----
 
 A backend for the TimeLogger application which serves data using REST. 
 The application uses Spring Boot java framework and Hibernate as ORM which operates on MySQL database. 
