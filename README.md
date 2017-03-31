@@ -8,6 +8,10 @@ The project consists of four main components, from which three are completed.
 
 [TimeLoggerDesktop](https://github.com/mprtcz/TimeLogger/tree/master/time-logger-desktop), an application written with JavaFX which can communicate with server and stores data on it's local database. The application validates requests it's about to send, presents custom error messages when the data entered is malformed and synchronizes any changes made on server on startup. 
 
+Desktop app UI: 
+
+![desktop-ui](https://sc-cdn.scaleengine.net/i/7cbabb5f3570b138657879ef3da4a0cc.png)
+
 [TimeLoggerAndroid](https://github.com/mprtcz/TimeLogger/tree/master/time-logger-android), an android app which has similar functionality as the desktop app. It also stores data obtined from the server on the app's database, synchronizes it with the server and is able to present the data in a graphical form.
 
 [TimeLoggerWeb](https://github.com/mprtcz/TimeLogger/tree/master/time-logger-web) an in progess component for a website which will be able to do all the mentioned things but in a web browser.
