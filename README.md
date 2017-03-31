@@ -14,4 +14,7 @@ Desktop app UI:
 
 [TimeLoggerAndroid](https://github.com/mprtcz/TimeLogger/tree/master/time-logger-android), an android app which has similar functionality as the desktop app. It also stores data obtined from the server on the app's database, synchronizes it with the server and is able to present the data in a graphical form.
 
+![android-ui](https://sc-cdn.scaleengine.net/i/1b659b90f974807ecc253f82270b7d38.png)
+
+
 [TimeLoggerWeb](https://github.com/mprtcz/TimeLogger/tree/master/time-logger-web) an in progess component for a website which will be able to do all the mentioned things but in a web browser.
