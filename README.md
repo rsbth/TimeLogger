@@ -18,3 +18,6 @@ Desktop app UI:
 
 
 [TimeLoggerWeb](https://github.com/mprtcz/TimeLogger/tree/master/time-logger-web) an in progess component for a website which will be able to do all the mentioned things but in a web browser.
+
+
+![web-ui](https://sc-cdn.scaleengine.net/i/87d5eee02422a54ff0fc9e5f57d9e9bb.png)
